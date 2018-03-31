@@ -1,3 +1,5 @@
+/* eslint-disable func-names */
+
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
@@ -5,13 +7,13 @@ const { URL } = require('url');
 const { expect } = require('chai');
 const nock = require('nock');
 
-const fhirClientModule = require('../lib/client');
+const Client = require('../lib/client');
 
 describe('Client', () => {
   it('initializes with config', function () {
     const baseUrl = 'https://test.com';
     const config = { baseUrl };
-    this.fhirClient = new fhirClientModule(config);
+    this.fhirClient = new Client(config);
 
     expect(this.fhirClient.baseUrl).to.deep.equal(new URL(baseUrl));
   });
@@ -23,10 +25,10 @@ describe('Client', () => {
       nock(baseUrl)
         .matchHeader('accept', 'application/json+fhir')
         .get('/metadata')
-        .reply(200, (uri, requestBody) => fs.createReadStream(path.normalize(`${__dirname}/fixtures/capability-statement.json`, 'utf8')));
+        .reply(200, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/capability-statement.json`, 'utf8')));
 
       const config = { baseUrl };
-      this.fhirClient = new fhirClientModule(config);
+      this.fhirClient = new Client(config);
     });
 
     it('responds to #capabilityStatement(), returning FHIR resource', async function () {

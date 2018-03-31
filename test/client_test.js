@@ -18,7 +18,7 @@ describe('Client', function() {
     expect(this.fhirClient.baseUrl).to.deep.equal(new URL(baseUrl));
   });
 
-  describe('instance methods', function() {
+  describe('instance', function() {
     beforeEach(function() {
       let baseUrl = 'http://test.com';
 
@@ -33,7 +33,13 @@ describe('Client', function() {
       this.fhirClient = new fhirClientModule(config);
     });
 
-    it('#authMetadata returns SMART oAuth URIs', async function() {
+    it('responds to #capabilityStatement(), returning FHIR resource', async function() {
+      let capabilityStatement = await this.fhirClient.capabilityStatement();
+
+      expect(capabilityStatement.resourceType).to.equal("CapabilityStatement");
+    });
+
+    it('responds to #authMetadata(), returning SMART OAuth URIs', async function() {
       let authMetadata = await this.fhirClient.smartAuthMetadata();
 
       expect(authMetadata).to.deep.equal({

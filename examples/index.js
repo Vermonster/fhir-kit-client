@@ -2,13 +2,37 @@ const fhirClientModule = require('../lib/client');
 
 let fhirClient = new fhirClientModule({baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open'});
 
-async function examples() {
+// Examples using promises...
+fhirClient.smartAuthMetadata().then((response) => {
+  console.log(response);
+});
+
+fhirClient.read('Patient', '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4').then((response) => {
+  console.log(response);
+});
+
+fhirClient.vread('Patient', '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', '1').then((response) => {
+  console.log(response);
+});
+
+fhirClient.search('Patient', { name: 'abbott' }).then((response) => {
+  console.log(response);
+});
+
+
+// Examples using async/await...
+async function async_examples() {
   let response = await fhirClient.smartAuthMetadata();
   console.log(response);
 
   console.log("--------");
 
-  response = await fhirClient.get('Patient', '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4');
+  response = await fhirClient.read('Patient', '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4');
+  console.log(response);
+
+  console.log("--------");
+
+  response = await fhirClient.vread('Patient', '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', '1');
   console.log(response);
 
   console.log("--------");
@@ -17,4 +41,4 @@ async function examples() {
   console.log(response);
 };
 
-examples();
+async_examples();

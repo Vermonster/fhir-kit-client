@@ -1,6 +1,8 @@
-const fhirClientModule = require('../lib/client');
+/* eslint no-console: "off" */
 
-let fhirClient = new fhirClientModule({baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open'});
+const Client = require('../lib/client');
+
+const fhirClient = new Client({ baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open' });
 
 // Examples using promises...
 fhirClient.smartAuthMetadata().then((response) => {
@@ -21,24 +23,24 @@ fhirClient.search('Patient', { name: 'abbott' }).then((response) => {
 
 
 // Examples using async/await...
-async function async_examples() {
+async function asyncExamples() {
   let response = await fhirClient.smartAuthMetadata();
   console.log(response);
 
-  console.log("--------");
+  console.log('--------');
 
   response = await fhirClient.read('Patient', '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4');
   console.log(response);
 
-  console.log("--------");
+  console.log('--------');
 
   response = await fhirClient.vread('Patient', '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', '1');
   console.log(response);
 
-  console.log("--------");
+  console.log('--------');
 
   response = await fhirClient.search('Patient', { name: 'abbott' });
   console.log(response);
-};
+}
 
-async_examples();
+asyncExamples();

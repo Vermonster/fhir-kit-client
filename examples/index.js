@@ -1,6 +1,6 @@
 /* eslint no-console: "off" */
 
-const Client = require('../lib/client');
+const { Client } = require('../lib/client');
 
 const fhirClient = new Client({ baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open' });
 

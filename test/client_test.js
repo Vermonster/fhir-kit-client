@@ -7,7 +7,7 @@ const { URL } = require('url');
 const { expect } = require('chai');
 const nock = require('nock');
 
-const Client = require('../lib/client');
+const { Client } = require('../lib/client');
 
 describe('Client', () => {
   it('initializes with config', function () {
@@ -19,9 +19,9 @@ describe('Client', () => {
   });
 
   describe('instance', () => {
-    beforeEach(function () {
-      const baseUrl = 'http://test.com';
+    const baseUrl = 'http://test.com';
 
+    beforeEach(function () {
       nock(baseUrl)
         .matchHeader('accept', 'application/json+fhir')
         .get('/metadata')
@@ -45,6 +45,29 @@ describe('Client', () => {
         tokenUrl: 'https://sb-auth.smarthealthit.org/token',
         registerUrl: 'https://sb-auth.smarthealthit.org/register',
       });
+    });
+
+    it('responds to #read, returning a matching resource', async function () {
+      nock(baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486')
+        .reply(200, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/patient.json`, 'utf8')));
+
+      const response = await this.fhirClient.read('Patient', 'eb3271e1-ae1b-4644-9332-41e32c829486');
+
+      expect(response.resourceType).to.equal('Patient');
+      expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
+    });
+
+    it('responds to #read, returning operation outcome if not found', async function () {
+      nock(baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .get('/Patient/abcdef')
+        .reply(404, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/patient-not-found.json`, 'utf8')));
+
+      const response = await this.fhirClient.read('Patient', 'abcdef');
+
+      expect(response.resourceType).to.equal('OperationOutcome');
     });
   });
 });

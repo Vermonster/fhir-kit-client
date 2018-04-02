@@ -6,7 +6,7 @@ Node FHIR client library
 # Features
 
 * Node
-* Minimial dependences
+* Minimal dependencies
 * Contemporary async/await structure
 * Modern Class getter/setter
 * TDD with Mocha
@@ -14,6 +14,10 @@ Node FHIR client library
 # Example
 
 [See examples](./examples/index.js)
+
+# Documentation
+
+[JSDoc-generated documentation](https://vermonster.github.io/node-fhir-client/fhir-client/0.1.0/)
 
 # Todo
 

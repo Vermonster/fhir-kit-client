@@ -1,0 +1,215 @@
+{
+  "resourceType": "CapabilityStatement",
+  "status": "active",
+  "date": "2018-03-30T16:04:37+00:00",
+  "publisher": "Not provided",
+  "kind": "instance",
+  "software": {
+    "name": "HAPI FHIR Server",
+    "version": "2.4"
+  },
+  "implementation": {
+    "description": "HSPC Reference API Server"
+  },
+  "fhirVersion": "3.0.1",
+  "acceptUnknown": "extensions",
+  "format": [
+    "application/fhir+xml",
+    "application/fhir+json"
+  ],
+  "rest": [
+    {
+      "mode": "server",
+      "resource": [
+        {
+          "extension": [
+            {
+              "url": "http://hl7api.sourceforge.net/hapi-fhir/res/extdefs.html#resourceCount",
+              "valueDecimal": 1629
+            }
+          ],
+          "type": "Patient",
+          "profile": {
+            "reference": "http://hl7.org/fhir/Profile/Patient"
+          },
+          "interaction": [
+            {
+              "code": "read"
+            },
+            {
+              "code": "vread"
+            },
+            {
+              "code": "update"
+            },
+            {
+              "code": "patch"
+            },
+            {
+              "code": "delete"
+            },
+            {
+              "code": "history-instance"
+            },
+            {
+              "code": "history-type"
+            },
+            {
+              "code": "create"
+            },
+            {
+              "code": "search-type"
+            }
+          ],
+          "versioning": "versioned-update",
+          "conditionalCreate": true,
+          "conditionalUpdate": true,
+          "conditionalDelete": "multiple",
+          "searchInclude": [
+            "*",
+            "Patient:general-practitioner",
+            "Patient:link",
+            "Patient:organization"
+          ],
+          "searchParam": [
+            {
+              "name": "_language",
+              "type": "string",
+              "documentation": "The language of the resource"
+            },
+            {
+              "name": "birthdate",
+              "type": "date",
+              "documentation": "The patient's date of birth"
+            },
+            {
+              "name": "deceased",
+              "type": "token",
+              "documentation": "This patient has been marked as deceased, or as a death date entered"
+            },
+            {
+              "name": "address-state",
+              "type": "string",
+              "documentation": "A state specified in an address"
+            },
+            {
+              "name": "gender",
+              "type": "token",
+              "documentation": "Gender of the patient"
+            },
+            {
+              "name": "animal-species",
+              "type": "token",
+              "documentation": "The species for animal patients"
+            },
+            {
+              "name": "link",
+              "type": "reference",
+              "documentation": "All patients linked to the given patient"
+            },
+            {
+              "name": "language",
+              "type": "token",
+              "documentation": "Language code (irrespective of use value)"
+            },
+            {
+              "name": "animal-breed",
+              "type": "token",
+              "documentation": "The breed for animal patients"
+            },
+            {
+              "name": "address-country",
+              "type": "string",
+              "documentation": "A country specified in an address"
+            },
+            {
+              "name": "death-date",
+              "type": "date",
+              "documentation": "The date of death has been provided and satisfies this search value"
+            },
+            {
+              "name": "phonetic",
+              "type": "string",
+              "documentation": "A portion of either family or given name using some kind of phonetic matching algorithm"
+            },
+            {
+              "name": "telecom",
+              "type": "token",
+              "documentation": "The value in any kind of telecom details of the patient"
+            },
+            {
+              "name": "address-city",
+              "type": "string",
+              "documentation": "A city specified in an address"
+            },
+            {
+              "name": "email",
+              "type": "token",
+              "documentation": "A value in an email contact"
+            },
+            {
+              "name": "given",
+              "type": "string",
+              "documentation": "A portion of the given name of the patient"
+            },
+            {
+              "name": "identifier",
+              "type": "token",
+              "documentation": "A patient identifier"
+            },
+            {
+              "name": "address",
+              "type": "string",
+              "documentation": "A server defined search that may match any of the string fields in the Address, including line, city, state, country, postalCode, and/or text"
+            },
+            {
+              "name": "general-practitioner",
+              "type": "reference",
+              "documentation": "Patient's nominated general practitioner, not the organization that manages the record"
+            },
+            {
+              "name": "active",
+              "type": "token",
+              "documentation": "Whether the patient record is active"
+            },
+            {
+              "name": "address-postalcode",
+              "type": "string",
+              "documentation": "A postalCode specified in an address"
+            },
+            {
+              "name": "phone",
+              "type": "token",
+              "documentation": "A value in a phone contact"
+            },
+            {
+              "name": "organization",
+              "type": "reference",
+              "documentation": "The organization at which this person is a patient"
+            },
+            {
+              "name": "address-use",
+              "type": "token",
+              "documentation": "A use code specified in an address"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "documentation": "A server defined search that may match any of the string fields in the HumanName, including family, give, prefix, suffix, suffix, and/or text"
+            },
+            {
+              "name": "_id",
+              "type": "token",
+              "documentation": "The ID of the resource"
+            },
+            {
+              "name": "family",
+              "type": "string",
+              "documentation": "A portion of the family name of the patient"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

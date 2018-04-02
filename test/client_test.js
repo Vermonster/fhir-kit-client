@@ -15,7 +15,7 @@ function readStreamFor(fixture) {
 
 describe('Client', () => {
   it('initializes with config', function () {
-    const baseUrl = 'https://test.com';
+    const baseUrl = 'https://example.com';
     const config = { baseUrl };
     this.fhirClient = new Client(config);
 
@@ -23,129 +23,142 @@ describe('Client', () => {
   });
 
   describe('instance', () => {
-    const baseUrl = 'http://test.com';
+    context('SMART URIs are not present', () => {
+      const baseUrl = 'http://example.com';
 
-    beforeEach(function () {
-      nock(baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
-        .get('/metadata')
-        .reply(200, () => readStreamFor('capability-statement.json'));
+      beforeEach(function () {
+        nock(baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/metadata')
+          .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
 
-      const config = { baseUrl };
-      this.fhirClient = new Client(config);
-    });
+        const config = { baseUrl };
+        this.fhirClient = new Client(config);
+      });
 
-    it('responds to #capabilityStatement(), returning FHIR resource', async function () {
-      const capabilityStatement = await this.fhirClient.capabilityStatement();
+      it('responds to #smartAuthMetadata(), returning an empty object if missing SMART OAuth URIs', async function () {
+        const authMetadata = await this.fhirClient.smartAuthMetadata();
 
-      expect(capabilityStatement.resourceType).to.equal('CapabilityStatement');
-    });
-
-    it('responds to #authMetadata(), returning SMART OAuth URIs', async function () {
-      const authMetadata = await this.fhirClient.smartAuthMetadata();
-
-      expect(authMetadata).to.deep.equal({
-        authorizeUrl: new URL('https://sb-auth.smarthealthit.org/authorize'),
-        tokenUrl: new URL('https://sb-auth.smarthealthit.org/token'),
-        registerUrl: new URL('https://sb-auth.smarthealthit.org/register'),
+        expect(authMetadata).to.deep.equal({});
       });
     });
+  });
 
-    it('responds to #read, returning a matching resource', async function () {
-      nock(baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
-        .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486')
-        .reply(200, () => readStreamFor('patient.json'));
+  describe('instance', () => {
+    context('SMART URIs are present', () => {
+      const baseUrl = 'http://example.com';
 
-      const response = await this.fhirClient.read({ resourceType: 'Patient', id: 'eb3271e1-ae1b-4644-9332-41e32c829486' });
+      beforeEach(function () {
+        nock(baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/metadata')
+          .reply(200, () => readStreamFor('valid-capability-statement.json'));
 
-      expect(response.resourceType).to.equal('Patient');
-      expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
-    });
+        const config = { baseUrl };
+        this.fhirClient = new Client(config);
+      });
 
-    it('responds to #read, throwing any errors for a missing resource', async function () {
-      nock(baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
-        .get('/Patient/abcdef')
-        .reply(404, () => readStreamFor('patient-not-found.json'));
+      it('responds to #capabilityStatement(), returning FHIR resource', async function () {
+        const capabilityStatement = await this.fhirClient.capabilityStatement();
 
-      let response;
-      try {
-        response = await this.fhirClient.read({ resourceType: 'Patient', id: 'abcdef' });
-      } catch (error) {
-        expect(error.response.status).to.equal(404);
-        expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
-      }
-      expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
-    });
+        expect(capabilityStatement.resourceType).to.equal('CapabilityStatement');
+      });
 
-    it('responds to #vread, returning a matching resource', async function () {
-      nock(baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
-        .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/1')
-        .reply(200, () => readStreamFor('patient.json'));
+      it('responds to #smartAuthMetadata(), returning SMART OAuth URIs', async function () {
+        const authMetadata = await this.fhirClient.smartAuthMetadata();
 
-      const response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '1' });
+        expect(authMetadata).to.deep.equal({
+          authorizeUrl: new URL('https://sb-auth.smarthealthit.org/authorize'),
+          tokenUrl: new URL('https://sb-auth.smarthealthit.org/token'),
+          registerUrl: new URL('https://sb-auth.smarthealthit.org/register'),
+          launchRegisterUrl: new URL('https://sb-auth.smarthealthit.org/launch-registration'),
+        });
+      });
 
-      expect(response.resourceType).to.equal('Patient');
-      expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
-    });
+      it('responds to #read, throwing any errors for a missing resource', async function () {
+        nock(baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient/abcdef')
+          .reply(404, () => readStreamFor('patient-not-found.json'));
 
-    it('responds to #vread, throwing any errors for an absent resource', async function () {
-      nock(baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
-        .get('/Patient/abcdef/_history/1')
-        .reply(404, () => readStreamFor('patient-not-found.json'));
+        let response;
+        try {
+          response = await this.fhirClient.read({ resourceType: 'Patient', id: 'abcdef' });
+        } catch (error) {
+          expect(error.response.status).to.equal(404);
+          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+        }
+        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
 
-      let response;
-      try {
-        response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'abcdef', version: '1' });
-      } catch (error) {
-        expect(error.response.status).to.equal(404);
-        expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
-      }
-      expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
-    });
+      it('responds to #vread, returning a matching resource', async function () {
+        nock(baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/1')
+          .reply(200, () => readStreamFor('patient.json'));
 
-    it('responds to #vread, throwing any errors for an absent version of an existing resource', async function () {
-      nock(baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
-        .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/2')
-        .reply(404, () => readStreamFor('patient-version-not-found.json'));
+        const response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '1' });
 
-      let response;
-      try {
-        response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '2' });
-      } catch (error) {
-        expect(error.response.status).to.equal(404);
-        expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
-      }
-      expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
-    });
+        expect(response.resourceType).to.equal('Patient');
+        expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
+      });
 
-    it('responds to #search, returning a matching search results bundle', async function () {
-      nock(baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
-        .get('/Patient?name=abbott')
-        .reply(200, () => readStreamFor('search-results.json'));
+      it('responds to #vread, throwing any errors for an absent resource', async function () {
+        nock(baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient/abcdef/_history/1')
+          .reply(404, () => readStreamFor('patient-not-found.json'));
 
-      const response = await this.fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abbott' } });
+        let response;
+        try {
+          response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'abcdef', version: '1' });
+        } catch (error) {
+          expect(error.response.status).to.equal(404);
+          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+        }
+        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
 
-      expect(response.resourceType).to.equal('Bundle');
-      expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
-    });
+      it('responds to #vread, throwing any errors for an absent version of an existing resource', async function () {
+        nock(baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/2')
+          .reply(404, () => readStreamFor('patient-version-not-found.json'));
 
-    it('responds to #search, returning an empty search results bundle if no match is found', async function () {
-      nock(baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
-        .get('/Patient?name=abcdef')
-        .reply(200, () => readStreamFor('empty-search-results.json'));
+        let response;
+        try {
+          response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '2' });
+        } catch (error) {
+          expect(error.response.status).to.equal(404);
+          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+        }
+        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
 
-      const response = await this.fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abcdef' } });
+      it('responds to #search, returning a matching search results bundle', async function () {
+        nock(baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient?name=abbott')
+          .reply(200, () => readStreamFor('search-results.json'));
 
-      expect(response.resourceType).to.equal('Bundle');
-      expect(response.id).to.equal('03e85f06-2f5f-408e-a8fa-17cda0e66f3c');
-      expect(response.total).to.equal(0);
+        const response = await this.fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abbott' } });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
+      });
+
+      it('responds to #search, returning an empty search results bundle if no match is found', async function () {
+        nock(baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient?name=abcdef')
+          .reply(200, () => readStreamFor('empty-search-results.json'));
+
+        const response = await this.fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abcdef' } });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.id).to.equal('03e85f06-2f5f-408e-a8fa-17cda0e66f3c');
+        expect(response.total).to.equal(0);
+      });
     });
   });
 });

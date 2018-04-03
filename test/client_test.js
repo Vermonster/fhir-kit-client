@@ -63,7 +63,7 @@ describe('Client', () => {
       expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
     });
 
-    it('responds to #read, throwing any errors that occur', async function () {
+    it('responds to #read, throwing any errors for a missing resource', async function () {
       nock(baseUrl)
         .matchHeader('accept', 'application/json+fhir')
         .get('/Patient/abcdef')
@@ -83,7 +83,7 @@ describe('Client', () => {
       nock(baseUrl)
         .matchHeader('accept', 'application/json+fhir')
         .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/1')
-        .reply(200, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/patient.json`, 'utf8')));
+        .reply(200, () => readStreamFor('patient.json'));
 
       const response = await this.fhirClient.vread({ resourceType: 'Patient', identifier: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '1' });
 
@@ -91,7 +91,7 @@ describe('Client', () => {
       expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
     });
 
-    it('responds to #vread, throwing any errors that occur', async function () {
+    it('responds to #vread, throwing any errors for an absent resource', async function () {
       nock(baseUrl)
         .matchHeader('accept', 'application/json+fhir')
         .get('/Patient/abcdef/_history/1')
@@ -107,11 +107,27 @@ describe('Client', () => {
       expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
     });
 
+    it('responds to #vread, throwing any errors for an absent version of an existing resource', async function () {
+      nock(baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/2')
+        .reply(404, () => readStreamFor('patient-version-not-found.json'));
+
+      let response;
+      try {
+        response = await this.fhirClient.vread({ resourceType: 'Patient', identifier: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '2' });
+      } catch (error) {
+        expect(error.response.status).to.equal(404);
+        expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+      }
+      expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+    });
+
     it('responds to #search, returning a matching search results bundle', async function () {
       nock(baseUrl)
         .matchHeader('accept', 'application/json+fhir')
         .get('/Patient?name=abbott')
-        .reply(200, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/search-results.json`, 'utf8')));
+        .reply(200, () => readStreamFor('search-results.json'));
 
       const response = await this.fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abbott' } });
 
@@ -123,7 +139,7 @@ describe('Client', () => {
       nock(baseUrl)
         .matchHeader('accept', 'application/json+fhir')
         .get('/Patient?name=abcdef')
-        .reply(200, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/empty-search-results.json`, 'utf8')));
+        .reply(200, () => readStreamFor('empty-search-results.json'));
 
       const response = await this.fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abcdef' } });
 

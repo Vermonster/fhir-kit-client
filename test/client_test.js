@@ -9,6 +9,10 @@ const nock = require('nock');
 
 const { Client } = require('../lib/client');
 
+function readStreamFor(fixture) {
+  return fs.createReadStream(path.normalize(`${__dirname}/fixtures/${fixture}`, 'utf8'));
+}
+
 describe('Client', () => {
   it('initializes with config', function () {
     const baseUrl = 'https://test.com';
@@ -25,7 +29,7 @@ describe('Client', () => {
       nock(baseUrl)
         .matchHeader('accept', 'application/json+fhir')
         .get('/metadata')
-        .reply(200, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/capability-statement.json`, 'utf8')));
+        .reply(200, () => readStreamFor('capability-statement.json'));
 
       const config = { baseUrl };
       this.fhirClient = new Client(config);
@@ -51,7 +55,7 @@ describe('Client', () => {
       nock(baseUrl)
         .matchHeader('accept', 'application/json+fhir')
         .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486')
-        .reply(200, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/patient.json`, 'utf8')));
+        .reply(200, () => readStreamFor('patient.json'));
 
       const response = await this.fhirClient.read('Patient', 'eb3271e1-ae1b-4644-9332-41e32c829486');
 
@@ -63,7 +67,7 @@ describe('Client', () => {
       nock(baseUrl)
         .matchHeader('accept', 'application/json+fhir')
         .get('/Patient/abcdef')
-        .reply(404, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/patient-not-found.json`, 'utf8')));
+        .reply(404, () => readStreamFor('patient-not-found.json'));
 
       let response;
       try {

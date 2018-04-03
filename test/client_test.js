@@ -41,9 +41,9 @@ describe('Client', () => {
       const authMetadata = await this.fhirClient.smartAuthMetadata();
 
       expect(authMetadata).to.deep.equal({
-        authorizeUrl: 'https://sb-auth.smarthealthit.org/authorize',
-        tokenUrl: 'https://sb-auth.smarthealthit.org/token',
-        registerUrl: 'https://sb-auth.smarthealthit.org/register',
+        authorizeUrl: new URL('https://sb-auth.smarthealthit.org/authorize'),
+        tokenUrl: new URL('https://sb-auth.smarthealthit.org/token'),
+        registerUrl: new URL('https://sb-auth.smarthealthit.org/register'),
       });
     });
 

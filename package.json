@@ -7,14 +7,18 @@
     "node": ">=8.10.0"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec",
+    "docs": "./node_modules/.bin/jsdoc --configure jsdoc.json",
     "lint": "./node_modules/.bin/eslint **/*.js --ignore-pattern node_modules/",
-    "docs": "./node_modules/.bin/jsdoc --configure jsdoc.json"
+    "lint:watch": "./node_modules/.bin/chokidar --initial './lib' './test' './examples' -c 'yarn lint'",
+    "test": "./node_modules/.bin/mocha --reporter spec",
+    "test:watch": "./node_modules/.bin/chokidar --initial './lib' './test' './examples' -c 'yarn test'",
+    "watch": "yarn test:watch & yarn lint:watch"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "chai": "^4.1.2",
+    "chokidar-cli": "^1.2.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.10.0",

@@ -65,10 +65,14 @@ describe('Client', () => {
         .get('/Patient/abcdef')
         .reply(404, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/patient-not-found.json`, 'utf8')));
 
-      await this.fhirClient.read('Patient', 'abcdef').catch((error) => {
+      let response;
+      try {
+        response = await this.fhirClient.read('Patient', 'abcdef');
+      } catch (error) {
         expect(error.response.status).to.equal(404);
         expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
-      });
+      }
+      expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
     });
   });
 });

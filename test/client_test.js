@@ -91,15 +91,20 @@ describe('Client', () => {
       expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
     });
 
-    it('responds to #vread, returning operation outcome if not found', async function () {
+    it('responds to #vread, throwing any errors that occur', async function () {
       nock(baseUrl)
         .matchHeader('accept', 'application/json+fhir')
         .get('/Patient/abcdef/_history/1')
-        .reply(404, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/patient-not-found.json`, 'utf8')));
+        .reply(404, () => readStreamFor('patient-not-found.json'));
 
-      const response = await this.fhirClient.vread({ resourceType: 'Patient', identifier: 'abcdef', version: '1' });
-
-      expect(response.resourceType).to.equal('OperationOutcome');
+      let response;
+      try {
+        response = await this.fhirClient.vread({ resourceType: 'Patient', identifier: 'abcdef', version: '1' });
+      } catch (error) {
+        expect(error.response.status).to.equal(404);
+        expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+      }
+      expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
     });
 
     it('responds to #search, returning a matching search results bundle', async function () {

@@ -86,7 +86,6 @@ describe('Client', () => {
         .reply(200, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/patient.json`, 'utf8')));
 
       const response = await this.fhirClient.vread({ resourceType: 'Patient', identifier: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '1' });
-      console.log(response);
 
       expect(response.resourceType).to.equal('Patient');
       expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');

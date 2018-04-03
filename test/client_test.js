@@ -51,6 +51,25 @@ describe('Client', () => {
       });
     });
 
+    it('responds to #create, returning a successful operation outcome', async function () {
+      const newPatient = {
+        resourceType: 'Patient',
+        active: true,
+        name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+        gender: 'female',
+        birthDate: '1948-04-14',
+      };
+
+      nock(baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .post('/Patient')
+        .reply(201, () => readStreamFor('patient-created.json'));
+
+      const response = await this.fhirClient.create({ resourceType: 'Patient', body: newPatient });
+
+      expect(response.resourceType).to.deep.equal('OperationOutcome');
+    });
+
     it('responds to #read, returning a matching resource', async function () {
       nock(baseUrl)
         .matchHeader('accept', 'application/json+fhir')

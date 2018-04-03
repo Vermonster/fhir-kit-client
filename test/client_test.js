@@ -4,7 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 
-const { expect } = require('chai');
+const chai = require('chai');
+const { expect } = chai;
 const nock = require('nock');
 
 const { Client } = require('../lib/client');
@@ -59,15 +60,16 @@ describe('Client', () => {
       expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
     });
 
-    it('responds to #read, returning operation outcome if not found', async function () {
+    it('responds to #read, throwing any errors that occur', async function () {
       nock(baseUrl)
         .matchHeader('accept', 'application/json+fhir')
         .get('/Patient/abcdef')
         .reply(404, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/patient-not-found.json`, 'utf8')));
 
-      const response = await this.fhirClient.read('Patient', 'abcdef');
-
-      expect(response.resourceType).to.equal('OperationOutcome');
+      await this.fhirClient.read('Patient', 'abcdef').catch(error => {
+        expect(error.response.status).to.equal(404);
+        expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+      });
     });
   });
 });

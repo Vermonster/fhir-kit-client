@@ -4,8 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 
-const chai = require('chai');
-const { expect } = chai;
+const { expect } = require('chai');
 const nock = require('nock');
 
 const { Client } = require('../lib/client');
@@ -66,7 +65,7 @@ describe('Client', () => {
         .get('/Patient/abcdef')
         .reply(404, () => fs.createReadStream(path.normalize(`${__dirname}/fixtures/patient-not-found.json`, 'utf8')));
 
-      await this.fhirClient.read('Patient', 'abcdef').catch(error => {
+      await this.fhirClient.read('Patient', 'abcdef').catch((error) => {
         expect(error.response.status).to.equal(404);
         expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
       });

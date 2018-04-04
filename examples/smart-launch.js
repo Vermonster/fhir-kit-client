@@ -102,7 +102,7 @@ app.get('/callback', async (req, res) => {
 
     console.log('The token is : ', token);
 
-    fhirClient.setBearerToken(token.access_token);
+    fhirClient.bearerToken = token.access_token;
 
     const patient = await fhirClient.read({ resourceType: 'Patient', id: token.patient });
 

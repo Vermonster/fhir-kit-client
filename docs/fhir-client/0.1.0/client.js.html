@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Client.html">Client</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#buildUrl">buildUrl</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#capabilityStatement">capabilityStatement</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#read">read</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#search">search</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#smartAuthMetadata">smartAuthMetadata</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#vread">vread</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#authFromCapability">authFromCapability</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#httpGet">httpGet</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Client.html">Client</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#capabilityStatement">capabilityStatement</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#read">read</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#search">search</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#smartAuthMetadata">smartAuthMetadata</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#vread">vread</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="HttpClient.html">HttpClient</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#authFromCapability">authFromCapability</a></span></li>
 </nav>
 
 <div id="main">
@@ -39,31 +39,9 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const { URL, URLSearchParams } = require('url');
-const axios = require('axios');
+            <pre class="prettyprint source linenums"><code>const { URLSearchParams } = require('url');
 const { authFromCapability } = require('./smart');
-const { logRequestError, logRequestInfo, logResponseInfo } = require('./logging');
-
-/**
- * Private function for Client to use for http requests
- *
- * @private
- *
- * @return {object} response from server parsed as JSON
- */
-async function httpGet(url) {
-  try {
-    axios.defaults.headers.common.Accept = 'application/json+fhir';
-    logRequestInfo('get', url, axios);
-    const response = await axios.get(url.toString());
-    const { data } = response;
-    logResponseInfo(response);
-    return data;
-  } catch (error) {
-    logRequestError(error);
-    throw error;
-  }
-}
+const HttpClient = require('./http-client');
 
 /** Class for a FHIR client. */
 class Client {
@@ -74,46 +52,30 @@ class Client {
    * @param.baseUrl {string} ISS for FHIR server
    */
   constructor(config) {
+    this.httpClient = new HttpClient({ baseUrl: config.baseUrl });
     this.baseUrl = config.baseUrl;
   }
 
   /**
    * Get the baseUrl value.
    *
-   * @return {URL}
+   * @return {string}
    */
   get baseUrl() {
-    return this._baseUrl;
+    return this.httpClient.baseUrl;
   }
 
   /**
-   * Set the baseUrl value to a URL Object.
+   * Set the baseUrl value to a URL String.
    *
-   * @param {string|object&lt;URL>} string-version of the Url.
-   * @return {object&lt;URL>} value as a URL object
+   * @param {string} url string-version of the Url.
    */
   set baseUrl(url) {
-    if (url instanceof URL) {
-      this._baseUrl = url;
-    } else {
-      this._baseUrl = new URL(url);
-    }
-    return this._baseUrl;
+    this.httpClient.baseUrl = url;
   }
 
-  /**
-   * Create a new URL object with an appended path.
-   *
-   * @private
-   *
-   * @param {string} path The path to append to the current baseUrl
-   *
-   * @return {URL} New URL object with path
-   */
-  buildUrl(path) {
-    const url = new URL(this.baseUrl);
-    url.pathname += url.pathname.slice(-1) === '/' ? path : `/${path}`;
-    return url;
+  setBearerToken(token) {
+    this.httpClient.axiosInstance.defaults.headers.common.Authorization = `Bearer ${token}`;
   }
 
   /**
@@ -155,8 +117,7 @@ class Client {
    * @return {Promise&lt;Object>} capability statement FHIR resource.
    */
   capabilityStatement() {
-    const url = this.buildUrl('metadata');
-    return httpGet(url);
+    return this.httpClient.get('metadata');
   }
 
   /**
@@ -179,8 +140,7 @@ class Client {
    * @return {Promise&lt;Object>} FHIR resource
    */
   read(params) {
-    const url = this.buildUrl(`${params.resourceType}/${params.id}`);
-    return httpGet(url);
+    return this.httpClient.get(`${params.resourceType}/${params.id}`);
   }
 
   /**
@@ -199,15 +159,14 @@ class Client {
    * console.log(response);
    *
    * @param {Object} params - The request parameters.
-  *  @param {string} params.resourceType - The resource type (e.g. "Patient", "Observation").
+   *  @param {string} params.resourceType - The resource type (e.g. "Patient", "Observation").
    * @param {string} params.id - The FHIR id for the resource.
    * @param {string} params.version - The version id for the resource.
    *
    * @return {Promise&lt;Object>} FHIR resource
    */
   vread(params) {
-    const url = this.buildUrl(`${params.resourceType}/${params.id}/_history/${params.version}`);
-    return httpGet(url);
+    return this.httpClient.get(`${params.resourceType}/${params.id}/_history/${params.version}`);
   }
 
   /**
@@ -232,10 +191,8 @@ class Client {
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
   search(params) {
-    const _params = new URLSearchParams(params.searchParams);
-    const url = this.buildUrl(params.resourceType);
-    url.search = _params;
-    return httpGet(url);
+    const relativePathWithQuery = `${params.resourceType}?${new URLSearchParams(params.searchParams)}`;
+    return this.httpClient.get(relativePathWithQuery);
   }
 }
 
@@ -252,7 +209,7 @@ module.exports = { Client };
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Apr 04 2018 10:17:40 GMT-0400 (EDT) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Apr 04 2018 16:45:18 GMT-0400 (EDT) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

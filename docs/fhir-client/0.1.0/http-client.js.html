@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Home - Documentation</title>
+    <title>http-client.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,47 +29,67 @@
 
 <div id="main">
     
+    <h1 class="page-title">http-client.js</h1>
+    
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const axios = require('axios');
+const { logRequestError, logRequestInfo, logResponseInfo } = require('./logging');
 
+/** Class for a HTTP-client. */
+class HttpClient {
+  constructor({ baseUrl }) {
+    this.axiosInstance = axios.create({
+      baseURL: baseUrl,
+    });
 
+    this.axiosInstance.defaults.headers.common.Accept = 'application/json+fhir';
 
+    // Dynamically-assigned instance methods for HTTP verbs:
+    ['get', 'post', 'patch', 'put', 'delete'].forEach((httpVerb) => {
+      this[httpVerb] = async (url, ...rest) => {
+        try {
+          logRequestInfo(httpVerb, url, axios);
+          const response = await this.axiosInstance[httpVerb](url, ...rest);
+          logResponseInfo(response);
+          return response.data;
+        } catch (error) {
+          logRequestError(error);
+          throw error;
+        }
+      };
+    });
+  }
 
+  /**
+   * Get the baseUrl value.
+   *
+   * @return {string}
+   */
+  get baseUrl() {
+    return this.axiosInstance.defaults.baseURL;
+  }
 
+  /**
+   * Set the baseUrl value to a URL Object.
+   *
+   * @param {string} url string-version of the base-URL.
+   */
+  set baseUrl(url) {
+    this.axiosInstance.defaults.baseURL = url;
+  }
+}
 
-
-
-
-    
-
-
-    <section class="readme">
-        <article><p><a href="https://travis-ci.org/Vermonster/node-fhir-client"><img src="https://travis-ci.org/Vermonster/node-fhir-client.svg?branch=master" alt="Build Status"></a></p>
-<p><a href="https://coveralls.io/github/Vermonster/node-fhir-client?branch=master"><img src="https://coveralls.io/repos/github/Vermonster/node-fhir-client/badge.svg?branch=master" alt="Coverage Status"></a></p>
-<h1>fhir-client</h1><p>Node FHIR client library</p>
-<h1>Features</h1><ul>
-<li>Node</li>
-<li>Minimal dependencies</li>
-<li>Contemporary async/await structure</li>
-<li>Modern Class getter/setter</li>
-<li>TDD with Mocha</li>
-</ul>
-<h1>Example</h1><p><a href="./examples/index.js">See examples</a></p>
-<h1>Documentation</h1><p><a href="https://vermonster.github.io/node-fhir-client/fhir-client/0.1.0/">JSDoc-generated documentation</a></p>
-<h1>Logging</h1><p>The <a href="https://www.npmjs.com/package/debug">debug library</a> can provide logging
-during development. Two different logging namespaces are provided, <code>node-fhir-
-client:info</code> logs each request and response, and <code>node-fhir-client:error</code> logs
-errors. To enable logging during development, add one of the namespaces to the
-DEBUG environment variable, or use <code>node-fhir-client:*</code> to enable both.</p>
-<pre class="prettyprint source"><code>$ DEBUG=node-fhir-client:* node examples/index.js</code></pre><h1>Todo</h1><h1>License</h1><p>MIT</p>
-<p>(c)2018 Vermonster LLC</p></article>
+module.exports = HttpClient;
+</code></pre>
+        </article>
     </section>
-
-
 
 
 

@@ -21,10 +21,8 @@ describe('Client', () => {
     this.fhirClient = new Client(config);
   });
 
-  describe('#new', () => {
-    it('initializes with config', function () {
-      expect(this.fhirClient.baseUrl).to.deep.equal(new URL(this.baseUrl));
-    });
+  it('initializes with config', function () {
+    expect(this.fhirClient.baseUrl).to.deep.equal(new URL(this.baseUrl));
   });
 
   describe('#smartAuthMetadata', () => {

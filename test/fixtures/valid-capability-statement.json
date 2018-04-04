@@ -36,6 +36,10 @@
               {
                 "url": "register",
                 "valueUri": "https://sb-auth.smarthealthit.org/register"
+              },
+              {
+                "url": "launch-registration",
+                "valueUri": "https://sb-auth.smarthealthit.org/launch-registration"
               }
             ]
           }

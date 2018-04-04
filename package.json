@@ -14,7 +14,7 @@
     "test": "./node_modules/.bin/mocha --reporter spec",
     "test:watch": "./node_modules/.bin/chokidar --initial './lib' './test' './examples' -c 'yarn test'",
     "watch": "yarn test:watch & yarn lint:watch",
-    "coveralls":  "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+    "coveralls": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
   },
   "author": "",
   "license": "MIT",
@@ -25,6 +25,7 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.10.0",
+    "istanbul": "^0.4.5",
     "jsdoc": "^3.5.5",
     "minami": "^1.2.3",
     "mocha": "^5.0.5",

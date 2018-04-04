@@ -14,7 +14,7 @@ function readStreamFor(fixture) {
 }
 
 describe('Client', () => {
-  beforeEach(function() {
+  beforeEach(function () {
     const baseUrl = 'https://example.com';
     const config = { baseUrl };
     this.baseUrl = baseUrl;
@@ -25,7 +25,7 @@ describe('Client', () => {
     it('initializes with config', function () {
       expect(this.fhirClient.baseUrl).to.deep.equal(new URL(this.baseUrl));
     });
-  })
+  });
 
   describe('#smartAuthMetadata', () => {
     context('SMART URIs are not present', () => {
@@ -136,7 +136,7 @@ describe('Client', () => {
         }
         expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
       });
-    })
+    });
 
     describe('#search', () => {
       it('returns a matching search results bundle', async function () {

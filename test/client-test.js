@@ -1,4 +1,4 @@
-/* eslint-disable func-names */
+/* eslint-disable func-names, no-unused-expressions */
 
 const fs = require('fs');
 const path = require('path');
@@ -23,6 +23,31 @@ describe('Client', () => {
 
   it('initializes with config', function () {
     expect(this.fhirClient.baseUrl).to.equal(this.baseUrl);
+  });
+
+  describe('.splitReference', () => {
+    const resourceType = 'Patient';
+    const id = '1234';
+
+    context('with an absolute reference', () => {
+      const baseUrl = 'https://example.com/fhir';
+
+      it('returns the baseUrl, resource type, and id', () => {
+        const absoluteReference = `${baseUrl}/${resourceType}/${id}`;
+        expect(Client.splitReference(absoluteReference).baseUrl).to.equal(baseUrl);
+        expect(Client.splitReference(absoluteReference).resourceType).to.equal(resourceType);
+        expect(Client.splitReference(absoluteReference).id).to.equal(id);
+      });
+    });
+
+    context('with a relative reference', () => {
+      it('returns the resource type and id', () => {
+        const relativeReference = `${resourceType}/${id}`;
+        expect(Client.splitReference(relativeReference).baseUrl).to.be.undefined;
+        expect(Client.splitReference(relativeReference).resourceType).to.equal(resourceType);
+        expect(Client.splitReference(relativeReference).id).to.equal(id);
+      });
+    });
   });
 
   describe('#smartAuthMetadata', () => {
@@ -87,7 +112,7 @@ describe('Client', () => {
           expect(error.response.status).to.equal(404);
           expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
         }
-        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+        expect(response).to.be.undefined;
       });
     });
 
@@ -117,7 +142,7 @@ describe('Client', () => {
           expect(error.response.status).to.equal(404);
           expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
         }
-        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+        expect(response).to.be.undefined;
       });
 
       it('throws errors for an absent version of an existing resource', async function () {
@@ -133,7 +158,7 @@ describe('Client', () => {
           expect(error.response.status).to.equal(404);
           expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
         }
-        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+        expect(response).to.be.undefined;
       });
     });
 
@@ -179,25 +204,49 @@ describe('Client', () => {
 
   describe('#resolve', async () => {
     context('with an absolute reference', () => {
-      it('requests the resource from the FHIR server and returns it', async function () {
-        const reference = 'Patient/eb3271e1-ae1b-4644-9332-41e32c829486';
-        const absoluteReference = `${this.baseUrl}/${reference}`;
-        nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
-          .get(`/${reference}`)
-          .reply(200, () => readStreamFor('patient.json'));
+      context('on the current FHIR server', () => {
+        it('requests the resource from the FHIR server and returns it', async function () {
+          const resourceType = 'Patient';
+          const id = 'eb3271e1-ae1b-4644-9332-41e32c829486';
+          const reference = `${resourceType}/${id}`;
+          const absoluteReference = `${this.baseUrl}/${reference}`;
+          nock(this.baseUrl)
+            .matchHeader('accept', 'application/json+fhir')
+            .get(`/${reference}`)
+            .reply(200, () => readStreamFor('patient.json'));
 
-        const response = await this.fhirClient.resolve(absoluteReference);
+          const response = await this.fhirClient.resolve(absoluteReference);
 
-        const { type, id } = this.fhirClient.splitReference(reference);
-        expect(response.resourceType).to.equal(type);
-        expect(response.id).to.equal(id);
+          expect(response.resourceType).to.equal(resourceType);
+          expect(response.id).to.equal(id);
+        });
+      });
+
+      context('on a different FHIR server', () => {
+        it('requests the resource from the FHIR server and returns it', async function () {
+          const baseUrl = 'https://www.example.org/fhir';
+          const resourceType = 'Patient';
+          const id = 'eb3271e1-ae1b-4644-9332-41e32c829486';
+          const reference = `${resourceType}/${id}`;
+          const absoluteReference = `${baseUrl}/${reference}`;
+          nock(baseUrl)
+            .matchHeader('accept', 'application/json+fhir')
+            .get(`/${reference}`)
+            .reply(200, () => readStreamFor('patient.json'));
+
+          const response = await this.fhirClient.resolve(absoluteReference);
+
+          expect(response.resourceType).to.equal(resourceType);
+          expect(response.id).to.equal(id);
+        });
       });
     });
 
     context('with a relative reference', () => {
       it('requests the resource from baseUrl and returns it', async function () {
-        const reference = 'Patient/eb3271e1-ae1b-4644-9332-41e32c829486';
+        const resourceType = 'Patient';
+        const id = 'eb3271e1-ae1b-4644-9332-41e32c829486';
+        const reference = `${resourceType}/${id}`;
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .get(`/${reference}`)
@@ -205,8 +254,7 @@ describe('Client', () => {
 
         const response = await this.fhirClient.resolve(reference);
 
-        const { type, id } = this.fhirClient.splitReference(reference);
-        expect(response.resourceType).to.equal(type);
+        expect(response.resourceType).to.equal(resourceType);
         expect(response.id).to.equal(id);
       });
     });
@@ -233,7 +281,7 @@ describe('Client', () => {
           expect(error.message).to.eql(`Unable to resolve contained reference: ${reference}`);
         }
 
-        expect(containedResource).to.be.undefined; // eslint-disable-line no-unused-expressions
+        expect(containedResource).to.be.undefined;
       });
     });
 
@@ -288,8 +336,8 @@ describe('Client', () => {
 
             const response = await this.fhirClient.resolve(absoluteReference, bundle);
 
-            const { type, id } = this.fhirClient.splitReference(reference);
-            expect(response.resourceType).to.equal(type);
+            const { resourceType, id } = Client.splitReference(reference);
+            expect(response.resourceType).to.equal(resourceType);
             expect(response.id).to.equal(id);
           });
         });
@@ -304,8 +352,8 @@ describe('Client', () => {
 
             const response = await this.fhirClient.resolve(reference, bundle);
 
-            const { type, id } = this.fhirClient.splitReference(reference);
-            expect(response.resourceType).to.equal(type);
+            const { resourceType, id } = Client.splitReference(reference);
+            expect(response.resourceType).to.equal(resourceType);
             expect(response.id).to.equal(id);
           });
         });

@@ -22,7 +22,7 @@ describe('Client', () => {
   });
 
   it('initializes with config', function () {
-    expect(this.fhirClient.baseUrl).to.deep.equal(new URL(this.baseUrl));
+    expect(this.fhirClient.baseUrl).to.equal(this.baseUrl);
   });
 
   describe('#smartAuthMetadata', () => {

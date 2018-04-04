@@ -1,5 +1,5 @@
 /* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
-/* eslint no-console: 0 */
+/* eslint no-console: 0, import/no-unresolved: 0 */
 const express = require('express');
 const session = require('express-session');
 const simpleOauthModule = require('simple-oauth2');

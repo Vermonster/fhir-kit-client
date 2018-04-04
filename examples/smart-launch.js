@@ -6,11 +6,34 @@ const simpleOauthModule = require('simple-oauth2');
 const { Client } = require('../lib/client');
 
 const app = express();
-// Use session to pass the iss to the callback
-app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 } }));
+
+// Use session to pass the iss information to the callback
+app.use(session({
+  secret: 'keyboard cat',
+  cookie: { maxAge: 60000 },
+  resave: true,
+  saveUninitialized: true,
+}));
 
 
-// Initial page redirecting to Github
+/**
+ * This is an exmple of a SMART app launching from within an EHR.
+ *
+ * In this example, there are two routes:
+ *  - /launch
+ *  - /callback
+ *
+ *
+ * The EHR will call the launch route with two parameters: iss and launch. The
+ * SMART app will will make a request to the OAuth server's authorization URL.
+ * Then will redirect to the SMART app callback.
+ *
+ * In the callback route, another request is made (using the simple-oauth
+ * library) to request a token from the OAuth2 server. The server will then
+ * send back a launch_context containing among other things an access token to
+ * set in the Authorization header and use for subsequent FHIR requests (to the
+ * ISS).
+ */
 app.get('/launch', async (req, res) => {
   const { iss, launch } = req.query;
 

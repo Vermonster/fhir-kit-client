@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/Vermonster/node-fhir-client.svg?branch=master)](https://travis-ci.org/Vermonster/node-fhir-client)
 
-[![Coverage Status](https://coveralls.io/repos/github/Vermonster/node-fhir-client/badge.svg?branch=8-coveralls-and-test-coverage)](https://coveralls.io/github/Vermonster/node-fhir-client?branch=8-coveralls-and-test-coverage)
+[![Coverage Status](https://coveralls.io/repos/github/Vermonster/node-fhir-client/badge.svg?branch=master)](https://coveralls.io/github/Vermonster/node-fhir-client?branch=master)
 
 # fhir-client
 Node FHIR client library

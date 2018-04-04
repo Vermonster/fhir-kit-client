@@ -57,7 +57,7 @@ describe('Client', () => {
         .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486')
         .reply(200, () => readStreamFor('patient.json'));
 
-      const response = await this.fhirClient.read({ resourceType: 'Patient', identifier: 'eb3271e1-ae1b-4644-9332-41e32c829486' });
+      const response = await this.fhirClient.read({ resourceType: 'Patient', id: 'eb3271e1-ae1b-4644-9332-41e32c829486' });
 
       expect(response.resourceType).to.equal('Patient');
       expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
@@ -71,7 +71,7 @@ describe('Client', () => {
 
       let response;
       try {
-        response = await this.fhirClient.read({ resourceType: 'Patient', identifier: 'abcdef' });
+        response = await this.fhirClient.read({ resourceType: 'Patient', id: 'abcdef' });
       } catch (error) {
         expect(error.response.status).to.equal(404);
         expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
@@ -85,7 +85,7 @@ describe('Client', () => {
         .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/1')
         .reply(200, () => readStreamFor('patient.json'));
 
-      const response = await this.fhirClient.vread({ resourceType: 'Patient', identifier: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '1' });
+      const response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '1' });
 
       expect(response.resourceType).to.equal('Patient');
       expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
@@ -99,7 +99,7 @@ describe('Client', () => {
 
       let response;
       try {
-        response = await this.fhirClient.vread({ resourceType: 'Patient', identifier: 'abcdef', version: '1' });
+        response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'abcdef', version: '1' });
       } catch (error) {
         expect(error.response.status).to.equal(404);
         expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
@@ -115,7 +115,7 @@ describe('Client', () => {
 
       let response;
       try {
-        response = await this.fhirClient.vread({ resourceType: 'Patient', identifier: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '2' });
+        response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '2' });
       } catch (error) {
         expect(error.response.status).to.equal(404);
         expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');

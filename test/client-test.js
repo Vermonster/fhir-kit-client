@@ -176,4 +176,140 @@ describe('Client', () => {
       await this.fhirClient.read({ resourceType: 'Patient', id: 'test-access-token' });
     });
   });
+
+  describe('#resolve', async function () {
+    context('with an absolute reference', function() {
+      it('requests the resource from the FHIR server and returns it', async function () {
+        const reference = 'Patient/eb3271e1-ae1b-4644-9332-41e32c829486';
+        const absoluteReference = `${this.baseUrl}/${reference}`;
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get(`/${reference}`)
+          .reply(200, () => readStreamFor('patient.json'));
+
+        const response = await this.fhirClient.resolve(absoluteReference);
+
+        const { type, id } = this.fhirClient.splitReference(reference);
+        expect(response.resourceType).to.equal(type);
+        expect(response.id).to.equal(id);
+      });
+    });
+
+    context('with a relative reference', function() {
+      it('requests the resource from baseUrl and returns it', async function () {
+        const reference = 'Patient/eb3271e1-ae1b-4644-9332-41e32c829486';
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get(`/${reference}`)
+          .reply(200, () => readStreamFor('patient.json'));
+
+        const response = await this.fhirClient.resolve(reference);
+
+        const { type, id } = this.fhirClient.splitReference(reference);
+        expect(response.resourceType).to.equal(type);
+        expect(response.id).to.equal(id);
+      });
+    });
+
+    context('with a contained reference', function() {
+      it('returns the contained resource', async function() {
+        const resource = JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/contained-resource.json`, 'utf8')));
+        const reference = '#p1';
+
+        const containedResource = await this.fhirClient.resolve(reference, resource);
+
+        expect(containedResource.resourceType).to.equal('Practitioner');
+        expect(containedResource.id).to.equal(reference.slice(1));
+      });
+
+      it('throws an error if the resource cannot be found', async function() {
+        const resource = JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/contained-resource.json`, 'utf8')));
+        const reference = '#p2';
+
+        let containedResource;
+        try {
+          containedResource = await this.fhirClient.resolve(reference, resource);
+        } catch(error) {
+          expect(error).to.equal(`Unable to resolve contained reference: ${reference}`);
+        };
+
+        expect(containedResource).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+    });
+
+    context('with a bundle', function() {
+      const bundle = JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/bundle-references.json`, 'utf8')));
+
+      context('when the resource exists in the bundle', function() {
+        context('with an absolute reference', function() {
+          it('returns the resource', async function() {
+            const reference = 'https://example.com/fhir/Patient/23';
+
+            const resource = await this.fhirClient.resolve(reference, bundle);
+
+            expect(resource.resourceType).to.equal('Patient');
+            expect(resource.id).to.equal('23');
+          });
+        });
+
+        context('with a relative reference', function() {
+          it('returns the resource', async function() {
+            const reference = 'Patient/23';
+
+            const resource = await this.fhirClient.resolve(reference, bundle);
+
+            expect(resource.resourceType).to.equal('Patient');
+            expect(resource.id).to.equal('23');
+          });
+        });
+
+        context('with a uuid', function() {
+          it('returns the resource', async function() {
+            const uuid = '04121321-4af5-424c-a0e1-ed3aab1c349d';
+            const reference = `urn:uuid:${uuid}`;
+
+            const resource = await this.fhirClient.resolve(reference, bundle);
+
+            expect(resource.resourceType).to.equal('Patient');
+            expect(resource.id).to.equal(uuid);
+          });
+        });
+      });
+
+      context('when the resource is not in the bundle', function() {
+        context('with an absolute reference', function() {
+          it('requests the resource from the FHIR server and returns it', async function() {
+            const reference = 'Patient/eb3271e1-ae1b-4644-9332-41e32c829486';
+            const absoluteReference = `${this.baseUrl}/${reference}`;
+            nock(this.baseUrl)
+              .matchHeader('accept', 'application/json+fhir')
+              .get(`/${reference}`)
+              .reply(200, () => readStreamFor('patient.json'));
+
+            const response = await this.fhirClient.resolve(absoluteReference, bundle);
+
+            const { type, id } = this.fhirClient.splitReference(reference);
+            expect(response.resourceType).to.equal(type);
+            expect(response.id).to.equal(id);
+          });
+        });
+
+        context('with a relative reference', function() {
+          it('requests the resource from baseUrl and returns it', async function () {
+            const reference = 'Patient/eb3271e1-ae1b-4644-9332-41e32c829486';
+            nock(this.baseUrl)
+              .matchHeader('accept', 'application/json+fhir')
+              .get(`/${reference}`)
+              .reply(200, () => readStreamFor('patient.json'));
+
+            const response = await this.fhirClient.resolve(reference, bundle);
+
+            const { type, id } = this.fhirClient.splitReference(reference);
+            expect(response.resourceType).to.equal(type);
+            expect(response.id).to.equal(id);
+          });
+        });
+      });
+    });
+  });
 });

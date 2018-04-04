@@ -14,57 +14,40 @@ function readStreamFor(fixture) {
 }
 
 describe('Client', () => {
-  it('initializes with config', function () {
+  beforeEach(function() {
     const baseUrl = 'https://example.com';
     const config = { baseUrl };
+    this.baseUrl = baseUrl;
     this.fhirClient = new Client(config);
-
-    expect(this.fhirClient.baseUrl).to.deep.equal(new URL(baseUrl));
   });
 
-  describe('instance', () => {
-    context('SMART URIs are not present', () => {
-      const baseUrl = 'http://example.com';
+  describe('#new', () => {
+    it('initializes with config', function () {
+      expect(this.fhirClient.baseUrl).to.deep.equal(new URL(this.baseUrl));
+    });
+  })
 
-      beforeEach(function () {
-        nock(baseUrl)
+  describe('#smartAuthMetadata', () => {
+    context('SMART URIs are not present', () => {
+      it('returns an empty object', async function () {
+        nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .get('/metadata')
           .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
 
-        const config = { baseUrl };
-        this.fhirClient = new Client(config);
-      });
-
-      it('responds to #smartAuthMetadata(), returning an empty object if missing SMART OAuth URIs', async function () {
         const authMetadata = await this.fhirClient.smartAuthMetadata();
 
         expect(authMetadata).to.deep.equal({});
       });
     });
-  });
 
-  describe('instance', () => {
     context('SMART URIs are present', () => {
-      const baseUrl = 'http://example.com';
-
-      beforeEach(function () {
-        nock(baseUrl)
+      it('returns SMART OAuth URIs', async function () {
+        nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .get('/metadata')
           .reply(200, () => readStreamFor('valid-capability-statement.json'));
 
-        const config = { baseUrl };
-        this.fhirClient = new Client(config);
-      });
-
-      it('responds to #capabilityStatement(), returning FHIR resource', async function () {
-        const capabilityStatement = await this.fhirClient.capabilityStatement();
-
-        expect(capabilityStatement.resourceType).to.equal('CapabilityStatement');
-      });
-
-      it('responds to #smartAuthMetadata(), returning SMART OAuth URIs', async function () {
         const authMetadata = await this.fhirClient.smartAuthMetadata();
 
         expect(authMetadata).to.deep.equal({
@@ -74,9 +57,26 @@ describe('Client', () => {
           launchRegisterUrl: new URL('https://sb-auth.smarthealthit.org/launch-registration'),
         });
       });
+    });
+  });
 
-      it('responds to #read, throwing any errors for a missing resource', async function () {
-        nock(baseUrl)
+  describe('#capabilityStatement', () => {
+    it('returns a FHIR resource', async function () {
+      nock(this.baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .get('/metadata')
+        .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
+
+      const capabilityStatement = await this.fhirClient.capabilityStatement();
+
+      expect(capabilityStatement.resourceType).to.equal('CapabilityStatement');
+    });
+  });
+
+  describe('API verbs', () => {
+    describe('#read', () => {
+      it('throws errors for a missing resource', async function () {
+        nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .get('/Patient/abcdef')
           .reply(404, () => readStreamFor('patient-not-found.json'));
@@ -90,9 +90,11 @@ describe('Client', () => {
         }
         expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
       });
+    });
 
-      it('responds to #vread, returning a matching resource', async function () {
-        nock(baseUrl)
+    describe('#vread', () => {
+      it('returns a matching resource', async function () {
+        nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/1')
           .reply(200, () => readStreamFor('patient.json'));
@@ -103,8 +105,8 @@ describe('Client', () => {
         expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
       });
 
-      it('responds to #vread, throwing any errors for an absent resource', async function () {
-        nock(baseUrl)
+      it('throws errors for an absent resource', async function () {
+        nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .get('/Patient/abcdef/_history/1')
           .reply(404, () => readStreamFor('patient-not-found.json'));
@@ -119,8 +121,8 @@ describe('Client', () => {
         expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
       });
 
-      it('responds to #vread, throwing any errors for an absent version of an existing resource', async function () {
-        nock(baseUrl)
+      it('throws errors for an absent version of an existing resource', async function () {
+        nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/2')
           .reply(404, () => readStreamFor('patient-version-not-found.json'));
@@ -134,9 +136,11 @@ describe('Client', () => {
         }
         expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
       });
+    })
 
-      it('responds to #search, returning a matching search results bundle', async function () {
-        nock(baseUrl)
+    describe('#search', () => {
+      it('returns a matching search results bundle', async function () {
+        nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .get('/Patient?name=abbott')
           .reply(200, () => readStreamFor('search-results.json'));
@@ -147,8 +151,8 @@ describe('Client', () => {
         expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
       });
 
-      it('responds to #search, returning an empty search results bundle if no match is found', async function () {
-        nock(baseUrl)
+      it('returns an empty search results bundle if no match is found', async function () {
+        nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .get('/Patient?name=abcdef')
           .reply(200, () => readStreamFor('empty-search-results.json'));

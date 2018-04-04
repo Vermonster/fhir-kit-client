@@ -42,6 +42,7 @@
             <pre class="prettyprint source linenums"><code>const { URL, URLSearchParams } = require('url');
 const axios = require('axios');
 const { authFromCapability } = require('./smart');
+const { logRequestError, logRequestInfo, logResponseInfo } = require('./logging');
 
 /**
  * Private function for Client to use for http requests
@@ -53,15 +54,14 @@ const { authFromCapability } = require('./smart');
 async function httpGet(url) {
   try {
     axios.defaults.headers.common.Accept = 'application/json+fhir';
+    logRequestInfo('get', url, axios);
     const response = await axios.get(url.toString());
     const { data } = response;
+    logResponseInfo(response);
     return data;
   } catch (error) {
-    console.log(error); // eslint-disable-line no-console
-    const { response } = error;
-    const { data } = response;
-    data.error = true;
-    return data;
+    logRequestError(error);
+    throw error;
   }
 }
 
@@ -160,47 +160,53 @@ class Client {
   }
 
   /**
-   * Get a resource by identifier.
+   * Get a resource by FHIR id.
    *
    * @example
    *
    * // Using promises
-   * fhirClient.read('Patient', 12345).then((data) => { console.log(data); });
+   * fhirClient.read({ resourceType: 'Patient', id: 12345 })
+   *           .then((data) => { console.log(data); });
    *
    * // Using async
-   * let response = await fhirClient.read('Patient', 12345);
+   * let response = await fhirClient.read({ resourceType: 'Patient', id: 12345 });
    * console.log(response);
    *
-   * @param {string} resource The resource type (e.g. "Patient", "Observation")
-   * @param {string} identifier The FHIR identifier for the resource
+   * @param {Object} params - The request parameters.
+   * @param {string} params.resourceType - The resource type (e.g. "Patient", "Observation").
+   * @param {string} params.id - The FHIR id for the resource.
    *
    * @return {Promise&lt;Object>} FHIR resource
    */
-  read(resource, identifier) {
-    const url = this.buildUrl(`${resource}/${identifier}`);
+  read(params) {
+    const url = this.buildUrl(`${params.resourceType}/${params.id}`);
     return httpGet(url);
   }
 
   /**
-   * Get a resource by identifier and version.
+   * Get a resource by id and version.
    *
    * @example
    *
    * // Using promises
-   * fhirClient.vread('Patient', 12345, 1).then((data) => { console.log(data); });
+   * fhirClient.vread({ resourceType: 'Patient', id: '12345',
+   *                    version: '1' })
+   *           .then((data) => { console.log(data); });
    *
    * // Using async
-   * let response = await fhirClient.vread('Patient', 12345, 1);
+   * let response = await fhirClient.vread({ resourceType: 'Patient',
+   *                                         id: '12345', version: '1' });
    * console.log(response);
    *
-   * @param {string} resource The resource type (e.g. "Patient", "Observation")
-   * @param {string} identifier The FHIR identifier for the resource
-   * @param {string} version The version identifier for the resource
+   * @param {Object} params - The request parameters.
+  *  @param {string} params.resourceType - The resource type (e.g. "Patient", "Observation").
+   * @param {string} params.id - The FHIR id for the resource.
+   * @param {string} params.version - The version id for the resource.
    *
    * @return {Promise&lt;Object>} FHIR resource
    */
-  vread(resource, identifier, version) {
-    const url = this.buildUrl(`${resource}/${identifier}/_history/${version}`);
+  vread(params) {
+    const url = this.buildUrl(`${params.resourceType}/${params.id}/_history/${params.version}`);
     return httpGet(url);
   }
 
@@ -210,20 +216,24 @@ class Client {
    * @example
    *
    * // Using promises
-   * fhirClient.search('Patient', { name: 'smith' }).then((data) => { console.log(data); });
+   * fhirClient.search({ resourceType: 'Patient',
+   *                     searchParams: { name: 'smith' } })
+   *           .then((data) => { console.log(data); });
    *
    * // Using async
-   * let response = await fhirClient.search('Patient', { name: 'smith'});
+   * let response = await fhirClient.search({ resourceType: 'Patient',
+   *                                          searchParams: { name: 'smith' } });
    * console.log(response);
    *
-   * @param {string} resource The resource type (e.g. "Patient", "Observation")
-   * @param {object} params The search parameters.
+   * @param {Object} params - The request parameters.
+   * @param {string} params.resourceType - The resource type (e.g. "Patient", "Observation").
+   * @param {Object} params.searchParams - The search parameters.
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
-  search(resource, params) {
-    const _params = new URLSearchParams(params);
-    const url = this.buildUrl(resource);
+  search(params) {
+    const _params = new URLSearchParams(params.searchParams);
+    const url = this.buildUrl(params.resourceType);
     url.search = _params;
     return httpGet(url);
   }
@@ -242,7 +252,7 @@ module.exports = { Client };
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Apr 02 2018 14:10:17 GMT-0400 (EDT) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Apr 04 2018 10:17:40 GMT-0400 (EDT) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

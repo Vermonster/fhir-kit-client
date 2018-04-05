@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Global - Documentation</title>
+    <title>Pager - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Global</h1>
+    <h1 class="page-title">Pager</h1>
     
 
     
@@ -42,8 +42,10 @@
 <header>
     
         <h2>
-        
+        Pager
         </h2>
+        
+            <div class="class-description"><p>Class for paging Bundles.</p></div>
         
     
 </header>
@@ -52,8 +54,24 @@
     <div class="container-overview">
     
         
+<div class="section-method">
 
-        
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="Pager"><span class="type-signature"></span>new Pager<span class="signature">(httpClient)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Create a pager for the provided client.</p>
+</div>
+
+
+
 
 
 <dl class="details">
@@ -83,6 +101,11 @@
     
 
     
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="pager.js.html">pager.js</a>, <a href="pager.js.html#line2">line 2</a>
+    </li></ul></dd>
+    
 
     
 
@@ -92,7 +115,80 @@
 </dl>
 
 
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
         
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>httpClient</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>HttpClient</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>a configured instance of http client.</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
     
     </div>
 
@@ -117,15 +213,14 @@
 
     
 
-    <h4 class="name" id="authFromCapability"><span class="type-signature"></span>authFromCapability<span class="signature">(capabilityStatement)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="nextPage"><span class="type-signature"></span>nextPage<span class="signature">(results)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Get the SMART OAuth URIs from a Capability Statement
-http://docs.smarthealthit.org/authorization/conformance-statement/</p>
+    <p>Return the next page of results.</p>
 </div>
 
 
@@ -161,7 +256,7 @@ http://docs.smarthealthit.org/authorization/conformance-statement/</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="smart.js.html">smart.js</a>, <a href="smart.js.html#line23">line 23</a>
+        <a href="pager.js.html">pager.js</a>, <a href="pager.js.html#line17">line 17</a>
     </li></ul></dd>
     
 
@@ -205,13 +300,13 @@ http://docs.smarthealthit.org/authorization/conformance-statement/</p>
 
         <tr>
             
-                <td class="name"><code>capabilityStatement</code></td>
+                <td class="name"><code>results</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><code>Object</code></span>
+<span class="param-type"><code>object</code></span>
 
 
             
@@ -222,7 +317,7 @@ http://docs.smarthealthit.org/authorization/conformance-statement/</p>
             
 
             <td class="description last">
-                <p>a FHIR capabilityStatement</p>
+                <p>a bundle result of a FHIR search</p>
                 
             </td>
         </tr>
@@ -244,45 +339,7 @@ http://docs.smarthealthit.org/authorization/conformance-statement/</p>
 
 
 
-<div class="section-returns">
-<h5>Returns:</h5>
 
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>Object</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    <p>contains the following SMART URIs: authorizeUrl, tokenUrl,
-  registerUrl, manageUrl</p>
-</div>
-
-    
-</div>
-
-
-
-<div class="section-examples">
-<h5>Example</h5>
-
-    <pre class="prettyprint"><code>{
-  authorizeUrl,
-  tokenUrl,
-  registerUrl,
-  manageUrl,
-} = authFromCapability(capabilityStatement);</code></pre>
-
-</div>
 
 </div>
         
@@ -291,14 +348,14 @@ http://docs.smarthealthit.org/authorization/conformance-statement/</p>
 
     
 
-    <h4 class="name" id="splitReference"><span class="type-signature"></span>splitReference<span class="signature">(reference)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="prevPage"><span class="type-signature"></span>prevPage<span class="signature">(results)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Split a FHIR reference into its baseUrl (if present), type, and id</p>
+    <p>Return the previous page of results.</p>
 </div>
 
 
@@ -334,7 +391,7 @@ http://docs.smarthealthit.org/authorization/conformance-statement/</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line21">line 21</a>
+        <a href="pager.js.html">pager.js</a>, <a href="pager.js.html#line27">line 27</a>
     </li></ul></dd>
     
 
@@ -378,13 +435,13 @@ http://docs.smarthealthit.org/authorization/conformance-statement/</p>
 
         <tr>
             
-                <td class="name"><code>reference</code></td>
+                <td class="name"><code>results</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><code>String</code></span>
+<span class="param-type"><code>object</code></span>
 
 
             
@@ -395,7 +452,7 @@ http://docs.smarthealthit.org/authorization/conformance-statement/</p>
             
 
             <td class="description last">
-                <p>the FHIR reference</p>
+                <p>a bundle result of a FHIR search</p>
                 
             </td>
         </tr>
@@ -417,46 +474,7 @@ http://docs.smarthealthit.org/authorization/conformance-statement/</p>
 
 
 
-<div class="section-returns">
-<h5>Returns:</h5>
 
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>Object</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    <p>Contains baseUrl, resourceType, and id fields. baseUrl will be
-undefined for relative references</p>
-</div>
-
-    
-</div>
-
-
-
-<div class="section-examples">
-<h5>Example</h5>
-
-    <pre class="prettyprint"><code>// With an absolute reference
-{ baseUrl, resourceType, id } = splitReference('http://www.example.com/fhir/Patient/1');
-console.log(`${baseUrl}/${resourceType}/${id}`);
-
-// With a relative reference
-{ resourceType, id } = splitReference('Patient/1');
-console.log('${resourceType}/${id}');</code></pre>
-
-</div>
 
 </div>
         

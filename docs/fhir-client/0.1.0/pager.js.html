@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>utils.js - Documentation</title>
+    <title>pager.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">utils.js</h1>
+    <h1 class="page-title">pager.js</h1>
     
 
     
@@ -39,50 +39,39 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const { fhirReferenceRegEx } = require('./fhir-regular-expressions');
+            <pre class="prettyprint source linenums"><code>/** Class for paging Bundles. */
+class Pager {
+  /**
+   * Create a pager for the provided client.
+   *
+   * @param {HttpClient} httpClient a configured instance of http client.
+   */
+  constructor(httpClient) {
+    this.httpClient = httpClient;
+  }
 
-/**
- * Split a FHIR reference into its baseUrl (if present), type, and id
- *
- * @example
- *
- * // With an absolute reference
- * { baseUrl, resourceType, id } = splitReference('http://www.example.com/fhir/Patient/1');
- * console.log(`${baseUrl}/${resourceType}/${id}`);
- *
- * // With a relative reference
- * { resourceType, id } = splitReference('Patient/1');
- * console.log('${resourceType}/${id}');
- *
- * @param {String} reference the FHIR reference
- *
- * @return {Object} Contains baseUrl, resourceType, and id fields. baseUrl will be
- * undefined for relative references
- */
-function splitReference(reference) {
-  if (!reference.match(fhirReferenceRegEx)) {
-    throw new Error(`${reference} is not a recognized FHIR reference`);
+  /**
+   * Return the next page of results.
+   *
+   * @param {object} results a bundle result of a FHIR search
+   */
+  nextPage(results) {
+    const { url } = results.link.find(link => link.relation === 'next');
+    return this.httpClient.get(url);
   }
-  let baseUrl;
-  let relativeReference = reference;
-  if (reference.startsWith('http')) {
-    [, baseUrl] = fhirReferenceRegEx.exec(reference);
-    relativeReference = reference.slice(baseUrl.length);
-    if (baseUrl.endsWith('/')) {
-      baseUrl = baseUrl.slice(0, -1);
-    }
+
+  /**
+   * Return the previous page of results.
+   *
+   * @param {object} results a bundle result of a FHIR search
+   */
+  prevPage(results) {
+    const { url } = results.link.find(link => link.relation === 'previous');
+    return this.httpClient.get(url);
   }
-  const [resourceType, id] = relativeReference.split('/');
-  return {
-    baseUrl,
-    resourceType,
-    id,
-  };
 }
 
-module.exports = {
-  splitReference,
-};
+module.exports = { Pager };
 </code></pre>
         </article>
     </section>

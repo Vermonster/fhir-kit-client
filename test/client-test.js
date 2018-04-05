@@ -196,5 +196,148 @@ describe('Client', () => {
         expect(response.total).to.equal(0);
       });
     });
+
+    describe('#create', () => {
+      it('returns a successful operation outcome', async function () {
+        const newPatient = {
+          resourceType: 'Patient',
+          active: true,
+          name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+          gender: 'female',
+          birthDate: '1948-04-14',
+        };
+
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .post('/Patient')
+          .reply(201, () => readStreamFor('patient-created.json'));
+
+        const response = await this.fhirClient.create({ resourceType: 'Patient', body: newPatient });
+
+        expect(response.resourceType).to.deep.equal('OperationOutcome');
+        expect(response.issue[0].diagnostics).to.have.string('Successfully created resource');
+      });
+
+      it('throws an error if the resource is not supported', async function () {
+        const newRecord = {
+          resourceType: 'Foo',
+          name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+        };
+
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .post('/Foo')
+          .reply(400, () => readStreamFor('unknown-resource.json'));
+
+        let response;
+        try {
+          response = await this.fhirClient.create({ resourceType: 'Foo', body: newRecord });
+        } catch (error) {
+          expect(error.response.status).to.eq(400);
+          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+        }
+        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+    });
+
+    describe('#delete', () => {
+      it('returns a successful operation outcome', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .delete('/Patient/152746')
+          .reply(200, () => readStreamFor('patient-deleted.json'));
+
+        const response = await this.fhirClient.delete({ resourceType: 'Patient', id: 152746 });
+
+        expect(response.resourceType).to.deep.equal('OperationOutcome');
+        expect(response.issue[0].diagnostics).to.have.string('Successfully deleted 1 resource');
+      });
+
+      it('throws an error for a missing resource', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .delete('/Patient/abcdef')
+          .reply(404, () => readStreamFor('patient-not-found.json'));
+
+        let response;
+        try {
+          response = await this.fhirClient.delete({ resourceType: 'Patient', id: 'abcdef' });
+        } catch (error) {
+          expect(error.response.status).to.equal(404);
+          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+        }
+        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+    });
+
+    describe('#update', () => {
+      const body = { resourceType: 'Patient', id: '152747', birthDate: '1948-10-10' };
+
+      it('returns a successful operation outcome', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .put('/Patient/152747')
+          .reply(200, () => readStreamFor('patient-updated.json'));
+
+        const response = await this.fhirClient.update({ resourceType: 'Patient', id: '152747', body: body });
+
+        expect(response.resourceType).to.deep.equal('OperationOutcome');
+        expect(response.issue[0].diagnostics).to.have.string('_history/2');
+      });
+
+      it('throws an error for a missing resource', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .put('/Patient/abcdef')
+          .reply(404, () => readStreamFor('patient-not-found.json'));
+
+        let response;
+        try {
+          response = await this.fhirClient.update({ resourceType: 'Patient', id: 'abcdef', body: body });
+        } catch (error) {
+          expect(error.response.status).to.equal(404);
+          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+        }
+        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+    });
+
+    describe('#patch', () => {
+      it('returns a successful operation outcome', async function () {
+        // Content-Type is 'application/json-patch+json'
+        // http://hl7.org/fhir/STU3/http.html#patch
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('content-type', 'application/json-patch+json')
+          .patch('/Patient/152747')
+          .reply(200, () => readStreamFor('patient-patched.json'));
+
+        // Format described in http://jsonpatch.com/
+        const json_patch = [{ op: 'replace', path: '/gender', value: 'male' }];
+        const response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: json_patch });
+
+        expect(response.resourceType).to.deep.equal('OperationOutcome');
+        expect(response.issue[0].diagnostics).to.have.string('_history/3');
+      });
+
+      it('throws an error when given an invalid patch', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('content-type', 'application/json-patch+json')
+          .patch('/Patient/152747')
+          .reply(500, () => readStreamFor('patient-not-patched.json'));
+
+        // Accepted values for gender: male, female, unknown
+        const invalid_patch = [{ op: 'replace', path: '/gender', value: 0 }];
+        let response;
+        try {
+          response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: invalid_patch });
+        } catch (error) {
+          expect(error.response.status).to.equal(500);
+          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+        }
+        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+    });
   });
 });

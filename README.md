@@ -17,6 +17,10 @@ Node FHIR client library
 
 [See examples](./examples/index.js)
 
+# Contributing
+
+All are welcome to contribute. By participating in this project you agree to follow the [Code of Conduct](https://github.com/Vermonster/node-fhir-client/blob/master/CODE_OF_CONDUCT.md).
+
 # Documentation
 
 [JSDoc-generated documentation](https://vermonster.github.io/node-fhir-client/fhir-client/0.1.0/)

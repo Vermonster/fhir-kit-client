@@ -3,7 +3,12 @@
     "node": true
   },
   "extends": "airbnb-base",
+  "plugins": [
+    "filenames"
+  ],
   "rules": {
-    "consistent-return": 0
+    "consistent-return": 0,
+    "filenames/match-regex": [2, "^[a-z\\-]+$", true],
+    "filenames/match-exported": [2, "kebab"]
   }
 }

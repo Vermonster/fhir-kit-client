@@ -43,6 +43,7 @@ describe('Client', () => {
       it('returns SMART OAuth URIs', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('Authorization', '')
           .get('/metadata')
           .reply(200, () => readStreamFor('valid-capability-statement.json'));
 
@@ -161,6 +162,18 @@ describe('Client', () => {
         expect(response.id).to.equal('03e85f06-2f5f-408e-a8fa-17cda0e66f3c');
         expect(response.total).to.equal(0);
       });
+    });
+
+    it('can set the "Authorization" header to a Bearer token', async function () {
+      this.fhirClient.bearerToken = 'XYZ';
+
+      nock(this.baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('Authorization', 'Bearer XYZ')
+        .get('/Patient/test-access-token')
+        .reply(200, () => readStreamFor('patient.json'));
+
+      await this.fhirClient.read({ resourceType: 'Patient', id: 'test-access-token' });
     });
   });
 });

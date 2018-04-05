@@ -20,6 +20,10 @@
   },
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vermonster/fhir-kit-client.git"
+  },
   "devDependencies": {
     "chai": "^4.1.2",
     "chokidar-cli": "^1.2.0",

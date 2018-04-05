@@ -6,7 +6,9 @@ const { URL } = require('url');
 const { expect } = require('chai');
 const nock = require('nock');
 
+
 const Client = require('../lib/client');
+const { Pager } = require('../lib/pager');
 
 /**
  * Read fixture data
@@ -78,6 +80,7 @@ describe('Client', () => {
 
   it('initializes with config', function () {
     expect(this.fhirClient.baseUrl).to.equal(this.baseUrl);
+    expect(this.fhirClient.pager).to.be.an.instanceof(Pager);
   });
 
   describe('#smartAuthMetadata', () => {

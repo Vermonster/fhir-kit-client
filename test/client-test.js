@@ -279,7 +279,7 @@ describe('Client', () => {
           .put('/Patient/152747')
           .reply(200, () => readStreamFor('patient-updated.json'));
 
-        const response = await this.fhirClient.update({ resourceType: 'Patient', id: '152747', body: body });
+        const response = await this.fhirClient.update({ resourceType: 'Patient', id: '152747', body });
 
         expect(response.resourceType).to.deep.equal('OperationOutcome');
         expect(response.issue[0].diagnostics).to.have.string('_history/2');
@@ -293,7 +293,7 @@ describe('Client', () => {
 
         let response;
         try {
-          response = await this.fhirClient.update({ resourceType: 'Patient', id: 'abcdef', body: body });
+          response = await this.fhirClient.update({ resourceType: 'Patient', id: 'abcdef', body });
         } catch (error) {
           expect(error.response.status).to.equal(404);
           expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
@@ -313,8 +313,8 @@ describe('Client', () => {
           .reply(200, () => readStreamFor('patient-patched.json'));
 
         // Format described in http://jsonpatch.com/
-        const json_patch = [{ op: 'replace', path: '/gender', value: 'male' }];
-        const response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: json_patch });
+        const jsonPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
+        const response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: jsonPatch });
 
         expect(response.resourceType).to.deep.equal('OperationOutcome');
         expect(response.issue[0].diagnostics).to.have.string('_history/3');
@@ -328,10 +328,10 @@ describe('Client', () => {
           .reply(500, () => readStreamFor('patient-not-patched.json'));
 
         // Accepted values for gender: male, female, unknown
-        const invalid_patch = [{ op: 'replace', path: '/gender', value: 0 }];
+        const invalidPatch = [{ op: 'replace', path: '/gender', value: 0 }];
         let response;
         try {
-          response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: invalid_patch });
+          response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: invalidPatch });
         } catch (error) {
           expect(error.response.status).to.equal(500);
           expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');

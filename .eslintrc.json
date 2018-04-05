@@ -1,9 +1,9 @@
 {
-    "env": {
-        "node": true
-    },
-    "extends": "airbnb-base",
-    "rules": {
-      "consistent-return": 0
-    }
+  "env": {
+    "node": true
+  },
+  "extends": "airbnb-base",
+  "rules": {
+    "consistent-return": 0
+  }
 }

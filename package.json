@@ -1,5 +1,5 @@
 {
-  "name": "fhir-client",
+  "name": "fhir-kit-client",
   "version": "0.1.0",
   "description": "FHIR Client",
   "main": "lib/client.js",

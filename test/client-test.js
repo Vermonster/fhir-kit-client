@@ -43,6 +43,7 @@ describe('Client', () => {
       it('returns SMART OAuth URIs', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('Authorization', '')
           .get('/metadata')
           .reply(200, () => readStreamFor('valid-capability-statement.json'));
 

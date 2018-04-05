@@ -6,7 +6,7 @@ const { URL } = require('url');
 const { expect } = require('chai');
 const nock = require('nock');
 
-const { Client } = require('../lib/client');
+const Client = require('../lib/client');
 
 function readStreamFor(fixture) {
   return fs.createReadStream(path.normalize(`${__dirname}/fixtures/${fixture}`, 'utf8'));

@@ -7,8 +7,8 @@ const { expect } = require('chai');
 const nock = require('nock');
 
 const { splitReference } = require('../lib/utils');
-const { Client } = require('../lib/client');
-const { ReferenceResolver } = require('../lib/reference-resolver');
+const Client = require('../lib/client');
+const ReferenceResolver = require('../lib/reference-resolver');
 
 function readStreamFor(fixture) {
   return fs.createReadStream(path.normalize(`${__dirname}/fixtures/${fixture}`, 'utf8'));

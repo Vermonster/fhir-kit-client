@@ -14,7 +14,7 @@
     "test": "./node_modules/.bin/mocha --reporter spec",
     "test:watch": "./node_modules/.bin/chokidar --initial './lib' './test' './examples' -c 'yarn test'",
     "watch": "yarn test:watch & yarn lint:watch",
-    "coveralls":  "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+    "coveralls": "./node_modules/.bin/nyc yarn test && node_modules/.bin/nyc report --reporter=text-lcov | node_modules/.bin/coveralls"
   },
   "author": "",
   "license": "MIT",
@@ -29,10 +29,17 @@
     "minami": "^1.2.3",
     "mocha": "^5.0.5",
     "mocha-lcov-reporter": "^1.3.0",
-    "nock": "^9.2.3"
+    "nock": "^9.2.3",
+    "nyc": "^11.6.0"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "debug": "^3.1.0"
+  },
+  "nyc": {
+    "exclude": [
+      "test/**",
+      "lib/logging.js"
+    ]
   }
 }

@@ -11,7 +11,7 @@
     "docs": "./node_modules/.bin/jsdoc --configure jsdoc.json",
     "lint": "./node_modules/.bin/eslint **/*.js --ignore-pattern node_modules/",
     "lint:watch": "./node_modules/.bin/chokidar --initial './lib' './test' './examples' -c 'yarn lint'",
-    "test": "./node_modules/.bin/mocha --reporter spec",
+    "test": "./node_modules/.bin/mocha test --reporter spec",
     "test:watch": "./node_modules/.bin/chokidar --initial './lib' './test' './examples' -c 'yarn test'",
     "watch": "yarn test:watch & yarn lint:watch",
     "coveralls": "./node_modules/.bin/nyc yarn test && node_modules/.bin/nyc report --reporter=text-lcov | node_modules/.bin/coveralls"

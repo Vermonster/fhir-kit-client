@@ -24,13 +24,13 @@ fhirClient.smartAuthMetadata().then((response) => {
 });
 
 fhirClient
-  .read({ resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
+  .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
   .then((response) => {
     console.log(response);
   });
 
 fhirClient
-  .vread({ resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' })
+  .vread({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' })
   .then((response) => {
     console.log(response);
   });
@@ -56,13 +56,13 @@ async function asyncExamples() {
   console.log('-------- waiting...');
 
   response = await fhirClient
-    .read({ resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
+    .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
   console.log(response);
 
   console.log('-------- waiting...');
 
   response = await fhirClient
-    .vread({ resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' })
+    .vread({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' })
   console.log(response);
 
   console.log('-------- waiting...');

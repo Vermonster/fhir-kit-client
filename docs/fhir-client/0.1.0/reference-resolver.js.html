@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>client.js - Documentation</title>
+    <title>reference-resolver.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">client.js</h1>
+    <h1 class="page-title">reference-resolver.js</h1>
     
 
     
@@ -39,50 +39,19 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const { URLSearchParams } = require('url');
-const { authFromCapability } = require('./smart');
-const HttpClient = require('./http-client');
-const ReferenceResolver = require('./reference-resolver');
+            <pre class="prettyprint source linenums"><code>const { splitReference } = require('./utils');
 
-/** Class for a FHIR client. */
-class Client {
+/** Class used by Client to resolve FHIR References. Do not use this class
+  * directly, use Client#resolve instead.
+  */
+class ReferenceResolver {
   /**
-   * Create a FHIR client.
+   * Create a Reference Resolver.
    *
-   * @param {Object} config Client configuration
-   * @param {String} config.baseUrl ISS for FHIR server
+   * @param {Client} client FHIR Client
    */
-  constructor(config) {
-    this.httpClient = new HttpClient({ baseUrl: config.baseUrl });
-    this.baseUrl = config.baseUrl;
-    this.resolver = new ReferenceResolver(this);
-  }
-
-  /**
-   * Get the httpClient's baseURL value.
-   *
-   * @return {String}
-   */
-  get baseUrl() {
-    return this.httpClient.axiosInstance.defaults.baseURL;
-  }
-
-  /**
-   * Set the httpClient's baseURL value to a URL string.
-   *
-   * @param {String} url
-   */
-  set baseUrl(url) {
-    this.httpClient.axiosInstance.defaults.baseURL = url;
-  }
-
-  /**
-   * Set the axios Authorization header to "Bearer ${token}".
-   *
-   * @param {String} token The access token value.
-   */
-  set bearerToken(token) {
-    this.httpClient.axiosInstance.defaults.headers.common.Authorization = `Bearer ${token}`;
+  constructor(client) {
+    this.client = client;
   }
 
   /**
@@ -123,127 +92,87 @@ class Client {
    *
    * @return {Promise&lt;Object>} FHIR resource
    */
-  resolve(reference, context) { return this.resolver.resolve(reference, context); }
+  async resolve(reference, context) {
+    if (context === undefined) {
+      if (reference.startsWith('http')) {
+        return this.resolveAbsoluteReference(reference);
+      }
+      return this.client.httpClient.get(reference);
+    }
+    if (reference.startsWith('#')) {
+      return this.resolveContainedReference(reference, context);
+    }
+    return this.resolveBundleReference(reference, context);
+  }
 
   /**
-   * Obtain the SMART OAuth URLs from the Capability Statement
+   * Private function for Client to resolve absolute references
+   *
+   * @private
    *
    * @async
    *
-   * @example
+   * @param {String} reference the FHIR reference
    *
-   * // Using promises
-   * fhirClient.smartAuthMetadata().then((data) => { console.log(data); });
-   *
-   * // Using async
-   * let response = await fhirClient.smartAuthMetadata();
-   * console.log(response);
-   *
-   * @return {Promise&lt;Object>} Structure of urls for OAuth
+   * @return {Promise&lt;Object>} FHIR resource
    */
-  async smartAuthMetadata() {
-    const capabilityStatement = await this.capabilityStatement();
-
-    return authFromCapability(capabilityStatement);
+  async resolveAbsoluteReference(reference) {
+    if (reference.startsWith(this.client.baseUrl)) {
+      return this.client.httpClient.get(reference);
+    }
+    const { baseUrl, resourceType, id } = splitReference(reference);
+    const Client = require('./client'); // eslint-disable-line global-require
+    return (new Client({ baseUrl })).read({ resourceType, id });
   }
 
   /**
-   * Get the capability statement.
+   * Private function for Client to resolve contained references
+   *
+   * @private
+   *
+   * @param {String} reference the FHIR reference
+   * @param {Object} [context] FHIR resource
+   *
+   * @return {Object} FHIR resource
+   * @throws Will throw if a contained resource which matches the reference
+   *   can't be found
+   */
+  resolveContainedReference(reference, context) { // eslint-disable-line class-methods-use-this
+    if (context.contained) {
+      const referenceId = reference.slice(1);
+      const containedResource = context.contained.find(resource => resource.id === referenceId);
+      if (containedResource) {
+        return containedResource;
+      }
+    }
+    throw (new Error(`Unable to resolve contained reference: ${reference}`));
+  }
+
+  /**
+   * Private function for Client to resolve references in a bundle. If not
+   * contained in the bundle, the resources will be fetched from a FHIR server.
+   *
+   * @private
    *
    * @async
    *
-   * @example
-   *
-   * // Using promises
-   * fhirClient.capabilityStatement().then((data) => { console.log(data); });
-   *
-   * // Using async
-   * let response = await fhirClient.capabilityStatement();
-   * console.log(response);
-   *
-   * @return {Promise&lt;Object>} capability statement FHIR resource.
-   */
-  capabilityStatement() {
-    return this.httpClient.get('metadata');
-  }
-
-  /**
-   * Get a resource by FHIR id.
-   *
-   * @example
-   *
-   * // Using promises
-   * fhirClient.read({ resourceType: 'Patient', id: 12345 })
-   *           .then((data) => { console.log(data); });
-   *
-   * // Using async
-   * let response = await fhirClient.read({ resourceType: 'Patient', id: 12345 });
-   * console.log(response);
-   *
-   * @param {Object} params - The request parameters.
-   * @param {String} params.resourceType - The resource type (e.g. "Patient", "Observation").
-   * @param {String} params.id - The FHIR id for the resource.
+   * @param {String} reference the FHIR reference
+   * @param {Object} [context] FHIR bundle
    *
    * @return {Promise&lt;Object>} FHIR resource
    */
-  read(params) {
-    return this.httpClient.get(`${params.resourceType}/${params.id}`);
-  }
+  async resolveBundleReference(reference, bundle) {
+    const referenceRegEx = new RegExp(`(^|/)${reference}$`);
+    const entry = bundle.entry.find(bundleEntry => referenceRegEx.test(bundleEntry.fullUrl));
 
-  /**
-   * Get a resource by id and version.
-   *
-   * @example
-   *
-   * // Using promises
-   * fhirClient.vread({ resourceType: 'Patient', id: '12345',
-   *                    version: '1' })
-   *           .then((data) => { console.log(data); });
-   *
-   * // Using async
-   * let response = await fhirClient.vread({ resourceType: 'Patient',
-   *                                         id: '12345', version: '1' });
-   * console.log(response);
-   *
-   * @param {Object} params - The request parameters.
-   * @param {String} params.resourceType - The resource type (e.g. "Patient", "Observation").
-   * @param {String} params.id - The FHIR id for the resource.
-   * @param {String} params.version - The version id for the resource.
-   *
-   * @return {Promise&lt;Object>} FHIR resource
-   */
-  vread(params) {
-    return this.httpClient.get(`${params.resourceType}/${params.id}/_history/${params.version}`);
-  }
-
-  /**
-   * Search for FHIR resources.
-   *
-   * @example
-   *
-   * // Using promises
-   * fhirClient.search({ resourceType: 'Patient',
-   *                     searchParams: { name: 'smith' } })
-   *           .then((data) => { console.log(data); });
-   *
-   * // Using async
-   * let response = await fhirClient.search({ resourceType: 'Patient',
-   *                                          searchParams: { name: 'smith' } });
-   * console.log(response);
-   *
-   * @param {Object} params - The request parameters.
-   * @param {String} params.resourceType - The resource type (e.g. "Patient", "Observation").
-   * @param {Object} params.searchParams - The search parameters.
-   *
-   * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
-   */
-  search(params) {
-    const relativePathWithQuery = `${params.resourceType}?${new URLSearchParams(params.searchParams)}`;
-    return this.httpClient.get(relativePathWithQuery);
+    if (!entry) {
+      return this.resolve(reference);
+    }
+    return entry.resource;
   }
 }
 
-module.exports = Client;
+module.exports = ReferenceResolver;
 </code></pre>
         </article>
     </section>

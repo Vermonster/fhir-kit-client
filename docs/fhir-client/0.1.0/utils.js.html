@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>http-client.js - Documentation</title>
+    <title>utils.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">http-client.js</h1>
+    <h1 class="page-title">utils.js</h1>
     
 
     
@@ -39,42 +39,42 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const axios = require('axios');
-const { logRequestError, logRequestInfo, logResponseInfo } = require('./logging');
+            <pre class="prettyprint source linenums"><code>const { fhirReferenceRegEx } = require('./fhir-regular-expressions');
 
-/** Class for an HTTP client. */
-class HttpClient {
-  /**
-   * Create an HTTP client.
-   *
-   * @param {Object} config HTTP Client configuration
-   * @param {String} config.baseUrl Base URL that axios uses to resolve relative paths
-   */
-  constructor({ baseUrl }) {
-    this.axiosInstance = axios.create({
-      baseURL: baseUrl,
-    });
-
-    this.axiosInstance.defaults.headers.common.Accept = 'application/json+fhir';
-
-    // Dynamically-assigned instance methods for HTTP verbs:
-    ['get', 'post', 'patch', 'put', 'delete'].forEach((httpVerb) => {
-      this[httpVerb] = async (url, ...rest) => {
-        try {
-          logRequestInfo(httpVerb, url, axios);
-          const response = await this.axiosInstance[httpVerb](url, ...rest);
-          logResponseInfo(response);
-          return response.data;
-        } catch (error) {
-          logRequestError(error);
-          throw error;
-        }
-      };
-    });
+/**
+ * Split a FHIR reference into its baseUrl (if present), type, and id
+ *
+ * @example
+ *
+ * { baseUrl, resourceType, id } = splitReference('http://www.example.com/fhir/Patient/1')
+ * { resourceType, id } = splitReference('Patient/1')
+ *
+ * @param {String} reference the FHIR reference
+ *
+ * @return {Object} Contains baseUrl, resourceType, and id fields. baseUrl will be
+ * undefined for relative references
+ */
+function splitReference(reference) {
+  let baseUrl;
+  let relativeReference = reference;
+  if (reference.startsWith('http')) {
+    [, baseUrl] = fhirReferenceRegEx.exec(reference);
+    relativeReference = reference.slice(baseUrl.length);
+    if (baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.slice(0, -1);
+    }
   }
+  const [resourceType, id] = relativeReference.split('/');
+  return {
+    baseUrl,
+    resourceType,
+    id,
+  };
 }
 
-module.exports = HttpClient;
+module.exports = {
+  splitReference,
+};
 </code></pre>
         </article>
     </section>

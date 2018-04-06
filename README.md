@@ -18,24 +18,24 @@ const Client = require('../lib/client');
 
 const fhirClient = new Client({ baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open' });
 
-const examplePatient = { resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' };
-const examplePatientV1 = { resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' };
-const exampleNamedPatient = { resourceType: 'Patient', searchParams: { name: 'abbott ' } };
+const patient = { resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' };
+const patientV1 = { resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' };
+const namedPatient = { resourceType: 'Patient', searchParams: { name: 'abbott ' } };
 
 // Examples using promises...
 fhirClient.smartAuthMetadata().then((response) => {
   console.log(response);
 });
 
-fhirClient.read(examplePatient).then((response) => {
+fhirClient.read(patient).then((response) => {
   console.log(response);
 });
 
-fhirClient.vread(examplePatientV1).then((response) => {
+fhirClient.vread(patientV1).then((response) => {
   console.log(response);
 });
 
-fhirClient.search(exampleNamedPatient).then((response) => {
+fhirClient.search(namedPatient).then((response) => {
   console.log(response);
 });
 
@@ -47,17 +47,17 @@ async function asyncExamples() {
 
   console.log('--------');
 
-  response = await fhirClient.read(examplePatient);
+  response = await fhirClient.read(patient);
   console.log(response);
 
   console.log('--------');
 
-  response = await fhirClient.vread(examplePatientV1);
+  response = await fhirClient.vread(patientV1);
   console.log(response);
 
   console.log('--------');
 
-  response = await fhirClient.search(exampleNamedPatient);
+  response = await fhirClient.search(namedPatient);
   console.log(response);
 }
 

@@ -20,7 +20,7 @@
   "opts": {
     "destination": "./docs/",
     "encoding": "utf8",
-    "private": true,
+    "private": false,
     "recurse": true,
     "template": "./node_modules/minami"
   }

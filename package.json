@@ -9,7 +9,8 @@
   },
   "scripts": {
     "docs": "jsdoc --configure jsdoc.json",
-    "lint": "eslint **/*.js --ignore-pattern node_modules/",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "lint:watch": "chokidar --initial './lib' './test' './examples' -c 'yarn lint'",
     "test": "mocha test --reporter spec",
     "test:watch": "chokidar --initial './lib' './test' './examples' -c 'yarn test'",

@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/Vermonster/node-fhir-client.svg?branch=master)](https://travis-ci.org/Vermonster/node-fhir-client)
-
-[![Coverage Status](https://coveralls.io/repos/github/Vermonster/node-fhir-client/badge.svg?branch=master)](https://coveralls.io/github/Vermonster/node-fhir-client?branch=master)
+[![Build Status](https://travis-ci.org/Vermonster/node-fhir-client.svg?branch=master)](https://travis-ci.org/Vermonster/node-fhir-client) [![Coverage Status](https://coveralls.io/repos/github/Vermonster/node-fhir-client/badge.svg?branch=master)](https://coveralls.io/github/Vermonster/node-fhir-client?branch=master)
 
 # fhir-client
 Node FHIR client library
@@ -15,11 +13,68 @@ Node FHIR client library
 
 # Example
 
-[See examples](./examples/index.js)
+Examples using promises...
 
-# Contributing
+```javascript
+const Client = require('../lib/client');
+const fhirClient = new Client({ baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open' });
 
-All are welcome to contribute. By participating in this project you agree to follow the [Code of Conduct](https://github.com/Vermonster/node-fhir-client/blob/master/CODE_OF_CONDUCT.md).
+fhirClient.smartAuthMetadata().then((response) => {
+  console.log(response);
+});
+
+fhirClient
+  .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
+  .then((response) => {
+    console.log(response);
+  });
+
+fhirClient
+  .vread({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' })
+  .then((response) => {
+    console.log(response);
+  });
+
+fhirClient
+  .search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
+  .then((response) => {
+    console.log(response);
+  });
+
+```
+
+Examples using async/await...
+
+```javascript
+const Client = require('../lib/client');
+const fhirClient = new Client({ baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open' });
+
+async function asyncExamples() {
+  let response = await fhirClient.smartAuthMetadata();
+  console.log(response);
+
+  console.log('-------- waiting...');
+
+  response = await fhirClient
+    .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
+  console.log(response);
+
+  console.log('-------- waiting...');
+
+  response = await fhirClient
+    .vread({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' })
+  console.log(response);
+
+  console.log('-------- waiting...');
+
+  response = await fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
+  console.log(response);
+}
+
+asyncExamples();
+```
+
+See the [SMART Launch](./examples/smart-launch.js) example with OAuth2 support.
 
 # Documentation
 
@@ -38,8 +93,15 @@ $ DEBUG=node-fhir-client:* node examples/index.js
 
 # Todo
 
+# Contributing
+
+All are welcome to contribute. By participating in this project you agree to
+follow the [Code of
+Conduct](https://github.com/Vermonster/node-fhir-client/blob/master/CODE_OF_CONDUCT.md).
+
+
 # License
 
 MIT
 
-(c)2018 Vermonster LLC
+Copyright (c) 2018 Vermonster LLC

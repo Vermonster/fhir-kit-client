@@ -8,7 +8,7 @@
     "yarn": ">= 1.3.2"
   },
   "scripts": {
-    "docs": "jsdoc --configure jsdoc.json",
+    "docs": "jsdoc --configure .jsdoc.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:watch": "chokidar --initial './lib' './test' './examples' -c 'yarn lint'",

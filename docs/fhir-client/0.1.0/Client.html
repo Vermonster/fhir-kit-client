@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Client.html">Client</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#capabilityStatement">capabilityStatement</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#read">read</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#resolve">resolve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#search">search</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#smartAuthMetadata">smartAuthMetadata</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#vread">vread</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="HttpClient.html">HttpClient</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ReferenceResolver.html">ReferenceResolver</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ReferenceResolver.html#resolve">resolve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ReferenceResolver.html#resolveAbsoluteReference">resolveAbsoluteReference</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ReferenceResolver.html#resolveBundleReference">resolveBundleReference</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ReferenceResolver.html#resolveContainedReference">resolveContainedReference</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#authFromCapability">authFromCapability</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#splitReference">splitReference</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Client.html">Client</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#capabilityStatement">capabilityStatement</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#read">read</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#resolve">resolve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#search">search</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#smartAuthMetadata">smartAuthMetadata</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#vread">vread</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="HttpClient.html">HttpClient</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ReferenceResolver.html">ReferenceResolver</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ReferenceResolver.html#resolve">resolve</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#authFromCapability">authFromCapability</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#splitReference">splitReference</a></span></li>
 </nav>
 
 <div id="main">
@@ -623,7 +623,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line148">line 148</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line150">line 150</a>
     </li></ul></dd>
     
 
@@ -814,8 +814,10 @@ console.log(response);</code></pre>
 <h5>Example</h5>
 
     <pre class="prettyprint"><code>// Using promises
-fhirClient.read({ resourceType: 'Patient', id: 12345 })
-          .then((data) => { console.log(data); });
+fhirClient.read({
+  resourceType: 'Patient',
+  id: 12345,
+}).then((data) => { console.log(data); });
 
 // Using async
 let response = await fhirClient.read({ resourceType: 'Patient', id: 12345 });
@@ -1036,24 +1038,24 @@ absolute URL, 2) relative URL or 3) an internal fragement.  In the case of
 <h5>Example</h5>
 
     <pre class="prettyprint"><code>// Always does a new http request
-client.resolve("http://test.com/fhir/Patient/1").then((patient) => {
+client.resolve('http://test.com/fhir/Patient/1'.then((patient) => {
   console.log(patient);
 });
 
 // Always does a new http request, using the client.baseUrl
-client.resolve("Patient/1").then((patient) => {
+client.resolve('Patient/1'.then((patient) => {
   console.log(patient);
 });
 
 // Try to resolve a patient in the bundle, otherwise build request
 // at client.baseUrl
-client.resolve("Patient/1", bundle).then((patient) => {
+client.resolve('Patient/1' bundle).then((patient) => {
   console.log(patient);
 });
 
 // Resolve a patient contained in someResource (see:
 // http://hl7.org/fhir/STU3/references.html#contained)
-client.resolve("#patient-1", someResource).then((patient) => {
+client.resolve('#patient-1' someResource).then((patient) => {
   console.log(patient);
 });</code></pre>
 
@@ -1109,7 +1111,7 @@ client.resolve("#patient-1", someResource).then((patient) => {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line199">line 199</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line209">line 209</a>
     </li></ul></dd>
     
 
@@ -1300,13 +1302,16 @@ client.resolve("#patient-1", someResource).then((patient) => {
 <h5>Example</h5>
 
     <pre class="prettyprint"><code>// Using promises
-fhirClient.search({ resourceType: 'Patient',
-                    searchParams: { name: 'smith' } })
-          .then((data) => { console.log(data); });
+fhirClient.search({
+  resourceType: 'Patient',
+  searchParams: { name: 'Smith' },
+}).then((data) => { console.log(data); });
 
 // Using async
-let response = await fhirClient.search({ resourceType: 'Patient',
-                                         searchParams: { name: 'smith' } });
+let response = await fhirClient.search({
+  resourceType: 'Patient',
+  searchParams: { name: 'Smith' },
+});
 console.log(response);</code></pre>
 
 </div>
@@ -1481,7 +1486,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line174">line 174</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line181">line 181</a>
     </li></ul></dd>
     
 
@@ -1698,13 +1703,18 @@ console.log(response);</code></pre>
 <h5>Example</h5>
 
     <pre class="prettyprint"><code>// Using promises
-fhirClient.vread({ resourceType: 'Patient', id: '12345',
-                   version: '1' })
-          .then((data) => { console.log(data); });
+fhirClient.vread({
+  resourceType: 'Patient',
+  id: '12345',
+  version: '1',
+}).then(data => console.log(data));
 
 // Using async
-let response = await fhirClient.vread({ resourceType: 'Patient',
-                                        id: '12345', version: '1' });
+let response = await fhirClient.vread({
+  resourceType: 'Patient',
+  id: '12345',
+  version: '1',
+});
 console.log(response);</code></pre>
 
 </div>
@@ -1728,7 +1738,7 @@ console.log(response);</code></pre>
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Apr 06 2018 08:11:16 GMT-0400 (EDT) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Apr 06 2018 14:08:04 GMT-0400 (EDT) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

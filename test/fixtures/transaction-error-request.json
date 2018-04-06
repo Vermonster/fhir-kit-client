@@ -1,0 +1,35 @@
+{
+ "resourceType": "Bundle",
+ "id": "bundle-transaction",
+ "meta": {
+   "lastUpdated": "2014-08-18T01:43:30Z"
+ },
+ "type": "transaction",
+ "entry": [
+   {
+     "request": {
+       "method": "POST",
+       "url": "Patient"
+     }
+   },
+   {
+   	 "resourceType": "Patient",
+     "request": {
+       "method": "PUT",
+       "url": "Patient/bdbaa136-a8b5-4baa-8edb-72ab8fd7e83c"
+     }
+   },
+      {
+     "request": {
+       "method": "GET",
+       "url": "Patient?name=missing-name"
+     }
+   },
+   {
+     "request": {
+       "method": "DELETE",
+       "url": "Patient/non-existent-patient"
+     }
+   }
+ ]
+}

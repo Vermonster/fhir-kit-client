@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Client.html">Client</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#capabilityStatement">capabilityStatement</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#create">create</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#delete">delete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#patch">patch</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#read">read</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#resolve">resolve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#search">search</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#smartAuthMetadata">smartAuthMetadata</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#update">update</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#vread">vread</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Pagination.html">Pagination</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Pagination.html#nextPage">nextPage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Pagination.html#prevPage">prevPage</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#authFromCapability">authFromCapability</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#splitReference">splitReference</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="module.exports.html">exports</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module.exports.html#batch">batch</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module.exports.html#capabilityStatement">capabilityStatement</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module.exports.html#create">create</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module.exports.html#delete">delete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module.exports.html#patch">patch</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module.exports.html#read">read</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module.exports.html#resolve">resolve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module.exports.html#resolve">resolve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module.exports.html#search">search</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module.exports.html#smartAuthMetadata">smartAuthMetadata</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module.exports.html#transaction">transaction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module.exports.html#update">update</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module.exports.html#vread">vread</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Pagination.html">Pagination</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Pagination.html#nextPage">nextPage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Pagination.html#prevPage">prevPage</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#authFromCapability">authFromCapability</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#splitReference">splitReference</a></span></li>
 </nav>
 
 <div id="main">
@@ -46,7 +46,7 @@ const ReferenceResolver = require('./reference-resolver');
 const Pagination = require('./pagination');
 
 /** Class for a FHIR client. */
-class Client {
+module.exports = class {
   /**
    * Create a FHIR client.
    *
@@ -392,6 +392,120 @@ class Client {
     const headers = { 'Content-Type': 'application/json-patch+json' };
     return this.httpClient.patch(`${resourceType}/${id}`, JSONPatch, { headers });
   }
+  /**
+   * Submit a set of actions to perform independently as a batch.
+   *
+   * Update, create or delete a set of resources in a single interaction.
+   * There should be no interdependencies between entries in the bundle.
+   *
+   * @example
+   *
+   * const requestBundle = {
+   *   'resourceType': 'Bundle',
+   *   'type': 'batch',
+   *   'entry': [
+   *    {
+   *      'fullUrl': 'http://example.org/fhir/Patient/123',
+   *      'resource': {
+   *        'resourceType': 'Patient',
+   *        'id': '123',
+   *        'active': true
+   *      },
+   *      'request': {
+   *        'method': 'PUT',
+   *        'url': 'Patient/123'
+   *      }
+   *    },
+   *     {
+   *       'request': {
+   *         'method': 'DELETE',
+   *         'url': 'Patient/2e27c71e-30c8-4ceb-8c1c-5641e066c0a4'
+   *       }
+   *     },
+   *     {
+   *       'request': {
+   *         'method': 'GET',
+   *         'url': 'Patient?name=peter'
+   *       }
+   *     }
+   *   ]
+   * }
+   *
+   * // Using promises
+   * fhirClient.batch(requestBundle);
+   *           .then((data) => { console.log(data); });
+   *
+   * // Using async
+   * let response = await fhirClient.batch(requestBundle);
+   * console.log(response);
+   *
+   * @param {Object} params - The request parameters.
+   * @param {string} params.body - The request body with a type of 'batch'.
+   * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
+   */
+  batch({ body } = {}) {
+    return this.httpClient.post('/', body);
+  }
+
+  /**
+   * Submit a set of actions to perform independently as a transaction.
+   *
+   * Update, create or delete a set of resources in a single interaction.
+   * The entire set of changes should succeed or fail as a single entity.
+   * Multiple actions on multiple resources different types may be submitted.
+   * The outcome should not depend on the order of the resources loaded.
+   * Order of processing actions: DELETE, POST, PUT, and GET.
+   * The transaction fails if any resource overlap in DELETE, POST and PUT.
+   *
+   * @example
+   *
+   * const requestBundle = {
+   *   'resourceType': 'Bundle',
+   *   'type': 'transaction',
+   *   'entry': [
+   *    {
+   *      'fullUrl': 'http://example.org/fhir/Patient/123',
+   *      'resource': {
+   *        'resourceType': 'Patient',
+   *        'id': '123',
+   *        'active': true
+   *      },
+   *      'request': {
+   *        'method': 'PUT',
+   *        'url': 'Patient/123'
+   *      }
+   *    },
+   *     {
+   *       'request': {
+   *         'method': 'DELETE',
+   *         'url': 'Patient/2e27c71e-30c8-4ceb-8c1c-5641e066c0a4'
+   *       }
+   *     },
+   *     {
+   *       'request': {
+   *         'method': 'GET',
+   *         'url': 'Patient?name=peter'
+   *       }
+   *     }
+   *   ]
+   * }
+   *
+   * // Using promises
+   * fhirClient.transaction(requestBundle);
+   *           .then((data) => { console.log(data); });
+   *
+   * // Using async
+   * let response = await fhirClient.transaction(requestBundle);
+   * console.log(response);
+   *
+   * @param {Object} params - The request parameters.
+   * @param {String} params.body - The request body with a type of 'transaction'.
+   *
+   * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
+   */
+  transaction({ body } = {}) {
+    return this.httpClient.post('/', body);
+  }
 
   nextPage(results) {
     return this.pagination.nextPage(results);
@@ -400,9 +514,7 @@ class Client {
   prevPage(results) {
     return this.pagination.prevPage(results);
   }
-}
-
-module.exports = Client;
+};
 </code></pre>
         </article>
     </section>
@@ -415,7 +527,7 @@ module.exports = Client;
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Apr 11 2018 15:33:07 GMT-0400 (EDT) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Apr 11 2018 16:26:52 GMT-0400 (EDT) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

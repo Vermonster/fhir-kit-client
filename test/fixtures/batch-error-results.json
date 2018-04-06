@@ -1,0 +1,102 @@
+{
+    "resourceType": "Bundle",
+    "id": "64fc91ef-ec70-4952-a148-9a746a264692",
+    "type": "batch-response",
+    "link": [
+        {
+            "relation": "self",
+            "url": "https://example.com"
+        }
+    ],
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "OperationOutcome",
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h1>Operation Outcome</h1><table border=\"0\"><tr><td style=\"font-weight: bold;\">INFORMATION</td><td>[]</td><td><pre>Batch completed in 15ms</pre></td>\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t</tr>\n\t\t</table>\n\t</div>"
+                },
+                "issue": [
+                    {
+                        "severity": "information",
+                        "diagnostics": "Batch completed in 15ms"
+                    }
+                ]
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "OperationOutcome",
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h1>Operation Outcome</h1><table border=\"0\"><tr><td style=\"font-weight: bold;\">ERROR</td><td>[]</td><td><pre>java.lang.NullPointerException</pre></td>\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t</tr>\n\t\t</table>\n\t</div>"
+                },
+                "issue": [
+                    {
+                        "severity": "error",
+                        "diagnostics": "java.lang.NullPointerException"
+                    }
+                ]
+            },
+            "response": {
+                "status": "500 Internal Server Error"
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "OperationOutcome",
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h1>Operation Outcome</h1><table border=\"0\"><tr><td style=\"font-weight: bold;\">ERROR</td><td>[]</td><td><pre>java.lang.NullPointerException</pre></td>\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t</tr>\n\t\t</table>\n\t</div>"
+                },
+                "issue": [
+                    {
+                        "severity": "error",
+                        "diagnostics": "java.lang.NullPointerException"
+                    }
+                ]
+            },
+            "response": {
+                "status": "500 Internal Server Error"
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "OperationOutcome",
+                "text": {
+                    "status": "generated",
+                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h1>Operation Outcome</h1><table border=\"0\"><tr><td style=\"font-weight: bold;\">ERROR</td><td>[]</td><td><pre>Resource Patient/non-existent-patient is not known</pre></td>\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t</tr>\n\t\t</table>\n\t</div>"
+                },
+                "issue": [
+                    {
+                        "severity": "error",
+                        "diagnostics": "Resource Patient/non-existent-patient is not known"
+                    }
+                ]
+            },
+            "response": {
+                "status": "404 Not Found"
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Bundle",
+                "id": "576754ae-1e89-43ba-8944-ec55cc874f4a",
+                "meta": {
+                    "lastUpdated": "2018-04-06T19:25:21.593+00:00"
+                },
+                "type": "searchset",
+                "total": 0,
+                "link": [
+                    {
+                        "relation": "self",
+                        "url": "https://example.com/Patient?name=missing-name"
+                    }
+                ]
+            },
+            "response": {
+                "status": "200 OK"
+            }
+        }
+    ]
+}

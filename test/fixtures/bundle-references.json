@@ -1,0 +1,60 @@
+{
+  "resourceType" : "Bundle",
+  "type" : "collection",
+  "entry" : [
+    {
+      "fullUrl" : "https://example.com/fhir/Patient/23",
+      "resource" : {
+        "resourceType" : "Patient",
+        "id" : "23"
+      }
+    },
+    {
+      "fullUrl" : "urn:uuid:04121321-4af5-424c-a0e1-ed3aab1c349d",
+      "resource" : {
+        "resourceType" : "Patient",
+        "id": "04121321-4af5-424c-a0e1-ed3aab1c349d"
+      }
+    },
+    {
+      "fullUrl" : "https://example.com/fhir/Observation/123",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "123",
+        "subject" : {
+          "reference" : "Patient/23"
+        }
+      }
+    },
+    {
+      "fullUrl" : "https://example.com/fhir/Observation/124",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "124",
+        "subject" : {
+          "reference" : "https://example.com/fhir/Patient/23"
+        }
+      }
+    },
+    {
+      "fullUrl" : "https://example.com/fhir/Observation/12",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "12",
+        "subject" : {
+          "reference" : "urn:uuid:04121321-4af5-424c-a0e1-ed3aab1c349d"
+        }
+      }
+    },
+    {
+      "fullUrl" : "https://example.com/fhir/Observation/14",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "14",
+        "subject" : {
+          "reference" : "https://example.com/fhir-2/Patient/1"
+        }
+      }
+    }
+  ]
+}

@@ -1,5 +1,4 @@
-/* eslint-disable func-names */
-
+/* eslint-disable func-names, no-unused-expressions */
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
@@ -7,7 +6,7 @@ const { URL } = require('url');
 const { expect } = require('chai');
 const nock = require('nock');
 
-const { Client } = require('../lib/client');
+const Client = require('../lib/client');
 
 function readStreamFor(fixture) {
   return fs.createReadStream(path.normalize(`${__dirname}/fixtures/${fixture}`, 'utf8'));
@@ -72,6 +71,24 @@ describe('Client', () => {
     });
   });
 
+  describe('#resolve', async () => {
+    it('resolves a reference and returns a resource', async function () {
+      const resourceType = 'Patient';
+      const id = 'eb3271e1-ae1b-4644-9332-41e32c829486';
+      const reference = `${resourceType}/${id}`;
+      const absoluteReference = `${this.baseUrl}/${reference}`;
+      nock(this.baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .get(`/${reference}`)
+        .reply(200, () => readStreamFor('patient.json'));
+
+      const response = await this.fhirClient.resolve(absoluteReference);
+
+      expect(response.resourceType).to.equal(resourceType);
+      expect(response.id).to.equal(id);
+    });
+  });
+
   describe('API verbs', () => {
     describe('#read', () => {
       it('throws errors for a missing resource', async function () {
@@ -87,7 +104,7 @@ describe('Client', () => {
           expect(error.response.status).to.equal(404);
           expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
         }
-        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+        expect(response).to.be.undefined;
       });
     });
 
@@ -117,7 +134,7 @@ describe('Client', () => {
           expect(error.response.status).to.equal(404);
           expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
         }
-        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+        expect(response).to.be.undefined;
       });
 
       it('throws errors for an absent version of an existing resource', async function () {
@@ -133,7 +150,7 @@ describe('Client', () => {
           expect(error.response.status).to.equal(404);
           expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
         }
-        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+        expect(response).to.be.undefined;
       });
     });
 

@@ -36,12 +36,6 @@ fhirClient
   });
 
 fhirClient
-  .search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
-  .then((response) => {
-    console.log(response);
-  });
-
-fhirClient
   .create({
     resourceType: 'Patient',
     body: { resourceType: 'Patient', name: [{ family: ['Lee'], given: ['Ed'] }] },
@@ -70,6 +64,24 @@ fhirClient
   }).then((response) => {
     console.log(response);
   });
+
+  fhirClient
+    .search({ resourceType: 'Patient', searchParams: { _count: '3', gender: 'female' } })
+    .then((response) => {
+      console.log(response);
+      return response;
+    })
+    .then((response) => {
+      console.log(response);
+      return fhirClient.pager.nextPage(response);
+    })
+    .then((response) => {
+      console.log(response);
+      return fhirClient.pager.prevPage(response);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 ```
 
 Examples using async/await...
@@ -132,6 +144,18 @@ async function asyncExamples() {
       id: '12345',
       JSONPatch: [{ op: 'replace', path: '/gender', value: 'male' }],
     });
+
+  const searchResponse1 = await fhirClient.search(examplePatientSearch);
+  console.log(searchResponse1);
+
+  console.log('--------');
+
+  const searchResponse2 = await fhirClient.pager.nextPage(searchResponse1);
+  console.log(searchResponse2);
+
+  console.log('--------');
+
+  response = await fhirClient.pager.prevPage(searchResponse2);
   console.log(response);
 }
 

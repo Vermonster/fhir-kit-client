@@ -5,6 +5,7 @@ const { splitReference } = require('../lib/utils');
 
 describe('utils', () => {
   describe('splitReference', () => {
+    const baseUrl = 'https://www.example.com/fhir';
     const resourceType = 'Patient';
     const id = '1234';
 
@@ -36,6 +37,15 @@ describe('utils', () => {
         expect(splitReference(relativeReference).baseUrl).to.be.undefined;
         expect(splitReference(relativeReference).resourceType).to.equal(resourceType);
         expect(splitReference(relativeReference).id).to.equal(id);
+      });
+    });
+
+    context('with an invalid reference', () => {
+      it('throws an error', () => {
+        const resourceType = 'Patent'; // intentional misspelling so reference is invalid
+        const absoluteReference = `${baseUrl}/${resourceType}/${id}`;
+        const expectedError = `${absoluteReference} is not a recognized FHIR reference`;
+        expect(() => splitReference(absoluteReference)).to.throw(expectedError);
       });
     });
   });

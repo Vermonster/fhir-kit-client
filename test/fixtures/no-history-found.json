@@ -1,0 +1,722 @@
+{
+  "resourceType": "Bundle",
+  "id": "9c9e1612-a862-46e1-a9c6-aec3950dea12",
+  "meta": {
+    "lastUpdated": "2018-04-06T13:15:28.741+00:00"
+  },
+  "type": "history",
+  "total": 152750,
+  "link": [
+    {
+      "relation": "self",
+      "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/_history"
+    },
+    {
+      "relation": "next",
+      "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open?_getpages=7a26cc4b-5501-4780-939c-72b2c143e559&_getpagesoffset=10&_count=10&_pretty=true&_bundletype=history"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Observation/152741",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "152741",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2018-04-06T13:11:13.000+00:00",
+          "tag": [
+            {
+              "system": "https://smarthealthit.org/tags",
+              "code": "smart-7-2017"
+            }
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">2018-04-06T13:11:13.838Ztemperature = 37.0 Cel</div>"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://www.bmc.nl/zorgportal/identifiers/observations",
+            "value": "smart-1380-temperature"
+          }
+        ],
+        "status": "unknown",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "Temperature"
+              }
+            ],
+            "text": "Vital Signs"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://lonic.org",
+              "code": "8310-5",
+              "display": "temperature"
+            }
+          ],
+          "text": "temperature"
+        },
+        "subject": {
+          "reference": "Patient/eb353530-d205-4954-b351-97595ac206f8"
+        },
+        "effectiveDateTime": "2018-04-06",
+        "performer": [
+          {
+            "reference": "Practitioner/smart-Practitioner-7880378"
+          }
+        ],
+        "valueQuantity": {
+          "value": 37,
+          "unit": "Cel",
+          "system": "http://unitsofmeasure.org",
+          "code": "Cel"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Observation/152741/_history/1"
+      }
+    },
+    {
+      "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Location/operation-room",
+      "resource": {
+        "resourceType": "Location",
+        "id": "operation-room",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2018-04-06T13:05:26.000+00:00"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Burgers UMC, South Wing, second floor, Neuro Radiology Operation Room 1</div>"
+        },
+        "identifier": [
+          {
+            "value": "B1-S.F2.1.00"
+          }
+        ],
+        "status": "suspended",
+        "operationalStatus": {
+          "system": "http://hl7.org/fhir/v2/0116",
+          "code": "H",
+          "display": "Housekeeping"
+        },
+        "name": "South Wing Neurology Operating Room 1",
+        "alias": [
+          "South Wing OR 5",
+          "Main Wing OR 2"
+        ],
+        "description": "Old South Wing, Neuro Radiology Operation Room 1 on second floor",
+        "mode": "instance",
+        "type": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/v3/RoleCode",
+              "code": "RNEU",
+              "display": "Neuroradiology unit"
+            }
+          ]
+        },
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "2329"
+          }
+        ],
+        "physicalType": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/location-physical-type",
+              "code": "ro",
+              "display": "Room"
+            }
+          ]
+        },
+        "managingOrganization": {
+          "reference": "Organization/f001"
+        },
+        "partOf": {
+          "reference": "Location/wing"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Location/operation-room/_history/1"
+      }
+    },
+    {
+      "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/RelatedPerson/152737",
+      "resource": {
+        "resourceType": "RelatedPerson",
+        "id": "152737",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2018-04-06T13:05:11.000+00:00"
+        },
+        "patient": {
+          "reference": "Patient/eb353530-d205-4954-b351-97595ac206f8"
+        },
+        "relationship": {
+          "text": "Authorized Representative"
+        },
+        "name": [
+          {
+            "use": "official",
+            "text": "Smart, Nancy",
+            "family": "Smart",
+            "given": [
+              "Nancy"
+            ],
+            "period": {
+              "start": "2016-06-22T20:43:05.000Z"
+            }
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+17039272028",
+            "use": "mobile"
+          }
+        ],
+        "gender": "female",
+        "period": {
+          "start": "2017-06-09T13:41:09.000Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/RelatedPerson/152737/_history/1"
+      }
+    },
+    {
+      "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/RelatedPerson/152738",
+      "resource": {
+        "resourceType": "RelatedPerson",
+        "id": "152738",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2018-04-06T13:05:11.000+00:00"
+        },
+        "patient": {
+          "reference": "Patient/eb353530-d205-4954-b351-97595ac206f8"
+        },
+        "relationship": {
+          "text": "Authorized Representative"
+        },
+        "name": [
+          {
+            "use": "official",
+            "text": "SMART, JOE",
+            "family": "SMART",
+            "given": [
+              "JOE"
+            ],
+            "period": {
+              "start": "2016-06-22T21:06:59.000Z"
+            }
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+1-317-518-8244",
+            "use": "mobile",
+            "period": {
+              "start": "2017-06-27T21:47:16.000Z"
+            }
+          }
+        ],
+        "gender": "male",
+        "address": [
+          {
+            "use": "home",
+            "text": "1234 Blvd\nOverland Park, KS 66213\nUSA",
+            "line": [
+              "1234 Blvd"
+            ],
+            "city": "Overland Park",
+            "district": "Johnson",
+            "state": "KS",
+            "postalCode": "66213",
+            "country": "USA",
+            "period": {
+              "start": "2017-06-27T21:47:16.000Z"
+            }
+          }
+        ],
+        "period": {
+          "start": "2017-06-09T13:41:09.000Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/RelatedPerson/152738/_history/1"
+      }
+    },
+    {
+      "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/RelatedPerson/152739",
+      "resource": {
+        "resourceType": "RelatedPerson",
+        "id": "152739",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2018-04-06T13:05:11.000+00:00"
+        },
+        "patient": {
+          "reference": "Patient/eb353530-d205-4954-b351-97595ac206f8"
+        },
+        "relationship": {
+          "text": "Authorized Representative"
+        },
+        "name": [
+          {
+            "use": "official",
+            "text": "Ball, Lonzo",
+            "family": "Ball",
+            "given": [
+              "Lonzo"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+18453712125",
+            "use": "home"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/RelatedPerson/152739/_history/1"
+      }
+    },
+    {
+      "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Location/wing",
+      "resource": {
+        "resourceType": "Location",
+        "id": "wing",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2018-04-06T13:01:31.000+00:00"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Burgers UMC, South Wing, second floor</div>"
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/location-alias",
+            "valueString": "Burgers University Medical Center, South Wing, second floor"
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/location-alias",
+            "valueString": "BU MC, SW, F2"
+          }
+        ],
+        "identifier": [
+          {
+            "value": "B1-S.F2"
+          }
+        ],
+        "status": "active",
+        "name": "South Wing, second floor",
+        "description": "Second floor of the Old South Wing, formerly in use by Psychiatry",
+        "mode": "instance",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "2328",
+            "use": "work"
+          },
+          {
+            "system": "fax",
+            "value": "2329",
+            "use": "work"
+          },
+          {
+            "system": "email",
+            "value": "second wing admissions"
+          },
+          {
+            "system": "url",
+            "value": "http://sampleorg.com/southwing",
+            "use": "work"
+          }
+        ],
+        "address": {
+          "use": "work",
+          "line": [
+            "Galapagosweg 91, Building A"
+                    ],
+                    "city": "Den Burg",
+                    "postalCode": "9105 PZ",
+                    "country": "NLD"
+        },
+        "physicalType": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/location-physical-type",
+              "code": "wi",
+              "display": "Wing"
+            }
+          ]
+        },
+        "position": {
+          "longitude": -83.6945691,
+          "latitude": 42.25475478,
+          "altitude": 0
+        },
+        "managingOrganization": {
+          "reference": "Organization/f001"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Location/wing/_history/1"
+      }
+    },
+    {
+      "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Organization/f001",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "f001",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2018-04-06T12:58:01.000+00:00"
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: f001</p><p><b>identifier</b>: 91654 (OFFICIAL), 17-0112278 (USUAL)</p><p><b>type</b>: University Medical Hospital <span>(Details : {urn:oid:2.16.840.1.113883.2.4.15.1060 code 'V6' = 'V6', given as 'University Medical Hospital'}; {http://hl7.org/fhir/organization-type code 'prov' = 'Healthcare Provider', given as 'Healthcare Provider'})</span></p><p><b>name</b>: Burgers University Medical Center</p><p><b>telecom</b>: ph: 022-655 2300(WORK)</p><p><b>address</b>: </p><ul><li>Galapagosweg 91 Den Burg 9105 PZ NLD (WORK)</li><li>PO Box 2311 Den Burg 9100 AA NLD (WORK)</li></ul><blockquote><p><b>contact</b></p><p><b>purpose</b>: Press <span>(Details : {http://hl7.org/fhir/contactentity-type code 'PRESS' = 'Press)</span></p><p><b>telecom</b>: ph: 022-655 2334</p></blockquote><blockquote><p><b>contact</b></p><p><b>purpose</b>: Patient <span>(Details : {http://hl7.org/fhir/contactentity-type code 'PATINF' = 'Patient)</span></p><p><b>telecom</b>: ph: 022-655 2335</p></blockquote></div>"
+          },
+          "identifier": [
+            {
+              "use": "official",
+              "system": "urn:oid:2.16.528.1",
+              "value": "91654"
+            },
+            {
+              "use": "usual",
+              "system": "urn:oid:2.16.840.1.113883.2.4.6.1",
+              "value": "17-0112278"
+            }
+          ],
+          "type": [
+            {
+              "coding": [
+                {
+                  "system": "urn:oid:2.16.840.1.113883.2.4.15.1060",
+                  "code": "V6",
+                  "display": "University Medical Hospital"
+                },
+                {
+                  "system": "http://hl7.org/fhir/organization-type",
+                  "code": "prov",
+                  "display": "Healthcare Provider"
+                }
+              ]
+            }
+          ],
+          "name": "Burgers University Medical Center",
+          "telecom": [
+            {
+              "system": "phone",
+              "value": "022-655 2300",
+              "use": "work"
+            }
+          ],
+          "address": [
+            {
+              "use": "work",
+              "line": [
+                "Galapagosweg 91"
+                        ],
+                        "city": "Den Burg",
+                        "postalCode": "9105 PZ",
+                        "country": "NLD"
+            },
+            {
+              "use": "work",
+              "line": [
+                "PO Box 2311"
+                        ],
+                        "city": "Den Burg",
+                        "postalCode": "9100 AA",
+                        "country": "NLD"
+            }
+          ],
+          "contact": [
+            {
+              "purpose": {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/contactentity-type",
+                    "code": "PRESS"
+                  }
+                ]
+              },
+              "telecom": [
+                {
+                  "system": "phone",
+                  "value": "022-655 2334"
+                }
+              ]
+            },
+            {
+              "purpose": {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/contactentity-type",
+                    "code": "PATINF"
+                  }
+                ]
+              },
+              "telecom": [
+                {
+                  "system": "phone",
+                  "value": "022-655 2335"
+                }
+              ]
+            }
+          ]
+          },
+          "request": {
+            "method": "POST",
+            "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Organization/f001/_history/1"
+          }
+        },
+        {
+          "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/CarePlan/152768alpha",
+          "resource": {
+            "resourceType": "CarePlan",
+            "id": "152768alpha",
+            "meta": {
+              "versionId": "1",
+              "lastUpdated": "2018-04-06T12:50:58.000+00:00"
+            },
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: f202</p><p><b>contained</b>: , , , , , </p><p><b>status</b>: active</p><p><b>intent</b>: plan</p><p><b>subject</b>: <a>Roel</a></p><p><b>careTeam</b>: id: careteam</p><p><b>addresses</b>: <a>Roel's head-neck tumor</a></p><p><b>goal</b>: id: goal; status: in-progress; Elimination of the spenoid bone tumor <span>(Details )</span>; Roel</p><blockquote><p><b>activity</b></p><p><b>outcomeReference</b>: <a>Roel's Chemotherapy</a></p><h3>Details</h3><table><tr><td>-</td><td><b>Category</b></td><td><b>Code</b></td><td><b>Status</b></td><td><b>Prohibited</b></td><td><b>Product[x]</b></td></tr><tr><td>*</td><td>Procedure <span>(Details : {http://hl7.org/fhir/care-plan-activity-category code 'procedure' = 'Procedure)</span></td><td>Chemotherapy <span>(Details : {SNOMED CT code '367336001' = 'Chemotherapy', given as 'Chemotherapy'})</span></td><td>in-progress</td><td>false</td><td>id: tpf; TPF <span>(Details )</span></td></tr></table></blockquote></div>"
+              },
+              "contained": [
+                {
+                  "resourceType": "CareTeam",
+                  "id": "c9dedacd-f199-44fd-ab08-5bb16e8a4a96",
+                  "participant": [
+                    {
+                      "role": {
+                        "coding": [
+                          {
+                            "system": "http://snomed.info/sct",
+                            "code": "28995006",
+                            "display": "Treated With"
+                          }
+                        ]
+                      },
+                      "member": {
+                        "reference": "Practitioner/smart-Practitioner-71614502",
+                        "display": "Sample Practitioner"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "resourceType": "Goal",
+                  "id": "goal-2",
+                  "status": "in-progress"
+                }
+              ],
+              "status": "active",
+              "intent": "plan",
+              "subject": {
+                "reference": "Patient/eb353530-d205-4954-b351-97595ac206f8",
+                "display": "Sample CarePlan Patient"
+              },
+              "period": {
+                "start": "2017-10-10T07:42:21-05:00"
+              },
+              "author": [
+                {
+                  "reference": "Practitioner/smart-Practitioner-71614502",
+                  "display": "CarePlan Practitioner Author"
+                }
+              ],
+              "careTeam": [
+                {
+                  "reference": "#c9dedacd-f199-44fd-ab08-5bb16e8a4a96"
+                }
+              ],
+              "goal": [
+                {
+                  "reference": "#goal-2"
+                }
+              ],
+              "activity": [
+                {
+                  "detail": {
+                    "category": {
+                      "coding": [
+                        {
+                          "system": "http://hl7.org/fhir/care-plan-activity-category",
+                          "code": "procedure"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "coding": [
+                        {
+                          "system": "http://snomed.info/sct",
+                          "code": "367336001",
+                          "display": "Chemotherapy"
+                        }
+                      ]
+                    },
+                    "status": "in-progress",
+                    "prohibited": false,
+                    "productReference": {
+                      "reference": "#tpf"
+                    }
+                  }
+                }
+              ]
+            },
+            "request": {
+              "method": "POST",
+              "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/CarePlan/152768alpha/_history/1"
+            }
+          },
+          {
+            "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Observation/HaplotypesTPMT-4",
+            "resource": {
+              "resourceType": "Observation",
+              "id": "HaplotypesTPMT-4",
+              "meta": {
+                "versionId": "1",
+                "lastUpdated": "2018-01-12T20:59:26.000+00:00"
+              },
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/observation-geneticsGene",
+                  "valueCodeableConcept": {
+                    "coding": [
+                      {
+                        "system": "http://www.genenames.org",
+                        "version": "GRCh38.p7",
+                        "code": "12014",
+                        "display": "TPMT"
+                      }
+                    ],
+                    "text": "Patient test results for TPMT"
+                  }
+                },
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/observation-geneticsAlleleName",
+                  "valueCodeableConcept": {
+                    "text": "*1"
+                  }
+                },
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/observation-geneticsAlleleName",
+                  "valueCodeableConcept": {
+                    "text": "*2"
+                  }
+                }
+              ],
+              "status": "final",
+              "category": [
+                {
+                  "text": "genetics"
+                }
+              ],
+              "code": {
+                "coding": [
+                  {
+                    "system": "http://loinc.org",
+                    "code": "84413-4",
+                    "display": "Genotype display name"
+                  }
+                ]
+              },
+              "subject": {
+                "reference": "Patient/smart-1482713"
+              }
+            },
+            "request": {
+              "method": "POST",
+              "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Observation/HaplotypesTPMT-4/_history/1"
+            }
+          },
+          {
+            "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Observation/HaplotypesCYP2C19-3",
+            "resource": {
+              "resourceType": "Observation",
+              "id": "HaplotypesCYP2C19-3",
+              "meta": {
+                "versionId": "1",
+                "lastUpdated": "2018-01-12T20:59:26.000+00:00"
+              },
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/observation-geneticsGene",
+                  "valueCodeableConcept": {
+                    "coding": [
+                      {
+                        "system": "http://www.genenames.org",
+                        "version": "GRCh38.p7",
+                        "code": "2621",
+                        "display": "CYP2C19"
+                      }
+                    ],
+                    "text": "Patient test results for CYP2C19"
+                  }
+                },
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/observation-geneticsAlleleName",
+                  "valueCodeableConcept": {
+                    "text": "*1"
+                  }
+                },
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/observation-geneticsAlleleName",
+                  "valueCodeableConcept": {
+                    "text": "*17"
+                  }
+                }
+              ],
+              "status": "final",
+              "category": [
+                {
+                  "text": "genetics"
+                }
+              ],
+              "code": {
+                "coding": [
+                  {
+                    "system": "http://loinc.org",
+                    "code": "84413-4",
+                    "display": "Genotype display name"
+                  }
+                ]
+              },
+              "subject": {
+                "reference": "Patient/smart-8888802"
+              }
+            },
+            "request": {
+              "method": "POST",
+              "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Observation/HaplotypesCYP2C19-3/_history/1"
+            }
+          }
+  ]
+        }

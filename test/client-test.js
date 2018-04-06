@@ -164,6 +164,35 @@ describe('Client', () => {
       });
     });
 
+    describe('#search-all', () => {
+      it('returns a matching search results bundle', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('?name=abbott')
+          .reply(200, () => readStreamFor('search-all-results.json'));
+
+        const response = await this.fhirClient.searchAll({ searchParams: { name: 'abbott' } });
+
+        expect(response.resourceType).to.equal('Bundle');
+        // TODO
+        expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
+      });
+
+      it('returns an empty search results bundle if no match is found', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/?name=abcdef')
+          .reply(200, () => readStreamFor('empty-search-all-results.json'));
+
+        const response = await this.fhirClient.searchAll({ name: 'abcdef' } );
+
+        expect(response.resourceType).to.equal('Bundle');
+        // TODO
+        expect(response.id).to.equal('03e85f06-2f5f-408e-a8fa-17cda0e66f3c');
+        expect(response.total).to.equal(0);
+      });
+    });
+
     it('can set the "Authorization" header to a Bearer token', async function () {
       this.fhirClient.bearerToken = 'XYZ';
 
@@ -314,6 +343,105 @@ describe('Client', () => {
         } catch (error) {
           expect(error.response.status).to.equal(500);
           expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+        }
+        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+    });
+
+    describe('#history', () => {
+      it('returns a history bundle for a resource', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .history('/Patient/52747/_history')
+          .reply(200, () => readStreamFor('patient-history.json'));
+
+        const response = await this.fhirClient.history({ resourceType: 'Patient', id: '152747' });
+
+        expect(response.resourceType).to.deep.equal('Bundle');
+        // TODO
+        expect(response.issue[0].diagnostics).to.have.string('_history/3');
+      });
+
+      it('returns an empty history bundle if none is found', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .history('/Patient/abcde/_history')
+          // TODO
+          .reply(500, () => readStreamFor('patient-history-not-found.json'));
+
+        let response;
+        try {
+          response = await this.fhirClient.history({ resourceType: 'Patient', id: 'abcde' });
+        } catch (error) {
+          expect(error.response.status).to.equal(500);
+          //TODO
+          expect(error.response.data.resourceType).to.deep.equal('Bundle');
+        }
+        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+    });
+
+    describe('#history-type', () => {
+      it('returns a history bundle for a resource type', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .patch('/Patient/_history')
+          .reply(200, () => readStreamFor('patient-type-history.json'));
+
+        const response = await this.fhirClient.historyType({ resourceType: 'Patient' });
+
+        expect(response.resourceType).to.deep.equal('Bundle');
+        // TODO
+        expect(response.issue[0].diagnostics).to.have.string('_history/3');
+      });
+
+      it('returns an empty history bundle if none is found', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .history('/Patient/_history')
+          // TODO
+          .reply(500, () => readStreamFor('patient-type-history-not-found.json'));
+
+        let response;
+        try {
+          response = await this.fhirClient.history('/Patient/_history');
+        } catch (error) {
+          expect(error.response.status).to.equal(500);
+          //TODO
+          expect(error.response.data.resourceType).to.deep.equal('Bundle');
+        }
+        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+    });
+
+    describe('#history-all', () => {
+      it('returns a history bundle for all resources', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .history-all('_history')
+          .reply(200, () => readStreamFor('all-history.json'));
+
+        const response = await this.fhirClient.history-all('_/history');
+
+        expect(response.resourceType).to.deep.equal('Bundle');
+        expect(response.type).to.deep.equal('history');
+        expect(response.total).to.deep.equal('152750');
+      });
+
+      it('returns an empty history bundle if none is found', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .history-all('_history')
+          .reply(500, () => readStreamFor('no-history-found.json'));
+
+        let response;
+        try {
+          response = await this.fhirClient.history-all('_history');
+        } catch (error) {
+          expect(error.response.status).to.equal(500);
+          expect(error.response.data.resourceType).to.deep.equal('Bundle');
+          expect(error.response.data.type).to.deep.equal('history');
+          expect(error.response.data.total).to.deep.equal('0');
         }
         expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
       });

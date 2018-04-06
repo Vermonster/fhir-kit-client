@@ -95,11 +95,13 @@ $ DEBUG=node-fhir-client:* node examples/index.js
 
 # Contributing
 
-All are welcome to contribute. By participating in this project you agree to follow the [Code of Conduct](https://github.com/Vermonster/node-fhir-client/blob/master/CODE_OF_CONDUCT.md).
+All are welcome to contribute. By participating in this project you agree to
+follow the [Code of
+Conduct](https://github.com/Vermonster/node-fhir-client/blob/master/CODE_OF_CONDUCT.md).
 
 
 # License
 
 MIT
 
-(c)2018 Vermonster LLC
+Copyright (c) 2018 Vermonster LLC

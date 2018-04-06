@@ -212,7 +212,10 @@ describe('Client', () => {
           .post('/Patient')
           .reply(201, () => readStreamFor('patient-created.json'));
 
-        const response = await this.fhirClient.create({ resourceType: 'Patient', body: newPatient });
+        const response = await this.fhirClient.create({
+          resourceType: newPatient.resourceType,
+          resource: newPatient,
+        });
 
         expect(response.resourceType).to.deep.equal('OperationOutcome');
         expect(response.issue[0].diagnostics).to.have.string('Successfully created resource');
@@ -231,7 +234,10 @@ describe('Client', () => {
 
         let response;
         try {
-          response = await this.fhirClient.create({ resourceType: 'Foo', body: newRecord });
+          response = await this.fhirClient.create({
+            resourceType: newRecord.resourceType,
+            resource: newRecord,
+          });
         } catch (error) {
           expect(error.response.status).to.eq(400);
           expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');

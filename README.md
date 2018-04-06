@@ -53,19 +53,19 @@ async function asyncExamples() {
   let response = await fhirClient.smartAuthMetadata();
   console.log(response);
 
-  console.log('--------');
+  console.log('-------- waiting...');
 
   response = await fhirClient
     .read({ resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
   console.log(response);
 
-  console.log('--------');
+  console.log('-------- waiting...');
 
   response = await fhirClient
     .vread({ resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' })
   console.log(response);
 
-  console.log('--------');
+  console.log('-------- waiting...');
 
   response = await fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
   console.log(response);

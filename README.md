@@ -13,51 +13,61 @@ Node FHIR client library
 
 # Example
 
+Examples using promises...
+
 ```javascript
 const Client = require('../lib/client');
-
 const fhirClient = new Client({ baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open' });
 
-const patient = { resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' };
-const patientV1 = { resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' };
-const namedPatient = { resourceType: 'Patient', searchParams: { name: 'abbott ' } };
-
-// Examples using promises...
 fhirClient.smartAuthMetadata().then((response) => {
   console.log(response);
 });
 
-fhirClient.read(patient).then((response) => {
-  console.log(response);
-});
+fhirClient
+  .read({ resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
+  .then((response) => {
+    console.log(response);
+  });
 
-fhirClient.vread(patientV1).then((response) => {
-  console.log(response);
-});
+fhirClient
+  .vread({ resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' })
+  .then((response) => {
+    console.log(response);
+  });
 
-fhirClient.search(namedPatient).then((response) => {
-  console.log(response);
-});
+fhirClient
+  .search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
+  .then((response) => {
+    console.log(response);
+  });
 
+```
 
-// Examples using async/await...
+Examples using async/await...
+
+```javascript
+const Client = require('../lib/client');
+const fhirClient = new Client({ baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open' });
+
 async function asyncExamples() {
   let response = await fhirClient.smartAuthMetadata();
   console.log(response);
 
   console.log('--------');
 
-  response = await fhirClient.read(patient);
+  response = await fhirClient
+    .read({ resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
   console.log(response);
 
   console.log('--------');
 
-  response = await fhirClient.vread(patientV1);
+  response = await fhirClient
+    .vread({ resourceType: 'Patient', identifier: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' })
   console.log(response);
 
   console.log('--------');
 
-  response = await fhirClient.search(namedPatient);
+  response = await fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
   console.log(response);
 }
 

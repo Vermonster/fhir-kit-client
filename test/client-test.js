@@ -8,7 +8,7 @@ const nock = require('nock');
 
 
 const Client = require('../lib/client');
-const { Pager } = require('../lib/pager');
+const Pager = require('../lib/pager');
 
 /**
  * Read fixture data

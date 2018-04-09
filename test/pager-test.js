@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { expect } = require('chai');
-const { Pager } = require('../lib/pager');
+const Pager = require('../lib/pager');
 
 function readFixture(filename) {
   return JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/${filename}`, 'utf8')));
@@ -28,7 +28,6 @@ describe('Pager', () => {
 
     it('returns undefined if no next page exists', function () {
       const results = readFixture('search-results.json');
-      const url = 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Patient?name=abbott';
       expect(this.pager.nextPage(results)).to.equal(undefined);
     });
   });
@@ -40,10 +39,9 @@ describe('Pager', () => {
       expect(this.pager.prevPage(results)).to.equal(url);
     });
 
-    it('returns undefined if no previous page exists', function() {
+    it('returns undefined if no previous page exists', function () {
       const results = readFixture('search-results.json');
-      const url = 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Patient?name=abbott';
-      expect(this.pager.nextPage(results)).to.equal(undefined);
+      expect(this.pager.prevPage(results)).to.equal(undefined);
     });
 
     it('detects "prev" relations', function () {

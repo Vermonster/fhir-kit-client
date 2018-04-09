@@ -45,8 +45,14 @@ app.use(session({
 app.get('/launch', async (req, res) => {
   const { iss, launch } = req.query;
 
+  console.log('>>> iss: ', iss);
+  console.log('>>> launch: ', launch);
+
   const fhirClient = new Client({ baseUrl: iss });
   const { authorizeUrl, tokenUrl } = await fhirClient.smartAuthMetadata();
+
+  console.log('>>> authorizeUrl: ', authorizeUrl);
+  console.log('>>> tokenUrl: ', tokenUrl);
 
   req.session.iss = iss;
 

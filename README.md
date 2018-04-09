@@ -41,6 +41,35 @@ fhirClient
     console.log(response);
   });
 
+fhirClient
+  .create({
+    resourceType: 'Patient',
+    body: { resourceType: 'Patient', name: [{ family: ['Lee'], given: ['Ed'] }] },
+  }).then((response) => {
+    console.log(response);
+  });
+
+fhirClient
+  .delete({ resourceType: 'Patient', id: '12345' })
+  .then((response) => {
+    console.log(response);
+  });
+
+fhirClient
+  .update({
+    resourceType: 'Patient', id: '12345',
+    body: { resourceType: 'Patient', birthDate: '1948-04-14' },
+  }).then((response) => {
+    console.log(response);
+  });
+
+fhirClient
+  .patch({
+    resourceType: 'Patient', id: '12345',
+    JSONPatch: [{ op: 'replace', path: '/gender', value: 'male' }],
+  }).then((response) => {
+    console.log(response);
+  });
 ```
 
 Examples using async/await...
@@ -56,18 +85,53 @@ async function asyncExamples() {
   console.log('-------- waiting...');
 
   response = await fhirClient
-    .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
+    .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' });
   console.log(response);
 
   console.log('-------- waiting...');
 
   response = await fhirClient
-    .vread({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' })
+    .vread({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' });
   console.log(response);
 
   console.log('-------- waiting...');
 
-  response = await fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
+  response = await fhirClient
+    .search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
+  console.log(response);
+  console.log('-------- waiting...');
+
+  response = await fhirClient
+    .create({
+      resourceType: 'Patient',
+      body: { resourceType: 'Patient', name: [{ family: ['Lee'], given: ['Ed'] }] },
+    });
+  console.log(response);
+
+  console.log('-------- waiting...');
+
+  response = await fhirClient
+    .delete({ resourceType: 'Patient', id: '12345' });
+  console.log(response);
+
+  console.log('-------- waiting...');
+
+  response = await fhirClient
+    .update({
+      resourceType: 'Patient',
+      id: '12345',
+      body: { resourceType: 'Patient', birthDate: '1948-04-14' },
+    });
+  console.log(response);
+
+  console.log('-------- waiting...');
+
+  response = await fhirClient
+    .patch({
+      resourceType: 'Patient',
+      id: '12345',
+      JSONPatch: [{ op: 'replace', path: '/gender', value: 'male' }],
+    });
   console.log(response);
 }
 

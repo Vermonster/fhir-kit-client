@@ -92,16 +92,19 @@ DEBUG environment variable, or use `fhir-kit-client:*` to enable both.
 $ DEBUG=fhir-kit-client:* node smart-launch.js
 ```
 
-# Todo
-
-
-
 # Contributing
 
-All are welcome to contribute. By participating in this project you agree to
+FHIRKit Client is an open source Node.js FHIR client library that welcomes community contributions with enthusiasm.
+
+All are welcome to participate. By participating in this project, you agree to
 follow the [Code of
 Conduct](https://github.com/Vermonster/fhir-kit-client/blob/master/CODE_OF_CONDUCT.md).
 
+Please see our [Contributing](https://github.com/Vermonster/node-fhir-client/blob/master/CONTRIBUTING.md) document for more details on how to get started.
+
+# Todo
+
+--
 
 # License
 

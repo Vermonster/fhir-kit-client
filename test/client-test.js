@@ -89,6 +89,22 @@ describe('Client', () => {
     });
   });
 
+  describe('Authorization header', () => {
+    describe('#read', () => {
+      it('sets the header to a Bearer token', async function () {
+        this.fhirClient.bearerToken = 'XYZ';
+
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('Authorization', 'Bearer XYZ')
+          .get('/Patient/test-access-token')
+          .reply(200, () => readStreamFor('patient.json'));
+
+        await this.fhirClient.read({ resourceType: 'Patient', id: 'test-access-token' });
+      });
+    });
+  });
+
   describe('API verbs', () => {
     describe('#read', () => {
       it('throws errors for a missing resource', async function () {
@@ -179,18 +195,6 @@ describe('Client', () => {
         expect(response.id).to.equal('03e85f06-2f5f-408e-a8fa-17cda0e66f3c');
         expect(response.total).to.equal(0);
       });
-    });
-
-    it('can set the "Authorization" header to a Bearer token', async function () {
-      this.fhirClient.bearerToken = 'XYZ';
-
-      nock(this.baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
-        .matchHeader('Authorization', 'Bearer XYZ')
-        .get('/Patient/test-access-token')
-        .reply(200, () => readStreamFor('patient.json'));
-
-      await this.fhirClient.read({ resourceType: 'Patient', id: 'test-access-token' });
     });
   });
 });

@@ -6,7 +6,6 @@ const { splitReference } = require('../lib/utils');
 describe('utils', () => {
   describe('splitReference', () => {
     const baseUrl = 'https://www.example.com/fhir';
-    const resourceType = 'Patient';
     const id = '1234';
 
     context('with an absolute reference', () => {
@@ -33,6 +32,7 @@ describe('utils', () => {
 
     context('with a relative reference', () => {
       it('returns the resource type and id', () => {
+        const resourceType = 'Patient';
         const relativeReference = `${resourceType}/${id}`;
         expect(splitReference(relativeReference).baseUrl).to.be.undefined;
         expect(splitReference(relativeReference).resourceType).to.equal(resourceType);

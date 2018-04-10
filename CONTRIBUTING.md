@@ -2,7 +2,7 @@
 
 FHIRKit Client is an open source Node.js FHIR client library that welcomes community contributions with enthusiasm. If you are new to open source, here are two great resources to help get you started: [Understanding the GitHub Flow](https://guides.github.com/introduction/flow/) and [How to Contribute to Open Source](https://opensource.guide/how-to-contribute/).
 
-# Code of Conduct
+## Code of Conduct
 
 All are welcome to contribute. By participating in this project, you agree to
 follow the Contributor Convent [code of
@@ -10,9 +10,9 @@ conduct](https://github.com/Vermonster/fhir-kit-client/blob/master/CODE_OF_CONDU
 
 ## Submit a Bug Report
 
-Before submitting a report, try [debugging](#debugging), reading through the [documentation](https://vermonster.github.io/fhir-kit-client/fhir-client/0.1.0/), or reviewing [existing issues](https://github.com/Vermonster/fhir-kit-client/issues) first to make sure the bug isn't fixable or already reported.
+Before submitting a report, first try [debugging](#debugging), reading through the [documentation](https://vermonster.github.io/fhir-kit-client/fhir-client/0.1.0/), and reviewing [existing issues](https://github.com/Vermonster/fhir-kit-client/issues) to make sure the bug isn't fixable or already reported.
 
-Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/). Provide the following information by filling in the [issue template](https://github.com/Vermonster/fhir-kit-client):
+Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/). Provide the following information by filling in the [issue template](https://github.com/Vermonster/fhir-kit-client/blob/master/issue_template.md):
 
   - Use a clear and descriptive title for the issue to identify the problem.
   - Describe the exact steps which reproduce the problem in as many details as possible.

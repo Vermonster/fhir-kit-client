@@ -100,7 +100,7 @@ $ DEBUG=fhir-kit-client:* node smart-launch.js
 
 All are welcome to contribute. By participating in this project you agree to
 follow the [Code of
-Conduct](https://github.com/Vermonster/node-fhir-client/blob/master/CODE_OF_CONDUCT.md).
+Conduct](https://github.com/Vermonster/fhir-kit-client/blob/master/CODE_OF_CONDUCT.md).
 
 
 # License

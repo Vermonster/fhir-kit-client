@@ -2,14 +2,19 @@
 /* eslint no-console: 0, import/no-unresolved: 0 */
 const express = require('express');
 const session = require('express-session');
+const jwtDecode = require('jwt-decode');
 const simpleOauthModule = require('simple-oauth2');
 const Client = require('../lib/client');
 
+const CLIENT_ID = '415db3c6-e149-41e7-9b6e-96299f4a1b55';
+/* Cerner does not currently support using a client secret. Public launch only.*/
+const CLIENT_SECRET = 'keyboard cat';
+const LOCAL_HOST = 'http://localhost:3000';
 const app = express();
 
 // Use session to pass the iss information to the callback
 app.use(session({
-  secret: 'keyboard cat',
+  secret: CLIENT_SECRET,
   cookie: { maxAge: 60000 },
   resave: true,
   saveUninitialized: true,
@@ -35,18 +40,29 @@ app.use(session({
  * ISS).
  */
 app.get('/launch', async (req, res) => {
+  console.log('*** Incoming Request ***');
+  console.log('** Headers **');
+  console.log(req.headers);
+  console.log('** Query **');
+  console.log(req.query);
   const { iss, launch } = req.query;
 
   const fhirClient = new Client({ baseUrl: iss });
-  const { authorizeUrl, tokenUrl } = await fhirClient.smartAuthMetadata();
+  const response = await fhirClient.smartAuthMetadata()
+    .catch(error => console.log(`$$$$ Error: ${error}`));
+  const { tokenUrl, authorizeUrl } = response;
 
+  console.log('*** Received OAuth urls ***');
+  console.log(`authorize: ${authorizeUrl}`);
+  console.log(`token: ${tokenUrl}`);
   req.session.iss = iss;
 
   // Create a new oAuth2 object using the Client capability statement:
   const oauth2 = simpleOauthModule.create({
     client: {
-      id: '<CLIENT_ID>',
-      secret: '<CLIENT_SECRET>',
+      id: CLIENT_ID,
+      /* Cerner does not currently support using a client secret. Public launch only.*/
+      // secret: CLIENT_SECRET,
     },
     auth: {
       tokenHost: `${tokenUrl.protocol}//${tokenUrl.host}`,
@@ -57,11 +73,13 @@ app.get('/launch', async (req, res) => {
   });
 
   // Authorization uri definition
+  console.log(`Redirect URI: ${LOCAL_HOST}/callback`);
   const authorizationUri = oauth2.authorizationCode.authorizeURL({
-    redirect_uri: 'http://localhost:3000/callback',
+    /* TODO: Investigate why the sandbox doesn't work if you pass a redirect_uri */
+    // redirect_uri: `${LOCAL_HOST}/callback`,
     launch,
     aud: iss,
-    scope: 'launch openid profile',
+    scope: 'launch openid profile user/Patient.read user/Observation.read user/Practitioner.read',
     state: '3(#0/!~',
   });
 
@@ -74,13 +92,17 @@ app.get('/callback', async (req, res) => {
   console.log(req.session);
 
   const fhirClient = new Client({ baseUrl: iss });
-  const { authorizeUrl, tokenUrl } = await fhirClient.smartAuthMetadata();
+  const response = await fhirClient.smartAuthMetadata()
+        .catch(error => console.log(`$$$$ Error: ${error}`));
+  const { tokenUrl, authorizeUrl } = response;
+  // const { authorizeUrl, tokenUrl } = await fhirClient.smartAuthMetadata();
 
   // Create a new oAuth2 object using the Client capability statement:
   const oauth2 = simpleOauthModule.create({
     client: {
-      id: '<CLIENT_ID>',
-      secret: '<CLIENT_SECRET>',
+      id: CLIENT_ID,
+      /* Cerner does not currently support using a client secret. Public launch only.*/
+      // secret: CLIENT_SECRET,
     },
     auth: {
       tokenHost: `${tokenUrl.protocol}//${tokenUrl.host}`,
@@ -104,11 +126,32 @@ app.get('/callback', async (req, res) => {
 
     fhirClient.bearerToken = token.access_token;
 
-    const patient = await fhirClient.read({ resourceType: 'Patient', id: token.patient });
+    // /* Get current Patient */
+    // const patient = await fhirClient.read({ resourceType: 'Patient', id: token.patient });
+    // return res.status(200).json(patient);
 
-    return res.status(200).json(patient);
+    // /* Get Patient weight
+    //  * Cerner does not appear to support sorting by date.
+    //  * Requesting one Observation appears to return the most recent.
+    //  */
+    // const observations = await fhirClient.search({
+    //   resourceType: 'Observation',
+    //   searchParams: {
+    //     patient: `Patient/${token.patient}`,
+    //     code: 'http://loinc.org|3141-9',
+    //     _count: 1,
+    //   }
+    // });
+    // return res.status(200).json(observations);
+
+    // /* Get current User */
+    // const idToken = jwtDecode(token.id_token);
+    // console.log(`Current User Name: ${idToken.name}`)
+    // const user = await fhirClient.resolve(idToken.profile);
+    // return res.status(200).json(user);
   } catch (error) {
     console.error('Access Token Error', error.message);
+    console.log(error);
     return res.status(500).json('Authentication failed');
   }
 });

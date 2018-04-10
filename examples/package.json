@@ -14,5 +14,8 @@
     "express": "^4.14.0",
     "express-session": "^1.15.6",
     "simple-oauth2": "1.5.2"
+  },
+  "dependencies": {
+    "jwt-decode": "^2.2.0"
   }
 }

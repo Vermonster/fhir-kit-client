@@ -8,7 +8,7 @@ const nock = require('nock');
 
 
 const Client = require('../lib/client');
-const Pager = require('../lib/pager');
+const Pagination = require('../lib/pagination');
 
 /**
  * Read fixture data
@@ -80,7 +80,7 @@ describe('Client', () => {
 
   it('initializes with config', function () {
     expect(this.fhirClient.baseUrl).to.equal(this.baseUrl);
-    expect(this.fhirClient.pager).to.be.an.instanceof(Pager);
+    expect(this.fhirClient.pagination).to.be.an.instanceof(Pagination);
   });
 
   describe('#smartAuthMetadata', () => {

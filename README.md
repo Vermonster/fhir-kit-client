@@ -78,7 +78,7 @@ See the [SMART Launch](./examples/smart-launch.js) example with OAuth2 support.
 
 # Documentation
 
-[JSDoc-generated documentation](https://vermonster.github.io/node-fhir-client/fhir-client/0.1.0/)
+[JSDoc-generated documentation](https://vermonster.github.io/fhir-kit-client/fhir-client/0.1.0/)
 
 # Logging
 

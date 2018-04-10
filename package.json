@@ -2,6 +2,12 @@
   "name": "fhir-kit-client",
   "version": "0.1.0",
   "description": "FHIR Client",
+  "keywords": [
+    "FHIR",
+    "SMART",
+    "EHR",
+    "EMR"
+  ],
   "main": "lib/client.js",
   "engines": {
     "node": ">=8.10.0",

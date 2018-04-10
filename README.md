@@ -5,7 +5,7 @@ Node FHIR client library
 
 # Features
 
-* Node
+* Support for STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)
 * Minimal dependencies
 * Contemporary async/await structure
 * Modern Class getter/setter

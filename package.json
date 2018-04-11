@@ -5,8 +5,8 @@
   "keywords": [
     "FHIR",
     "SMART",
-    "EHR",
-    "EMR"
+    "CDS Hooks",
+    "HL7"
   ],
   "main": "lib/client.js",
   "engines": {
@@ -24,7 +24,7 @@
     "coveralls": "nyc yarn test && nyc report --reporter=text-lcov | coveralls",
     "coveralls:report": "nyc --reporter=lcov --reporter=text-lcov npm test"
   },
-  "author": "",
+  "author": "Vermonster",
   "license": "MIT",
   "files": [
     "LICENSE",

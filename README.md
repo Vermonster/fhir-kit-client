@@ -131,6 +131,8 @@ async function asyncExamples() {
       resourceType: 'Patient',
       id: '12345',
       body: { resourceType: 'Patient', birthDate: '1948-04-14' },
+    }).then((response) => {
+      console.log(response);
     });
   console.log(response);
 

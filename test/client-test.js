@@ -8,22 +8,31 @@ const nock = require('nock');
 
 const Client = require('../lib/client');
 
+/**
+ * Read fixture data
+ *
+ * @param {String} fixture - The fixture file
+ *
+ * @returns {String} - The data from a fixture
+ */
 function readStreamFor(fixture) {
   return fs.createReadStream(path.normalize(`${__dirname}/fixtures/${fixture}`, 'utf8'));
-};
+}
 
 
 /**
  * Mock out and assert behavior for client verbs without passing params
  *
- * @param {String} httpVerb - the HTTP verb to mock
- * @param {String} apiVerb - the verb to call on the client
+ * @param {String} httpVerb - The HTTP verb to mock
+ * @param {String} apiVerb - The verb to call on the client
+ *
+ * @return {Object} - The nock scope
  */
-const mockAndExpectNotFound = async function(httpVerb, apiVerb) {
+const mockAndExpectNotFound = async function (httpVerb, apiVerb) {
   const scope = nock('http://example.com')
-    .matchHeader('accept', 'application/json+fhir')
+    .matchHeader('accept', 'application/json+fhir');
 
-  switch(httpVerb) {
+  switch (httpVerb) {
     case 'get':
       scope.get(/undefined.*/).reply(404);
       break;
@@ -41,16 +50,15 @@ const mockAndExpectNotFound = async function(httpVerb, apiVerb) {
       break;
     default:
       break;
-  };
+  }
 
-  const client = new Client({baseUrl: 'http://example.com'});
+  const client = new Client({ baseUrl: 'http://example.com' });
   let response;
 
   try {
     response = await client[apiVerb]();
   } catch (error) {
-    let status = error.response.status;
-    expect(status).to.equal(404);
+    expect(error.response.status).to.equal(404);
   }
 
   expect(response).to.be.undefined;
@@ -65,7 +73,7 @@ describe('Client', () => {
   });
 
   it('initializes without config', function () {
-    expect(new Client).to.exist;
+    expect(new Client()).to.exist;
   });
 
   it('initializes with config', function () {
@@ -155,7 +163,7 @@ describe('Client', () => {
 
   describe('API verbs', function () {
     describe('#read', () => {
-      it('builds request with no arguments', async function() {
+      it('builds request with no arguments', async function () {
         mockAndExpectNotFound('get', 'read');
       });
 
@@ -177,7 +185,7 @@ describe('Client', () => {
     });
 
     describe('#vread', () => {
-      it('builds request with no arguments', async function() {
+      it('builds request with no arguments', async function () {
         mockAndExpectNotFound('get', 'vread');
       });
 
@@ -227,7 +235,7 @@ describe('Client', () => {
     });
 
     describe('#search', () => {
-      it('builds request with no arguments', async function() {
+      it('builds request with no arguments', async function () {
         mockAndExpectNotFound('get', 'search');
       });
 
@@ -258,7 +266,7 @@ describe('Client', () => {
     });
 
     describe('#create', () => {
-      it('create builds request with no arguments', async function() {
+      it('create builds request with no arguments', async function () {
         mockAndExpectNotFound('post', 'create');
       });
 
@@ -311,7 +319,7 @@ describe('Client', () => {
     });
 
     describe('#delete', () => {
-      it('builds request with no arguments', async function() {
+      it('builds request with no arguments', async function () {
         mockAndExpectNotFound('delete', 'delete');
       });
 
@@ -345,7 +353,7 @@ describe('Client', () => {
     });
 
     describe('#update', () => {
-      it('builds request with no arguments', async function() {
+      it('builds request with no arguments', async function () {
         mockAndExpectNotFound('put', 'update');
       });
 
@@ -381,7 +389,7 @@ describe('Client', () => {
     });
 
     describe('#patch', () => {
-      it('builds request with no arguments', async function() {
+      it('builds request with no arguments', async function () {
         mockAndExpectNotFound('patch', 'patch');
       });
 

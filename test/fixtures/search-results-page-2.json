@@ -224,7 +224,7 @@
       }
     },
     {
-      "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Patient/0aa6e35b-7268-42bf-aa42-9fc1df86248b",
+      "fullUrl": "https://example.com/Patient/0aa6e35b-7268-42bf-aa42-9fc1df86248b",
       "resource": {
         "resourceType": "Patient",
         "id": "0aa6e35b-7268-42bf-aa42-9fc1df86248b",
@@ -438,7 +438,7 @@
       }
     },
     {
-      "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Patient/smart-644201",
+      "fullUrl": "https://example.com/Patient/smart-644201",
       "resource": {
         "resourceType": "Patient",
         "id": "smart-644201",

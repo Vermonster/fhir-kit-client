@@ -10,7 +10,6 @@
     "consistent-return": 0,
     "filenames/match-regex": [2, "^[a-z\\-]+$", true],
     "filenames/match-exported": [2, "kebab"],
-    "valid-jsdoc": 2,
-    "prefer-arrow-callback": 0
+    "valid-jsdoc": 2
   }
 }

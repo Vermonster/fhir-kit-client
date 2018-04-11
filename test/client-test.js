@@ -68,7 +68,7 @@ const mockAndExpectNotFound = async function (httpVerb, apiVerb) {
   expect(response).to.be.undefined;
 };
 
-describe('Client', () => {
+describe('Client', function () {
   beforeEach(function () {
     const baseUrl = 'https://example.com';
     const config = { baseUrl };
@@ -85,8 +85,8 @@ describe('Client', () => {
     expect(this.fhirClient.pagination).to.be.an.instanceof(Pagination);
   });
 
-  describe('#smartAuthMetadata', () => {
-    context('SMART URIs are not present', () => {
+  describe('#smartAuthMetadata', function () {
+    context('SMART URIs are not present', function () {
       it('returns an empty object', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -99,7 +99,7 @@ describe('Client', () => {
       });
     });
 
-    context('SMART URIs are present', () => {
+    context('SMART URIs are present', function () {
       it('returns SMART OAuth URIs', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -119,7 +119,7 @@ describe('Client', () => {
     });
   });
 
-  describe('#capabilityStatement', () => {
+  describe('#capabilityStatement', function () {
     it('returns a FHIR resource', async function () {
       nock(this.baseUrl)
         .matchHeader('accept', 'application/json+fhir')
@@ -132,7 +132,7 @@ describe('Client', () => {
     });
   });
 
-  describe('#resolve', async () => {
+  describe('#resolve', async function () {
     it('resolves a reference and returns a resource', async function () {
       const resourceType = 'Patient';
       const id = 'eb3271e1-ae1b-4644-9332-41e32c829486';
@@ -150,8 +150,8 @@ describe('Client', () => {
     });
   });
 
-  describe('Authorization header', () => {
-    describe('#read', () => {
+  describe('Authorization header', function () {
+    describe('#read', function () {
       it('sets the header to a Bearer token', async function () {
         this.fhirClient.bearerToken = 'XYZ';
 
@@ -167,7 +167,7 @@ describe('Client', () => {
   });
 
   describe('API verbs', function () {
-    describe('#read', () => {
+    describe('#read', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('get', 'read');
       });
@@ -189,7 +189,7 @@ describe('Client', () => {
       });
     });
 
-    describe('#vread', () => {
+    describe('#vread', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('get', 'vread');
       });
@@ -239,7 +239,7 @@ describe('Client', () => {
       });
     });
 
-    describe('#search', () => {
+    describe('#search', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('get', 'search');
       });
@@ -270,14 +270,14 @@ describe('Client', () => {
       });
     });
 
-    describe('#create', () => {
+    describe('#create', function () {
       it('create builds request with no arguments', async function () {
         mockAndExpectNotFound('post', 'create');
       });
     });
 
-    describe('pagination', () => {
-      describe('#nextPage', () => {
+    describe('pagination', function () {
+      describe('#nextPage', function () {
         it('returns httpClient get for the next link', async function () {
           nock(this.baseUrl)
             .matchHeader('accept', 'application/json+fhir')
@@ -298,7 +298,7 @@ describe('Client', () => {
         });
       });
 
-      describe('#prevPage', () => {
+      describe('#prevPage', function () {
         it('returns httpClient get for the previous link', async function () {
           nock(this.baseUrl)
             .matchHeader('accept', 'application/json+fhir')
@@ -384,7 +384,7 @@ describe('Client', () => {
       });
     });
 
-    describe('#delete', () => {
+    describe('#delete', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('delete', 'delete');
       });
@@ -418,7 +418,7 @@ describe('Client', () => {
       });
     });
 
-    describe('#update', () => {
+    describe('#update', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('put', 'update');
       });
@@ -454,7 +454,7 @@ describe('Client', () => {
       });
     });
 
-    describe('#patch', () => {
+    describe('#patch', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('patch', 'patch');
       });

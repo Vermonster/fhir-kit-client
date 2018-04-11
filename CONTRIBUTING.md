@@ -15,7 +15,7 @@ Before submitting a report, first try [debugging](#debugging), reading through t
 Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/). Provide the following information by filling in the [issue template](https://github.com/Vermonster/fhir-kit-client/blob/master/issue_template.md):
 
   - Use a clear and descriptive title for the issue to identify the problem.
-  - Describe the exact steps which reproduce the problem in as many details as possible.
+  - Describe the exact steps which reproduce the problem with as many details as possible.
   - Provide specific examples to demonstrate the steps. Include links to files or GitHub projects, or copy/pasteable snippets, which you use in those examples. If you're providing snippets in the issue, use Markdown code blocks.
   - Describe the behavior you observed after following the steps and point out what exactly is the problem with that behavior.
   - Explain which behavior you expected to see instead and why.
@@ -26,7 +26,7 @@ Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/).
 Enhancement suggestions are also tracked as [GitHub issues](https://guides.github.com/features/issues/). Suggest an enhancement by creating an issue and providing the following information:
 
   - Use a clear and descriptive title for the issue to identify the suggestion.
-  - Provide a step-by-step description of the suggested enhancement in as many details as possible.
+  - Provide a step-by-step description of the suggested enhancement with as many details as possible.
   - Provide specific examples to demonstrate the steps. Include copy/pasteable snippets which you use in those examples, as Markdown code blocks.
   - Describe the current behavior and explain which behavior you wish to see in addition and why.
 

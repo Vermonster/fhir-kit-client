@@ -9,7 +9,7 @@
   "link": [
     {
       "relation": "self",
-      "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Patient?name=abcdef"
+      "url": "https://example.com/Patient?name=abcdef"
     }
   ]
 }

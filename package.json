@@ -15,7 +15,8 @@
     "test": "mocha test --reporter spec",
     "test:watch": "chokidar --initial './lib' './test' './examples' -c 'yarn test'",
     "watch": "yarn test:watch & yarn lint:watch",
-    "coveralls": "nyc yarn test && nyc report --reporter=text-lcov | coveralls"
+    "coveralls": "nyc yarn test && nyc report --reporter=text-lcov | coveralls",
+    "coveralls:report": "nyc --reporter=lcov --reporter=text-lcov npm test"
   },
   "author": "",
   "license": "MIT",

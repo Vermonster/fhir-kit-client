@@ -52,7 +52,7 @@ describe('Client', () => {
           authorizeUrl: new URL('https://sb-auth.smarthealthit.org/authorize'),
           tokenUrl: new URL('https://sb-auth.smarthealthit.org/token'),
           registerUrl: new URL('https://sb-auth.smarthealthit.org/register'),
-          launchRegisterUrl: new URL('https://sb-auth.smarthealthit.org/launch-registration'),
+          manageUrl: new URL('https://sb-auth.smarthealthit.org/manage'),
         });
       });
     });

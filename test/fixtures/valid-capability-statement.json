@@ -38,8 +38,8 @@
                 "valueUri": "https://sb-auth.smarthealthit.org/register"
               },
               {
-                "url": "launch-registration",
-                "valueUri": "https://sb-auth.smarthealthit.org/launch-registration"
+                "url": "manage",
+                "valueUri": "https://sb-auth.smarthealthit.org/manage"
               }
             ]
           }

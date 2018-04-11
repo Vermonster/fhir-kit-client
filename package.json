@@ -1,7 +1,13 @@
 {
-  "name": "fhir-client",
+  "name": "fhir-kit-client",
   "version": "0.1.0",
   "description": "FHIR Client",
+  "keywords": [
+    "FHIR",
+    "SMART",
+    "CDS Hooks",
+    "HL7"
+  ],
   "main": "lib/client.js",
   "engines": {
     "node": ">=8.10.0",
@@ -18,8 +24,17 @@
     "coveralls": "nyc yarn test && nyc report --reporter=text-lcov | coveralls",
     "coveralls:report": "nyc --reporter=lcov --reporter=text-lcov npm test"
   },
-  "author": "",
+  "author": "Vermonster",
   "license": "MIT",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "lib/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vermonster/fhir-kit-client.git"
+  },
   "devDependencies": {
     "chai": "^4.1.2",
     "chokidar-cli": "^1.2.0",

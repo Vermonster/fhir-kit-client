@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Client.html">Client</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#capabilityStatement">capabilityStatement</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#read">read</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#resolve">resolve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#search">search</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#smartAuthMetadata">smartAuthMetadata</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#vread">vread</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#authFromCapability">authFromCapability</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#splitReference">splitReference</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Client.html">Client</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#capabilityStatement">capabilityStatement</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#create">create</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#delete">delete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#patch">patch</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#read">read</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#resolve">resolve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#search">search</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#smartAuthMetadata">smartAuthMetadata</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#update">update</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Client.html#vread">vread</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#authFromCapability">authFromCapability</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#splitReference">splitReference</a></span></li>
 </nav>
 
 <div id="main">
@@ -52,9 +52,9 @@ class Client {
    * @param {Object} config Client configuration
    * @param {String} config.baseUrl ISS for FHIR server
    */
-  constructor(config) {
-    this.httpClient = new HttpClient({ baseUrl: config.baseUrl });
-    this.baseUrl = config.baseUrl;
+  constructor({ baseUrl } = {}) {
+    this.httpClient = new HttpClient({ baseUrl });
+    this.baseUrl = baseUrl;
     this.resolver = new ReferenceResolver(this);
   }
 
@@ -190,8 +190,8 @@ class Client {
    *
    * @return {Promise&lt;Object>} FHIR resource
    */
-  read(params) {
-    return this.httpClient.get(`${params.resourceType}/${params.id}`);
+  read({ resourceType, id } = {}) {
+    return this.httpClient.get(`${resourceType}/${id}`);
   }
 
   /**
@@ -221,8 +221,8 @@ class Client {
    *
    * @return {Promise&lt;Object>} FHIR resource
    */
-  vread(params) {
-    return this.httpClient.get(`${params.resourceType}/${params.id}/_history/${params.version}`);
+  vread({ resourceType, id, version } = {}) {
+    return this.httpClient.get(`${resourceType}/${id}/_history/${version}`);
   }
 
   /**
@@ -249,9 +249,146 @@ class Client {
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
-  search(params) {
-    const relativePathWithQuery = `${params.resourceType}?${new URLSearchParams(params.searchParams)}`;
+  search({ resourceType, searchParams } = {}) {
+    const relativePathWithQuery = `${resourceType}?${new URLSearchParams(searchParams)}`;
     return this.httpClient.get(relativePathWithQuery);
+  }
+
+  /**
+   * Create a resource.
+   *
+   * @example
+   * const newPatient = {
+   *   resourceType: 'Patient',
+   *   active: true,
+   *   name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+   *   gender: 'female',
+   *   birthDate: '1948-04-14',
+   * }
+   *
+   * // Using promises
+   * fhirClient.create({
+   *   resourceType: 'Patient',
+   *   body: newPatient,
+   * }).then((data) => { console.log(data); });
+   *
+   * // Using async
+   * let response = await fhirClient.create({
+   *   resourceType: 'Patient',
+   *   body: newPatient,
+   * })
+   * console.log(response);
+   *
+   * @param {Object} params - The request parameters.
+   * @param {String} params.resourceType - The FHIR resource type.
+   * @param {String} params.body - The new resource data to create.
+   *
+   * @return {Promise&lt;Object>} FHIR resource
+   */
+  create({ resourceType, body } = {}) {
+    return this.httpClient.post(resourceType, body);
+  }
+
+  /**
+   * Delete a resource by FHIR id.
+   *
+   * @example
+   *
+   * // Using promises
+   * fhirClient.delete({
+   *   resourceType: 'Patient',
+   *   id: 12345,
+   * }).then((data) => { console.log(data); });
+   *
+   * // Using async
+   * let response = await fhirClient.delete({ resourceType: 'Patient', id: 12345 });
+   * console.log(response);
+   *
+   * @param {Object} params - The request parameters.
+   * @param {String} params.resourceType - The resource type (e.g. "Patient", "Observation").
+   * @param {String} params.id - The FHIR id for the resource.
+   *
+   * @return {Promise&lt;Object>} FHIR resource
+   */
+  delete({ resourceType, id } = {}) {
+    return this.httpClient.delete(`${resourceType}/${id}`);
+  }
+
+  /**
+   * Update a resource by FHIR id.
+   *
+   * @example
+   *
+   * const updatedPatient = {
+   *   resourceType: 'Patient',
+   *   birthDate: '1948-04-14',
+   * }
+   *
+   * // Using promises
+   * fhirClient.update({
+   *   resourceType: 'Patient',
+   *   id: 12345,
+   *   body: updatedPatient,
+   * }).then((data) => { console.log(data); });
+   *
+   * // Using async
+   * let response = await fhirClient.update({
+   *   resourceType: 'Patient',
+   *   id: 12345,
+   *   body: updatedPatient,
+   * });
+   * console.log(response);
+   *
+   * @param {Object} params - The request parameters.
+   * @param {String} params.resourceType - The resource type (e.g. "Patient", "Observation").
+   * @param {String} params.id - The FHIR id for the resource.
+   * @param {String} params.body - The resource to be updated.
+   *
+   * @return {Promise&lt;Object>} FHIR resource
+   */
+  update({ resourceType, id, body } = {}) {
+    return this.httpClient.put(`${resourceType}/${id}`, body);
+  }
+
+  /**
+   * Patch a resource by FHIR id.
+   *
+   * From http://hl7.org/fhir/STU3/http.html#patch:
+   * Content-Type is 'application/json-patch+json'
+   * Expects a JSON Patch document format, see http://jsonpatch.com/
+   *
+   * @example
+   *
+   * // JSON Patch document format from http://jsonpatch.com/
+   * const JSONPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
+   *
+   * // Using promises
+   * fhirClient.patch({
+   *   resourceType: 'Patient',
+   *   id: 12345,
+   *   JSONpatch: JSONPatch,
+   * }).then((data) => { console.log(data); });
+   *
+   * // Using async
+   * let response = await fhirClient.patch({
+   *   resourceType: 'Patient',
+   *   id: 12345,
+   *   JSONPatch: JSONPatch
+   * });
+   * console.log(response);
+   *
+   * @param {Object} params - The request parameters.
+   * @param {String} params.resourceType - The resource type (e.g. "Patient", "Observation").
+   * @param {String} params.id - The FHIR id for the resource.
+   * @param {Array} params.JSONpatch - A JSON Patch document containing an array of patch operations, formatted according to http://jsonpatch.com/.
+   *
+   * @return {Promise&lt;Object>} FHIR resource
+   */
+  patch({ resourceType, id, JSONPatch } = {}) {
+    // Content-Type is 'application/json-patch+json'
+    // Ref: http://hl7.org/fhir/STU3/http.html#patch
+    const headers = { 'Content-Type': 'application/json-patch+json' };
+    return this.httpClient.patch(`${resourceType}/${id}`, JSONPatch, { headers });
   }
 }
 
@@ -268,7 +405,7 @@ module.exports = Client;
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Apr 11 2018 09:01:27 GMT-0400 (EDT) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Apr 11 2018 13:40:25 GMT-0400 (EDT) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -10,7 +10,51 @@ const Client = require('../lib/client');
 
 function readStreamFor(fixture) {
   return fs.createReadStream(path.normalize(`${__dirname}/fixtures/${fixture}`, 'utf8'));
-}
+};
+
+
+/**
+ * Mock out and assert behavior for client verbs without passing params
+ *
+ * @param {String} httpVerb - the HTTP verb to mock
+ * @param {String} apiVerb - the verb to call on the client
+ */
+const mockAndExpectNotFound = async function(httpVerb, apiVerb) {
+  const scope = nock('http://example.com')
+    .matchHeader('accept', 'application/json+fhir')
+
+  switch(httpVerb) {
+    case 'get':
+      scope.get(/undefined.*/).reply(404);
+      break;
+    case 'post':
+      scope.post(/.*/).reply(404);
+      break;
+    case 'delete':
+      scope.delete(/.*/).reply(404);
+      break;
+    case 'put':
+      scope.put(/.*/).reply(404);
+      break;
+    case 'patch':
+      scope.patch(/.*/).reply(404);
+      break;
+    default:
+      break;
+  };
+
+  const client = new Client({baseUrl: 'http://example.com'});
+  let response;
+
+  try {
+    response = await client[apiVerb]();
+  } catch (error) {
+    let status = error.response.status;
+    expect(status).to.equal(404);
+  }
+
+  expect(response).to.be.undefined;
+};
 
 describe('Client', () => {
   beforeEach(function () {
@@ -18,6 +62,10 @@ describe('Client', () => {
     const config = { baseUrl };
     this.baseUrl = baseUrl;
     this.fhirClient = new Client(config);
+  });
+
+  it('initializes without config', function () {
+    expect(new Client).to.exist;
   });
 
   it('initializes with config', function () {
@@ -105,8 +153,12 @@ describe('Client', () => {
     });
   });
 
-  describe('API verbs', () => {
+  describe('API verbs', function () {
     describe('#read', () => {
+      it('builds request with no arguments', async function() {
+        mockAndExpectNotFound('get', 'read');
+      });
+
       it('throws errors for a missing resource', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -125,6 +177,10 @@ describe('Client', () => {
     });
 
     describe('#vread', () => {
+      it('builds request with no arguments', async function() {
+        mockAndExpectNotFound('get', 'vread');
+      });
+
       it('returns a matching resource', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -171,6 +227,10 @@ describe('Client', () => {
     });
 
     describe('#search', () => {
+      it('builds request with no arguments', async function() {
+        mockAndExpectNotFound('get', 'search');
+      });
+
       it('returns a matching search results bundle', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -198,6 +258,10 @@ describe('Client', () => {
     });
 
     describe('#create', () => {
+      it('create builds request with no arguments', async function() {
+        mockAndExpectNotFound('post', 'create');
+      });
+
       it('returns a successful operation outcome', async function () {
         const newPatient = {
           resourceType: 'Patient',
@@ -247,6 +311,10 @@ describe('Client', () => {
     });
 
     describe('#delete', () => {
+      it('builds request with no arguments', async function() {
+        mockAndExpectNotFound('delete', 'delete');
+      });
+
       it('returns a successful operation outcome', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -277,6 +345,10 @@ describe('Client', () => {
     });
 
     describe('#update', () => {
+      it('builds request with no arguments', async function() {
+        mockAndExpectNotFound('put', 'update');
+      });
+
       const body = { resourceType: 'Patient', id: '152747', birthDate: '1948-10-10' };
 
       it('returns a successful operation outcome', async function () {
@@ -309,6 +381,10 @@ describe('Client', () => {
     });
 
     describe('#patch', () => {
+      it('builds request with no arguments', async function() {
+        mockAndExpectNotFound('patch', 'patch');
+      });
+
       it('returns a successful operation outcome', async function () {
         // Content-Type is 'application/json-patch+json'
         // http://hl7.org/fhir/STU3/http.html#patch

@@ -183,7 +183,7 @@ describe('Client', function () {
           response = await this.fhirClient.read({ resourceType: 'Patient', id: 'abcdef' });
         } catch (error) {
           expect(error.response.status).to.equal(404);
-          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+          expect(error.response.data.resourceType).to.equal('OperationOutcome');
         }
         expect(response).to.be.undefined;
       });
@@ -217,7 +217,7 @@ describe('Client', function () {
           response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'abcdef', version: '1' });
         } catch (error) {
           expect(error.response.status).to.equal(404);
-          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+          expect(error.response.data.resourceType).to.equal('OperationOutcome');
         }
         expect(response).to.be.undefined;
       });
@@ -233,7 +233,7 @@ describe('Client', function () {
           response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '2' });
         } catch (error) {
           expect(error.response.status).to.equal(404);
-          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+          expect(error.response.data.resourceType).to.equal('OperationOutcome');
         }
         expect(response).to.be.undefined;
       });
@@ -355,7 +355,7 @@ describe('Client', function () {
           resource: newPatient,
         });
 
-        expect(response.resourceType).to.deep.equal('OperationOutcome');
+        expect(response.resourceType).to.equal('OperationOutcome');
         expect(response.issue[0].diagnostics).to.have.string('Successfully created resource');
       });
 
@@ -378,7 +378,7 @@ describe('Client', function () {
           });
         } catch (error) {
           expect(error.response.status).to.eq(400);
-          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+          expect(error.response.data.resourceType).to.equal('OperationOutcome');
         }
         expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
       });
@@ -389,6 +389,114 @@ describe('Client', function () {
         mockAndExpectNotFound('delete', 'delete');
       });
 
+      it('returns a successful operation outcome', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .delete('/Patient/152746')
+          .reply(200, () => readStreamFor('patient-deleted.json'));
+
+        const response = await this.fhirClient.delete({ resourceType: 'Patient', id: 152746 });
+
+        expect(response.resourceType).to.equal('OperationOutcome');
+        expect(response.issue[0].diagnostics).to.have.string('Successfully deleted 1 resource');
+      });
+
+      it('throws an error for a missing resource', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .delete('/Patient/abcdef')
+          .reply(404, () => readStreamFor('patient-not-found.json'));
+
+        let response;
+        try {
+          response = await this.fhirClient.delete({ resourceType: 'Patient', id: 'abcdef' });
+        } catch (error) {
+          expect(error.response.status).to.equal(404);
+          expect(error.response.data.resourceType).to.equal('OperationOutcome');
+        }
+        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+    });
+
+    describe('#update', function () {
+      it('builds request with no arguments', async function () {
+        mockAndExpectNotFound('put', 'update');
+      });
+
+      const body = { resourceType: 'Patient', id: '152747', birthDate: '1948-10-10' };
+
+      it('returns a successful operation outcome', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .put('/Patient/152747')
+          .reply(200, () => readStreamFor('patient-updated.json'));
+
+        const response = await this.fhirClient.update({ resourceType: 'Patient', id: '152747', body });
+
+        expect(response.resourceType).to.equal('OperationOutcome');
+        expect(response.issue[0].diagnostics).to.have.string('_history/2');
+      });
+
+      it('throws an error for a missing resource', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .put('/Patient/abcdef')
+          .reply(404, () => readStreamFor('patient-not-found.json'));
+
+        let response;
+        try {
+          response = await this.fhirClient.update({ resourceType: 'Patient', id: 'abcdef', body });
+        } catch (error) {
+          expect(error.response.status).to.equal(404);
+          expect(error.response.data.resourceType).to.equal('OperationOutcome');
+        }
+        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+    });
+
+    describe('#patch', function () {
+      it('builds request with no arguments', async function () {
+        mockAndExpectNotFound('patch', 'patch');
+      });
+
+      it('returns a successful operation outcome', async function () {
+        // Content-Type is 'application/json-patch+json'
+        // http://hl7.org/fhir/STU3/http.html#patch
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('content-type', 'application/json-patch+json')
+          .patch('/Patient/152747')
+          .reply(200, () => readStreamFor('patient-patched.json'));
+
+        // Format described in http://jsonpatch.com/
+        const jsonPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
+        const response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: jsonPatch });
+
+        expect(response.resourceType).to.equal('OperationOutcome');
+        expect(response.issue[0].diagnostics).to.have.string('_history/3');
+      });
+
+      it('throws an error when given an invalid patch', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('content-type', 'application/json-patch+json')
+          .patch('/Patient/152747')
+          .reply(500, () => readStreamFor('patient-not-patched.json'));
+
+        // Accepted values for gender: male, female, unknown
+        const invalidPatch = [{ op: 'replace', path: '/gender', value: 0 }];
+        let response;
+        try {
+          response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: invalidPatch });
+        } catch (error) {
+          expect(error.response.status).to.equal(500);
+          expect(error.response.data.resourceType).to.equal('OperationOutcome');
+        }
+        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+    });
+
+    describe('#delete', () => {
       it('returns a successful operation outcome', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -418,11 +526,7 @@ describe('Client', function () {
       });
     });
 
-    describe('#update', function () {
-      it('builds request with no arguments', async function () {
-        mockAndExpectNotFound('put', 'update');
-      });
-
+    describe('#update', () => {
       const body = { resourceType: 'Patient', id: '152747', birthDate: '1948-10-10' };
 
       it('returns a successful operation outcome', async function () {
@@ -454,43 +558,90 @@ describe('Client', function () {
       });
     });
 
-    describe('#patch', function () {
+    describe('#batch', () => {
       it('builds request with no arguments', async function () {
-        mockAndExpectNotFound('patch', 'patch');
+        mockAndExpectNotFound('post', 'batch');
       });
 
-      it('returns a successful operation outcome', async function () {
-        // Content-Type is 'application/json-patch+json'
-        // http://hl7.org/fhir/STU3/http.html#patch
+      it('returns a matching batch response bundle', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
-          .matchHeader('content-type', 'application/json-patch+json')
-          .patch('/Patient/152747')
-          .reply(200, () => readStreamFor('patient-patched.json'));
+          .post('/')
+          .reply(200, () => readStreamFor('batch-results.json'));
 
-        // Format described in http://jsonpatch.com/
-        const jsonPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
-        const response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: jsonPatch });
+        const body = readFixture('batch-request.json');
+        const response = await this.fhirClient.batch({ body });
 
-        expect(response.resourceType).to.deep.equal('OperationOutcome');
-        expect(response.issue[0].diagnostics).to.have.string('_history/3');
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.type).to.equal('batch-response');
+        expect(response.entry[0].resource.resourceType).to.equal('OperationOutcome');
+        expect(response.entry[0].resource.text.status).to.equal('generated');
+        expect(response.entry[1].response.status).to.equal('201 Created');
+        expect(response.entry[2].response.status).to.equal('200 OK');
+        expect(response.entry[3].response.status).to.equal('204 No Content');
+        expect(response.entry[4].response.status).to.equal('200 OK');
+        expect(response.entry[4].resource.resourceType).to.equal('Bundle');
       });
 
-      it('throws an error when given an invalid patch', async function () {
+      it('returns a bundle of errors if any operations are unsuccessful', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
-          .matchHeader('content-type', 'application/json-patch+json')
-          .patch('/Patient/152747')
-          .reply(500, () => readStreamFor('patient-not-patched.json'));
+          .post('/')
+          .reply(200, () => readStreamFor('batch-error-results.json'));
 
-        // Accepted values for gender: male, female, unknown
-        const invalidPatch = [{ op: 'replace', path: '/gender', value: 0 }];
+        const body = readFixture('batch-error-request.json');
+        const response = await this.fhirClient.batch({ body });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.type).to.equal('batch-response');
+        expect(response.entry[0].resource.resourceType).to.equal('OperationOutcome');
+        expect(response.entry[0].resource.text.status).to.equal('generated');
+        expect(response.entry[1].response.status).to.equal('500 Internal Server Error');
+        expect(response.entry[2].response.status).to.equal('500 Internal Server Error');
+        expect(response.entry[3].response.status).to.equal('404 Not Found');
+        // A search operation yielding zero results returns an empty bundle despite failures
+        expect(response.entry[4].response.status).to.equal('200 OK');
+        expect(response.entry[4].resource.resourceType).to.equal('Bundle');
+      });
+    });
+
+    describe('#transaction', () => {
+      it('builds request with no arguments', async function () {
+        mockAndExpectNotFound('post', 'transaction');
+      });
+
+      it('returns a transaction response bundle with matching response statuses', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .post('/')
+          .reply(200, () => readStreamFor('transaction-results.json'));
+
+        const body = readFixture('transaction-request.json');
+        const response = await this.fhirClient.transaction({ body });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.type).to.equal('transaction-response');
+        expect(response.entry[0].response.status).to.equal('201 Created');
+        expect(response.entry[1].response.status).to.equal('200 OK');
+        expect(response.entry[2].response.status).to.equal('204 No Content');
+        expect(response.entry[3].response.status).to.equal('200 OK');
+        expect(response.entry[3].resource.resourceType).to.equal('Bundle');
+      });
+
+      it('throws an error if any operations are unsuccessful', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .post('/')
+          .reply(404, () => readStreamFor('transaction-error-response.json'));
+
+        const body = readFixture('transaction-error-request.json');
+
         let response;
         try {
-          response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: invalidPatch });
+          response = await this.fhirClient.transaction({ body });
         } catch (error) {
-          expect(error.response.status).to.equal(500);
-          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
+          expect(error.response.status).to.equal(404);
+          expect(error.response.data.resourceType).to.equal('OperationOutcome');
         }
         expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
       });

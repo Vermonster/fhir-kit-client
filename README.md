@@ -8,15 +8,16 @@ Node FHIR client library
 * Support for STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)
 * Minimal dependencies
 * Contemporary async/await structure
-* Modern Class getter/setter
+* Modern Class getter/setter pattern
 * TDD with Mocha
 
-# Example
+# Examples
 
 Examples using promises...
 
 ```javascript
-const Client = require('../lib/client');
+const Client = require('fhir-kit-client');
+
 const fhirClient = new Client({ baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open' });
 
 fhirClient.smartAuthMetadata().then((response) => {
@@ -182,17 +183,16 @@ $ DEBUG=fhir-kit-client:* node smart-launch.js
 
 # Contributing
 
-FHIRKit Client is an open source Node.js FHIR client library that welcomes community contributions with enthusiasm.
+FHIRKit Client is an open source Node.js FHIR client library that welcomes
+community contributions with enthusiasm.
 
 All are welcome to participate. By participating in this project, you agree to
 follow the [Code of
 Conduct](https://github.com/Vermonster/fhir-kit-client/blob/master/CODE_OF_CONDUCT.md).
 
-Please see our [Contributing](https://github.com/Vermonster/fhir-kit-client/blob/master/CONTRIBUTING.md) document for more details on how to get started.
-
-# Todo
-
---
+Please see our
+[Contributing](https://github.com/Vermonster/fhir-kit-client/blob/master/CONTRIBUTING.md)
+document for more details on how to get started.
 
 # License
 

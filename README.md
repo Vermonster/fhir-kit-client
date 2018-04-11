@@ -6,6 +6,10 @@ Node FHIR client library
 # Features
 
 * Support for STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)
+* Support for all FHIR REST actions
+* Pagination support for search results
+* Batch and Transaction support
+* Support for absolute, in-Bundle, and contained references
 * Minimal dependencies
 * Contemporary async/await structure
 * Modern Class getter/setter pattern
@@ -180,6 +184,11 @@ DEBUG environment variable, or use `fhir-kit-client:*` to enable both.
 ```
 $ DEBUG=fhir-kit-client:* node smart-launch.js
 ```
+
+# TODO
+
+* Search (on the system level)
+* History (all three levels)
 
 # Contributing
 

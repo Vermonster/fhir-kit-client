@@ -53,8 +53,6 @@ fhirClient
   .update({
     resourceType: 'Patient', id: '12345',
     body: { resourceType: 'Patient', birthDate: '1948-04-14' },
-  }).then((response) => {
-    console.log(response);
   });
 
 fhirClient
@@ -65,23 +63,23 @@ fhirClient
     console.log(response);
   });
 
-  fhirClient
-    .search({ resourceType: 'Patient', searchParams: { _count: '3', gender: 'female' } })
-    .then((response) => {
-      console.log(response);
-      return response;
-    })
-    .then((response) => {
-      console.log(response);
-      return fhirClient.pager.nextPage(response);
-    })
-    .then((response) => {
-      console.log(response);
-      return fhirClient.pager.prevPage(response);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+fhirClient
+  .search({ resourceType: 'Patient', searchParams: { _count: '3', gender: 'female' } })
+  .then((response) => {
+    console.log(response);
+    return response;
+  })
+  .then((response) => {
+    console.log(response);
+    return fhirClient.pager.nextPage(response);
+  })
+  .then((response) => {
+    console.log(response);
+    return fhirClient.pager.prevPage(response);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
 ```
 
 Examples using async/await...
@@ -150,12 +148,12 @@ async function asyncExamples() {
 
   console.log('--------');
 
-  const searchResponse2 = await fhirClient.pager.nextPage(searchResponse1);
+  const searchResponse2 = await fhirClient.nextPage(searchResponse1);
   console.log(searchResponse2);
 
   console.log('--------');
 
-  response = await fhirClient.pager.prevPage(searchResponse2);
+  response = await fhirClient.prevPage(searchResponse2);
   console.log(response);
 }
 

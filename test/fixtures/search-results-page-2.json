@@ -9,20 +9,20 @@
   "link": [
     {
       "relation": "self",
-      "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset"
+      "url": "https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset"
     },
     {
       "relation": "next",
-      "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=6&_count=3&_pretty=true&_bundletype=searchset"
+      "url": "https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=6&_count=3&_pretty=true&_bundletype=searchset"
     },
     {
       "relation": "previous",
-      "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset"
+      "url": "https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset"
     }
   ],
   "entry": [
     {
-      "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Patient/2e27c71e-30c8-4ceb-8c1c-5641e066c0a4",
+      "fullUrl": "https://example.com/Patient/2e27c71e-30c8-4ceb-8c1c-5641e066c0a4",
       "resource": {
         "resourceType": "Patient",
         "id": "2e27c71e-30c8-4ceb-8c1c-5641e066c0a4",

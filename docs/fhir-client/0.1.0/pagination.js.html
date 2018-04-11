@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>smart.js - Documentation</title>
+    <title>pagination.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">smart.js</h1>
+    <h1 class="page-title">pagination.js</h1>
     
 
     
@@ -39,67 +39,40 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const { URL } = require('url');
+            <pre class="prettyprint source linenums"><code>/** Class for paging Bundles. */
+class Pagination {
+  /**
+   * Add pagination functionality for the provided client.
+   *
+   * @private
+   * @param {HttpClient} httpClient a configured instance of http client.
+   */
+  constructor(httpClient) {
+    this.httpClient = httpClient;
+  }
 
-const smartOauthUrl = 'http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris';
-const { logError } = require('./logging');
+  /**
+   * Return the next page of results.
+   *
+   * @param {object} results a bundle result of a FHIR search
+   */
+  nextPage(results) {
+    const nextLink = results.link.find(link => link.relation === 'next');
+    return nextLink ? this.httpClient.get(nextLink.url) : undefined;
+  }
 
-/**
- * Get the SMART OAuth URIs from a Capability Statement
- * http://docs.smarthealthit.org/authorization/conformance-statement/
- *
- * @example
- *
- * {
- *   authorizeUrl,
- *   tokenUrl,
- *   registerUrl,
- *   manageUrl,
- * } = authFromCapability(capabilityStatement);
- *
- * @param {Object} capabilityStatement - a FHIR capabilityStatement
- * @return {Object} contains the following SMART URIs: authorizeUrl, tokenUrl,
- *   registerUrl, manageUrl
- */
-function authFromCapability(capabilityStatement) {
-  const authMetadata = {};
-
-  try {
-    capabilityStatement.rest.forEach((restItem) => {
-      restItem.security.service.forEach((serviceItem) => {
-        serviceItem.coding.forEach((codingItem) => {
-          if (codingItem.code === 'SMART-on-FHIR') {
-            const uris = restItem.security.extension.find(x => x.url === smartOauthUrl);
-
-            uris.extension.forEach((ext) => {
-              switch (ext.url) {
-                case 'authorize':
-                  authMetadata.authorizeUrl = new URL(ext.valueUri);
-                  break;
-                case 'token':
-                  authMetadata.tokenUrl = new URL(ext.valueUri);
-                  break;
-                case 'register':
-                  authMetadata.registerUrl = new URL(ext.valueUri);
-                  break;
-                case 'manage':
-                  authMetadata.manageUrl = new URL(ext.valueUri);
-                  break;
-                default:
-              }
-            });
-          }
-        });
-      });
-    });
-    return authMetadata;
-  } catch (error) {
-    logError(error);
-    return authMetadata;
+  /**
+   * Return the previous page of results.
+   *
+   * @param {object} results a bundle result of a FHIR search
+   */
+  prevPage(results) {
+    const prevLink = results.link.find(link => link.relation.match(/^prev(ious)?$/));
+    return prevLink ? this.httpClient.get(prevLink.url) : undefined;
   }
 }
 
-module.exports = { authFromCapability };
+module.exports = Pagination;
 </code></pre>
         </article>
     </section>

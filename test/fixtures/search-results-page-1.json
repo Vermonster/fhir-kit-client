@@ -9,16 +9,16 @@
   "link": [
     {
       "relation": "self",
-      "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Patient?_count=3&gender=female"
+      "url": "https://example.com/Patient?_count=3&gender=female"
     },
     {
       "relation": "next",
-      "url": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset"
+      "url": "https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset"
     }
   ],
   "entry": [
     {
-      "fullUrl": "https://sb-fhir-stu3.smarthealthit.org/smartstu3/open/Patient/a18e455c-c6ce-4413-a51f-cb5658e6c1dc",
+      "fullUrl": "https://example.com/Patient/a18e455c-c6ce-4413-a51f-cb5658e6c1dc",
       "resource": {
         "resourceType": "Patient",
         "id": "a18e455c-c6ce-4413-a51f-cb5658e6c1dc",

@@ -17,7 +17,7 @@ app.use(session({
 
 
 /**
- * This is an exmple of a SMART app launching from within an EHR.
+ * This is an example of a SMART app launching from within an EHR.
  *
  * In this example, there are two routes:
  *  - /launch
@@ -25,12 +25,12 @@ app.use(session({
  *
  *
  * The EHR will call the launch route with two parameters: iss and launch. The
- * SMART app will will make a request to the OAuth server's authorization URL.
- * Then will redirect to the SMART app callback.
+ * SMART app will make a request to the OAuth server's authorization URL.
+ * Then, it will redirect to the SMART app callback.
  *
  * In the callback route, another request is made (using the simple-oauth
  * library) to request a token from the OAuth2 server. The server will then
- * send back a launch_context containing among other things an access token to
+ * send back a launch_context containing, among other things, an access token to
  * set in the Authorization header and use for subsequent FHIR requests (to the
  * ISS).
  */
@@ -116,4 +116,3 @@ app.get('/callback', async (req, res) => {
 app.listen(3000, () => {
   console.log('Express server started on port 3000');
 });
-

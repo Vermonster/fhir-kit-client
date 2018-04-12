@@ -167,7 +167,9 @@ async function asyncExamples() {
 asyncExamples();
 ```
 
-See the [SMART Launch](./examples/smart-launch.js) example with OAuth2 support.
+# Launch Examples
+
+See the [examples directory](./examples/) and [examples readme](./examples/README.md) for app launch/authorization demonstrations.
 
 # Documentation
 

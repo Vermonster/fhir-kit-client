@@ -6,9 +6,8 @@ const jwtDecode = require('jwt-decode');
 const simpleOauthModule = require('simple-oauth2');
 const Client = require('../lib/client');
 
-const CLIENT_ID = '415db3c6-e149-41e7-9b6e-96299f4a1b55';
-/* Cerner does not currently support using a client secret. Public launch only.*/
-const CLIENT_SECRET = 'keyboard cat';
+const CLIENT_ID = '';
+const CLIENT_SECRET = '';
 const LOCAL_HOST = 'http://localhost:3000';
 const app = express();
 
@@ -61,8 +60,7 @@ app.get('/launch', async (req, res) => {
   const oauth2 = simpleOauthModule.create({
     client: {
       id: CLIENT_ID,
-      /* Cerner does not currently support using a client secret. Public launch only.*/
-      // secret: CLIENT_SECRET,
+      secret: CLIENT_SECRET,
     },
     auth: {
       tokenHost: `${tokenUrl.protocol}//${tokenUrl.host}`,
@@ -75,11 +73,10 @@ app.get('/launch', async (req, res) => {
   // Authorization uri definition
   console.log(`Redirect URI: ${LOCAL_HOST}/callback`);
   const authorizationUri = oauth2.authorizationCode.authorizeURL({
-    /* TODO: Investigate why the sandbox doesn't work if you pass a redirect_uri */
-    // redirect_uri: `${LOCAL_HOST}/callback`,
+    redirect_uri: `${LOCAL_HOST}/callback`,
     launch,
     aud: iss,
-    scope: 'launch openid profile patient/Patient.read user/Observation.read user/Practitioner.read',
+    scope: 'launch openid profile user/*.read patient/*.read',
     state: '3(#0/!~',
   });
 
@@ -95,14 +92,12 @@ app.get('/callback', async (req, res) => {
   const response = await fhirClient.smartAuthMetadata()
         .catch(error => console.log(`$$$$ Error: ${error}`));
   const { tokenUrl, authorizeUrl } = response;
-  // const { authorizeUrl, tokenUrl } = await fhirClient.smartAuthMetadata();
 
   // Create a new oAuth2 object using the Client capability statement:
   const oauth2 = simpleOauthModule.create({
     client: {
       id: CLIENT_ID,
-      /* Cerner does not currently support using a client secret. Public launch only.*/
-      // secret: CLIENT_SECRET,
+      secret: CLIENT_SECRET,
     },
     auth: {
       tokenHost: `${tokenUrl.protocol}//${tokenUrl.host}`,
@@ -114,12 +109,15 @@ app.get('/callback', async (req, res) => {
 
   const { code } = req.query;
   const options = {
-    code,
+    redirect_uri: 'http://localhost:3000/callback',
+    code: code,
+    scope: 'launch openid profile user/*.read patient/*.read'
   };
 
   try {
+    console.log(options)
     const result = await oauth2.authorizationCode.getToken(options);
-
+    console.log("result:   ", result);
     const { token } = oauth2.accessToken.create(result);
 
     console.log('The token is : ', token);
@@ -127,22 +125,21 @@ app.get('/callback', async (req, res) => {
     fhirClient.bearerToken = token.access_token;
 
     // /* Get current Patient */
+    // Allscript returns multiple organization MRNs
     // const patient = await fhirClient.read({ resourceType: 'Patient', id: token.patient });
     // return res.status(200).json(patient);
 
-    // /* Get Patient weight
-    //  * Cerner does not appear to support sorting by date.
-    //  * Requesting one Observation appears to return the most recent.
-    //  */
-    // const observations = await fhirClient.search({
-    //   resourceType: 'Observation',
-    //   searchParams: {
-    //     patient: `Patient/${token.patient}`,
-    //     code: 'http://loinc.org|3141-9',
-    //     _count: 1,
-    //   }
-    // });
-    // return res.status(200).json(observations);
+    /* Get Patient weight
+     * Allscript resourceType requires patient id
+     * Requesting one Observation appears to return the most recent.
+     */
+    const observations = await fhirClient.search({
+      resourceType: `Patient/${token.patient}/Observation`,
+      searchParams: {
+        category: "vital-signs",
+      }
+    });
+    return res.status(200).json(observations);
 
     // /* Get current User */
     // const idToken = jwtDecode(token.id_token);

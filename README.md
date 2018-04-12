@@ -85,6 +85,61 @@ fhirClient
   .catch((error) => {
     console.error(error);
   });
+
+const batchRequest = {
+  'resourceType': 'Bundle',
+  'type': 'batch',
+  'entry': [
+    {
+      'request': {
+        'method': 'DELETE',
+        'url': 'Patient/2e27c71e-30c8-4ceb-8c1c-5641e066c0a4'
+      }
+    },
+    {
+      'request': {
+        'method': 'GET',
+        'url': 'Patient?name=peter'
+      }
+    }
+  ]
+}
+
+fhirClient
+  .batch(batchRequest)
+  .then((response) => {
+    console.log(response);
+  });
+
+const transactionRequest = {
+  'resourceType': 'Bundle',
+  'type': 'transaction',
+  'entry': [
+   {
+     'fullUrl': 'http://example.org/fhir/Patient/123',
+     'resource': {
+       'resourceType': 'Patient',
+       'active': true
+     },
+     'request': {
+       'method': 'POST',
+       'url': 'Patient/123'
+     }
+   },
+   {
+     'request': {
+       'method': 'GET',
+       'url': 'Patient?name=sarah'
+     }
+   }
+  ]
+}
+
+fhirClient
+  .transaction(transactionRequest)
+  .then((response) => {
+    console.log(response);
+  });
 ```
 
 Examples using async/await...

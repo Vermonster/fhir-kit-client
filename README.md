@@ -217,6 +217,55 @@ async function asyncExamples() {
 
   response = await fhirClient.prevPage(searchResponse2);
   console.log(response);
+
+  const batchRequest = {
+    'resourceType': 'Bundle',
+    'type': 'batch',
+    'entry': [
+      {
+        'request': {
+          'method': 'DELETE',
+          'url': 'Patient/2e27c71e-30c8-4ceb-8c1c-5641e066c0a4'
+        }
+      },
+      {
+        'request': {
+          'method': 'GET',
+          'url': 'Patient?name=peter'
+        }
+      }
+    ]
+  }
+
+  response = await fhirClient.batch(batchRequest);
+  console.log(response);
+
+  const transactionRequest = {
+    'resourceType': 'Bundle',
+    'type': 'transaction',
+    'entry': [
+     {
+       'fullUrl': 'http://example.org/fhir/Patient/123',
+       'resource': {
+         'resourceType': 'Patient',
+         'active': true
+       },
+       'request': {
+         'method': 'POST',
+         'url': 'Patient/123'
+       }
+     },
+     {
+       'request': {
+         'method': 'GET',
+         'url': 'Patient?name=sarah'
+       }
+     }
+    ]
+  }
+
+  response = await fhirClient.transaction(transactionRequest);
+  console.log(response);
 }
 
 asyncExamples();

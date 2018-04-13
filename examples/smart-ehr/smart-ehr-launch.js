@@ -23,7 +23,6 @@ app.use(session({
  *  - /launch
  *  - /callback
  *
- *
  * The EHR will call the launch route with two parameters: iss and launch. The
  * SMART app will make a request to the OAuth server's authorization URL.
  * Then, it will redirect to the SMART app callback.

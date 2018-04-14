@@ -64,7 +64,9 @@ Examples using async/await...
 
 ```javascript
 const Client = require('fhir-kit-client');
-const fhirClient = new Client({ baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open' });
+const fhirClient = new Client({
+  baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open'
+  });
 
 async function asyncExamples() {
   // Get SMART URLs for OAuth

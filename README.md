@@ -40,50 +40,6 @@ fhirClient
   });
 
 
-// Read a patient at a version
-fhirClient
-  .vread({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' })
-  .then((response) => {
-    console.log(response);
-  });
-
-
-// Create a new patient resource
-fhirClient
-  .create({
-    resourceType: 'Patient',
-    body: { resourceType: 'Patient', name: [{ family: ['Lee'], given: ['Ed'] }] },
-  }).then((response) => {
-    console.log(response);
-  });
-
-
-// Delete a patient resource
-fhirClient
-  .delete({ resourceType: 'Patient', id: '12345' })
-  .then((response) => {
-    console.log(response);
-  });
-
-
-// Update an existing patient resource
-fhirClient
-  .update({
-    resourceType: 'Patient', id: '12345',
-    body: { resourceType: 'Patient', birthDate: '1948-04-14' },
-  });
-
-
-// Patch an existing patient resource using JSON Patch document
-fhirClient
-  .patch({
-    resourceType: 'Patient', id: '12345',
-    JSONPatch: [{ op: 'replace', path: '/gender', value: 'male' }],
-  }).then((response) => {
-    console.log(response);
-  });
-
-
 // Search for patients, and page through results
 fhirClient
   .search({ resourceType: 'Patient', searchParams: { _count: '3', gender: 'female' } })
@@ -102,65 +58,6 @@ fhirClient
   .catch((error) => {
     console.error(error);
   });
-
-
-// Batch process, a delete and get action
-const batchRequest = {
-  'resourceType': 'Bundle',
-  'type': 'batch',
-  'entry': [
-    {
-      'request': {
-        'method': 'DELETE',
-        'url': 'Patient/2e27c71e-30c8-4ceb-8c1c-5641e066c0a4'
-      }
-    },
-    {
-      'request': {
-        'method': 'GET',
-        'url': 'Patient?name=peter'
-      }
-    }
-  ]
-};
-
-fhirClient
-  .batch(batchRequest)
-  .then((response) => {
-    console.log(response);
-  });
-
-
-// Create a transaction to post and get a patient
-const transactionRequest = {
-  'resourceType': 'Bundle',
-  'type': 'transaction',
-  'entry': [
-   {
-     'fullUrl': 'http://example.org/fhir/Patient/123',
-     'resource': {
-       'resourceType': 'Patient',
-       'active': true
-     },
-     'request': {
-       'method': 'POST',
-       'url': 'Patient/123'
-     }
-   },
-   {
-     'request': {
-       'method': 'GET',
-       'url': 'Patient?name=sarah'
-     }
-   }
-  ]
-};
-
-fhirClient
-  .transaction(transactionRequest)
-  .then((response) => {
-    console.log(response);
-  });
 ```
 
 Examples using async/await...
@@ -174,152 +71,38 @@ async function asyncExamples() {
   let response = await fhirClient.smartAuthMetadata();
   console.log(response);
 
-  console.log('-------- waiting...');
-
 
   // Read a patient
   response = await fhirClient
     .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' });
   console.log(response);
 
-  console.log('-------- waiting...');
 
-
-  // Read a patient at a version
-  response = await fhirClient
-    .vread({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' });
-  console.log(response);
-
-  console.log('-------- waiting...');
-
-
-  // Search for a patient with name matching abbott
-  response = await fhirClient
+  // Search for a patient with name matching abbott, then paging
+  let searchResponse = await fhirClient
     .search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
-  console.log(response);
-  console.log('-------- waiting...');
+  console.log(searchResponse);
 
+  searchResponse = await fhirClient.nextPage(searchResponse);
+  console.log(searchResponse);
 
-  // Create a new patient resource
-  response = await fhirClient
-    .create({
-      resourceType: 'Patient',
-      body: { resourceType: 'Patient', name: [{ family: ['Lee'], given: ['Ed'] }] },
-    });
-  console.log(response);
-
-  console.log('-------- waiting...');
-
-
-  // Delete a patient
-  response = await fhirClient
-    .delete({ resourceType: 'Patient', id: '12345' });
-  console.log(response);
-
-  console.log('-------- waiting...');
-
-
-  // Update a patient
-  response = await fhirClient
-    .update({
-      resourceType: 'Patient',
-      id: '12345',
-      body: { resourceType: 'Patient', birthDate: '1948-04-14' },
-    }).then((response) => {
-      console.log(response);
-    });
-  console.log(response);
-
-  console.log('-------- waiting...');
-
-
-  // Patch a patient using a JSON Patch document
-  response = await fhirClient
-    .patch({
-      resourceType: 'Patient',
-      id: '12345',
-      JSONPatch: [{ op: 'replace', path: '/gender', value: 'male' }],
-    });
-
-
-  // Search for a patient, and paginate
-  const searchResponse1 = await fhirClient.search(examplePatientSearch);
-  console.log(searchResponse1);
-
-  console.log('--------');
-
-  const searchResponse2 = await fhirClient.nextPage(searchResponse1);
-  console.log(searchResponse2);
-
-  console.log('--------');
-
-  response = await fhirClient.prevPage(searchResponse2);
-  console.log(response);
-
-
-  // Batch process, a delete and get action
-  const batchRequest = {
-    'resourceType': 'Bundle',
-    'type': 'batch',
-    'entry': [
-      {
-        'request': {
-          'method': 'DELETE',
-          'url': 'Patient/2e27c71e-30c8-4ceb-8c1c-5641e066c0a4'
-        }
-      },
-      {
-        'request': {
-          'method': 'GET',
-          'url': 'Patient?name=peter'
-        }
-      }
-    ]
-  };
-
-  response = await fhirClient.batch(batchRequest);
-  console.log(response);
-
-
-  // Create a transaction to post and get a patient
-  const transactionRequest = {
-    'resourceType': 'Bundle',
-    'type': 'transaction',
-    'entry': [
-     {
-       'fullUrl': 'http://example.org/fhir/Patient/123',
-       'resource': {
-         'resourceType': 'Patient',
-         'active': true
-       },
-       'request': {
-         'method': 'POST',
-         'url': 'Patient/123'
-       }
-     },
-     {
-       'request': {
-         'method': 'GET',
-         'url': 'Patient?name=sarah'
-       }
-     }
-    ]
-  };
-
-  response = await fhirClient.transaction(transactionRequest);
-  console.log(response);
+  searchResponse = await fhirClient.prevPage(searchResponse);
+  console.log(searchResponse);
 }
 
 asyncExamples();
 ```
 
-# Launch Examples
-
-See the [examples directory](./examples/) and [examples readme](./examples/README.md) for app launch/authorization demonstrations.
+For more examples see the JS Docs and Launch Examples below.
 
 # Documentation
 
-[JSDoc-generated documentation](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/0.1.0/)
+[JSDoc-generated documentation with examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/0.1.0/)
+
+# Launch Examples
+
+See the [examples directory](./examples/) and [examples
+readme](./examples/README.md) for app launch/authorization demonstrations.
 
 # Logging
 

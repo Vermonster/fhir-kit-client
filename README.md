@@ -8,11 +8,12 @@ Node FHIR client library
 * Support for STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)
 * Support for all FHIR REST actions
 * Pagination support for search results
-* Batch and Transaction support
-* Support for absolute, in-Bundle, and contained references
+* Batch and transaction support
+* Support for absolute, in-bundle, and contained references
+* SMART security support
 * Minimal dependencies
 * Contemporary async/await structure
-* Modern Class getter/setter pattern
+* Modern ES6 Classes
 * TDD with Mocha
 
 # Examples
@@ -21,25 +22,33 @@ Examples using promises...
 
 ```javascript
 const Client = require('fhir-kit-client');
+const fhirClient = new Client({
+  baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open'
+  });
 
-const fhirClient = new Client({ baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open' });
-
+// Get SMART URLs for OAuth
 fhirClient.smartAuthMetadata().then((response) => {
   console.log(response);
-});
+  });
 
+
+// Read a patient
 fhirClient
   .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
   .then((response) => {
     console.log(response);
   });
 
+
+// Read a patient at a version
 fhirClient
   .vread({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' })
   .then((response) => {
     console.log(response);
   });
 
+
+// Create a new patient resource
 fhirClient
   .create({
     resourceType: 'Patient',
@@ -48,18 +57,24 @@ fhirClient
     console.log(response);
   });
 
+
+// Delete a patient resource
 fhirClient
   .delete({ resourceType: 'Patient', id: '12345' })
   .then((response) => {
     console.log(response);
   });
 
+
+// Update an existing patient resource
 fhirClient
   .update({
     resourceType: 'Patient', id: '12345',
     body: { resourceType: 'Patient', birthDate: '1948-04-14' },
   });
 
+
+// Patch an existing patient resource using JSON Patch document
 fhirClient
   .patch({
     resourceType: 'Patient', id: '12345',
@@ -68,6 +83,8 @@ fhirClient
     console.log(response);
   });
 
+
+// Search for patients, and page through results
 fhirClient
   .search({ resourceType: 'Patient', searchParams: { _count: '3', gender: 'female' } })
   .then((response) => {
@@ -86,6 +103,8 @@ fhirClient
     console.error(error);
   });
 
+
+// Batch process, a delete and get action
 const batchRequest = {
   'resourceType': 'Bundle',
   'type': 'batch',
@@ -103,7 +122,7 @@ const batchRequest = {
       }
     }
   ]
-}
+};
 
 fhirClient
   .batch(batchRequest)
@@ -111,6 +130,8 @@ fhirClient
     console.log(response);
   });
 
+
+// Create a transaction to post and get a patient
 const transactionRequest = {
   'resourceType': 'Bundle',
   'type': 'transaction',
@@ -133,7 +154,7 @@ const transactionRequest = {
      }
    }
   ]
-}
+};
 
 fhirClient
   .transaction(transactionRequest)
@@ -145,32 +166,41 @@ fhirClient
 Examples using async/await...
 
 ```javascript
-const Client = require('../lib/client');
+const Client = require('fhir-kit-client');
 const fhirClient = new Client({ baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open' });
 
 async function asyncExamples() {
+  // Get SMART URLs for OAuth
   let response = await fhirClient.smartAuthMetadata();
   console.log(response);
 
   console.log('-------- waiting...');
 
+
+  // Read a patient
   response = await fhirClient
     .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' });
   console.log(response);
 
   console.log('-------- waiting...');
 
+
+  // Read a patient at a version
   response = await fhirClient
     .vread({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' });
   console.log(response);
 
   console.log('-------- waiting...');
 
+
+  // Search for a patient with name matching abbott
   response = await fhirClient
     .search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
   console.log(response);
   console.log('-------- waiting...');
 
+
+  // Create a new patient resource
   response = await fhirClient
     .create({
       resourceType: 'Patient',
@@ -180,12 +210,16 @@ async function asyncExamples() {
 
   console.log('-------- waiting...');
 
+
+  // Delete a patient
   response = await fhirClient
     .delete({ resourceType: 'Patient', id: '12345' });
   console.log(response);
 
   console.log('-------- waiting...');
 
+
+  // Update a patient
   response = await fhirClient
     .update({
       resourceType: 'Patient',
@@ -198,6 +232,8 @@ async function asyncExamples() {
 
   console.log('-------- waiting...');
 
+
+  // Patch a patient using a JSON Patch document
   response = await fhirClient
     .patch({
       resourceType: 'Patient',
@@ -205,6 +241,8 @@ async function asyncExamples() {
       JSONPatch: [{ op: 'replace', path: '/gender', value: 'male' }],
     });
 
+
+  // Search for a patient, and paginate
   const searchResponse1 = await fhirClient.search(examplePatientSearch);
   console.log(searchResponse1);
 
@@ -218,6 +256,8 @@ async function asyncExamples() {
   response = await fhirClient.prevPage(searchResponse2);
   console.log(response);
 
+
+  // Batch process, a delete and get action
   const batchRequest = {
     'resourceType': 'Bundle',
     'type': 'batch',
@@ -235,11 +275,13 @@ async function asyncExamples() {
         }
       }
     ]
-  }
+  };
 
   response = await fhirClient.batch(batchRequest);
   console.log(response);
 
+
+  // Create a transaction to post and get a patient
   const transactionRequest = {
     'resourceType': 'Bundle',
     'type': 'transaction',
@@ -262,7 +304,7 @@ async function asyncExamples() {
        }
      }
     ]
-  }
+  };
 
   response = await fhirClient.transaction(transactionRequest);
   console.log(response);

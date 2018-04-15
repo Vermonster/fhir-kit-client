@@ -99,12 +99,12 @@ For more examples see the JS Docs and Launch Examples below.
 
 # Documentation
 
-[JSDoc-generated documentation with examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/0.1.0/)
+[JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/0.1.0/)
 
-# Launch Examples
+# Launch Examples (SMART, CDS Hooks)
 
-See the [examples directory](./examples/) and [examples
-readme](./examples/README.md) for app launch/authorization demonstrations.
+To see how to follow launch and authorization workflows for FHIR applications, 
+see the [examples directory](./examples/) and [examples README](./examples/README.md).
 
 # Logging
 

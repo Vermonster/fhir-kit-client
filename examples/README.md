@@ -29,7 +29,7 @@ This provides the same routes above,
 but instead of an EHR launching from the `/launch` route, a user would directly
 visit the route with two different parameters: iss and scope. For example:
 
-`https://localhost:3000/launch?iss=http://example.com/fhir&scope=openid profile offline_access user/*.* patient/*.* launch/encounter launch/patient`
+`https://localhost:3000/launch?iss=http://example.com/fhir&scope=openid%20profile%20offline_access%20user%2F*.*%20patient%2F*.*%20launch%2Fencounter%20launch%2Fpatient`
 
 The EHR will again then provide a launch context and access token.
 

@@ -141,10 +141,10 @@ describe('Client', function () {
 
       this.fhirClient.metadata = readFixture('no-smart-oauth-uri-capability-statement.json');
 
-      capabilityStatement = await this.fhirClient.capabilityStatement();
+      const capabilityStatement = await this.fhirClient.capabilityStatement();
 
       // The metadata returns as expected without hitting the FHIR server.
-      expect(scope.activeMocks()).to.contain("GET https://example.com:443/metadata");
+      expect(scope.activeMocks()).to.contain('GET https://example.com:443/metadata');
       expect(capabilityStatement.resourceType).to.equal('CapabilityStatement');
     });
   });

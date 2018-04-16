@@ -120,14 +120,31 @@ describe('Client', function () {
   });
 
   describe('#capabilityStatement', function () {
-    it('returns a FHIR resource', async function () {
-      nock(this.baseUrl)
+    it('returns a FHIR resource from the FHIR server if metadata is not present', async function () {
+      const scope = nock(this.baseUrl)
         .matchHeader('accept', 'application/json+fhir')
         .get('/metadata')
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
 
       const capabilityStatement = await this.fhirClient.capabilityStatement();
 
+      // The metadata returns as expected after hitting the FHIR server.
+      expect(scope.activeMocks()).to.be.empty;
+      expect(capabilityStatement.resourceType).to.equal('CapabilityStatement');
+    });
+
+    it('returns a FHIR resource from the FHIR client if metadata is already present', async function () {
+      const scope = nock(this.baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .get('/metadata')
+        .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
+
+      this.fhirClient.metadata = readFixture('no-smart-oauth-uri-capability-statement.json');
+
+      capabilityStatement = await this.fhirClient.capabilityStatement();
+
+      // The metadata returns as expected without hitting the FHIR server.
+      expect(scope.activeMocks()).to.contain("GET https://example.com:443/metadata");
       expect(capabilityStatement.resourceType).to.equal('CapabilityStatement');
     });
   });

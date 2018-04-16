@@ -1,0 +1,15 @@
+{
+  "resourceType": "Bundle",
+  "id": "03e85f06-2f5f-408e-a8fa-17cda0e66f3c",
+  "meta": {
+    "lastUpdated": "2018-04-03T19:17:04.745+00:00"
+  },
+  "type": "searchset",
+  "total": 0,
+  "link": [
+    {
+      "relation": "self",
+      "url": "https://example.com/Patient?name=abcdef"
+    }
+  ]
+}

@@ -129,10 +129,7 @@ class Client {
    * @return {Promise<Object>} capability statement FHIR resource.
    */
   capabilityStatement() {
-    if (!this.metadata) {
-      this.metadata = this.httpClient.get('metadata');
-    }
-    return this.metadata;
+    return this.httpClient.get('metadata');
   }
 
   /**
@@ -466,43 +463,20 @@ class Client {
   }
 
   /**
-   * Search for a FHIR resource, within a compartment, or the entire system
+   * Search for a FHIR resource, a compartment or the system
    *
-   * @example
-   *
-   * // Using promises
-   * fhirClient.search({
-   *   resourceType: 'Observation',
-   *   compartment: { resourceType: 'Patient', id: 123 },
-   *   searchParams: { code: 'abc' },
-   * }).then((data) => { console.log(data); });
-   *
-   * // Using async
-   * let response = await fhirClient.search({
-   *   resourceType: 'Patient',
-   *   compartment: { resourceType: 'Patient', id: 123 },
-   *   searchParams: { code: 'abc' },
-   * });
-   * console.log(response);
-   *
-   * @param {Object} params - The request parameters.
-   * @param {String} params.resourceType - The resource type (e.g. "Patient", "Observation").
-   * @param {Object} params.compartment - The search compartment.
-   * @param {Object} params.searchParams - The search parameters.
-   *
-   * @return {String} level - The search level
-   */
+   */ 
 
   search({ resourceType, compartment, searchParams } = {}) {
     let level;
 
-    if (compartment && resourceType && searchParams) {
+    if (compartment) {
       this.compartmentSearch({ resourceType, compartment, searchParams });
       level = 'compartment';
-    } else if (resourceType && searchParams) {
+    } else if (resourceType) {
       this.resourceSearch({ resourceType, searchParams });
       level = 'resource';
-    } else if (searchParams) {
+    } else {
       this.systemSearch({ searchParams });
       level = 'system';
     }
@@ -516,7 +490,7 @@ class Client {
    * @example
    *
    * // Using promises
-   * fhirClient.resourceSearch({
+   * fhirClient.resourcSearch({
    *   resourceType: 'Patient',
    *   searchParams: { name: 'Smith' },
    * }).then((data) => { console.log(data); });
@@ -546,9 +520,8 @@ class Client {
    * @example
    *
    * // Using promises
-   * fhirClient.systemSearch({
-   *   searchParams: { name: 'smith' }
-   * }).then((data) => { console.log(data); });
+   * fhirClient.systemSearch({ searchParams: { name: 'smith' } })
+   *           .then((data) => { console.log(data); });
    *
    * // Using async
    * let response = await fhirClient.systemSearch({ searchParams: { name: 'smith' } });
@@ -563,79 +536,10 @@ class Client {
     return this.httpClient.get(`/_search?${new URLSearchParams(searchParams)}`);
   }
 
-  /**
-   * Search for FHIR resources within a compartment.
-   * The resourceType and id must be specified.
-   *
-   * @example
-   *
-   * // Using promises
-   * fhirClient.compartmentSearch({
-   *   resourceType: 'Observation',
-   *   compartment: { resourceType: 'Patient', id: 123 },
-   *   searchParams: { code: 'abc' }
-   * }).then((data) => { console.log(data); });
-   *
-   * // Using async
-   * let response = await fhirClient.compartmentSearch({
-   *   resourceType: 'Observation',
-   *   compartment: { resourceType: 'Patient', id: 123 },
-   *   searchParams: { code: 'abc' }
-   * });
-   * console.log(response);
-   *
-   * @param {Object} params - The request parameters.
-   * @param {Object} params.searchParams - The search parameters.
-   *
-   * @return {Promise<Object>} FHIR resources in a FHIR Bundle structure.
-   */
   compartmentSearch({ resourceType, compartment, searchParams } = {}) {
-    const compartmentType = compartment.resourceType;
-    const compartmentId = compartment.id;
-    const query = new URLSearchParams(searchParams);
-    const relativePath = `/${compartmentType}/${compartmentId}/${resourceType}?${query}`;
-
-    return this.httpClient.get(relativePath);
+    console.log('In compartment');
   }
 
-  /**
-   * Retrieve the change history for a FHIR resource id, a resource type or the entire system
-   *
-   * @example
-   *
-   * // Using promises
-   * fhirClient.history({ resourceType: 'Patient', id: '12345' });
-   *   .then((data) => { console.log(data); });
-   *
-   * // Using async
-   * let response = await fhirClient.history({ resourceType: 'Patient', id: '12345' });
-   * console.log(response);
-   *
-   * @param {Object} params - The request parameters.
-   * @param {string} params.resourceType - The resource type (e.g. "Patient", "Observation").
-   * @param {string} params.id - The FHIR id for the resource.
-   *
-   * @return {String} level - The history level
-   */
-
-  history({ resourceType, id } = {}) {
-    let level;
-
-    if (id && resourceType) {
-      this.resourceHistory({ resourceType, id });
-      level = 'resource';
-    } else if (resourceType) {
-      this.typeHistory({ resourceType });
-      level = 'type';
-    } else {
-      this.systemHistory();
-      level = 'system';
-    }
-
-    console.log('--------------------');
-    console.log(level);
-    return level;
-  }
   /**
    * Retrieve the change history for a particular resource FHIR id.
    *

@@ -23,7 +23,18 @@ send back a launch_context containing, among other things, an access token to
 set in the Authorization header and use for subsequent FHIR requests (to the
 ISS).
 
+## [examples/smart-standalone](./examples/smart-standalone)
+
+This provides the same routes above,
+but instead of an EHR launching from the `/launch` route, a user would directly
+visit the route with two different parameters: iss and scope. For example:
+
+`https://localhost:3000/launch?iss=http://example.com/fhir&scope=openid%20profile%20offline_access%20user%2F*.*%20patient%2F*.*%20launch%2Fencounter%20launch%2Fpatient`
+
+The EHR will again then provide a launch context and access token.
+
+To run, follow the same instructions above listed for the *examples/smart-ehr* example.
+
 ## Upcoming Examples
 
-- [examples/smart-standalone](./examples/smart-standalone): Launching a SMART app absent of an EHR context.
 - [examples/cds-hooks](./examples/cds-hooks): Triggering a Clinical Decision Support (CDS) app from within an EHR according to [CDS Hooks specifications](https://cds-hooks.org/specification/1.0/).

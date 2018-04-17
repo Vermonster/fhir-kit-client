@@ -8,11 +8,12 @@ Node FHIR client library
 * Support for STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)
 * Support for all FHIR REST actions
 * Pagination support for search results
-* Batch and Transaction support
-* Support for absolute, in-Bundle, and contained references
+* Batch and transaction support
+* Support for absolute, in-bundle, and contained references
+* SMART security support
 * Minimal dependencies
 * Contemporary async/await structure
-* Modern Class getter/setter pattern
+* Modern ES6 Classes
 * TDD with Mocha
 
 # Examples
@@ -21,53 +22,25 @@ Examples using promises...
 
 ```javascript
 const Client = require('fhir-kit-client');
+const fhirClient = new Client({
+  baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open'
+  });
 
-const fhirClient = new Client({ baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open' });
-
+// Get SMART URLs for OAuth
 fhirClient.smartAuthMetadata().then((response) => {
   console.log(response);
-});
+  });
 
+
+// Read a patient
 fhirClient
   .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
   .then((response) => {
     console.log(response);
   });
 
-fhirClient
-  .vread({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' })
-  .then((response) => {
-    console.log(response);
-  });
 
-fhirClient
-  .create({
-    resourceType: 'Patient',
-    body: { resourceType: 'Patient', name: [{ family: ['Lee'], given: ['Ed'] }] },
-  }).then((response) => {
-    console.log(response);
-  });
-
-fhirClient
-  .delete({ resourceType: 'Patient', id: '12345' })
-  .then((response) => {
-    console.log(response);
-  });
-
-fhirClient
-  .update({
-    resourceType: 'Patient', id: '12345',
-    body: { resourceType: 'Patient', birthDate: '1948-04-14' },
-  });
-
-fhirClient
-  .patch({
-    resourceType: 'Patient', id: '12345',
-    JSONPatch: [{ op: 'replace', path: '/gender', value: 'male' }],
-  }).then((response) => {
-    console.log(response);
-  });
-
+// Search for patients, and page through results
 fhirClient
   .search({ resourceType: 'Patient', searchParams: { _count: '3', gender: 'female' } })
   .then((response) => {
@@ -85,199 +58,53 @@ fhirClient
   .catch((error) => {
     console.error(error);
   });
-
-const batchRequest = {
-  'resourceType': 'Bundle',
-  'type': 'batch',
-  'entry': [
-    {
-      'request': {
-        'method': 'DELETE',
-        'url': 'Patient/2e27c71e-30c8-4ceb-8c1c-5641e066c0a4'
-      }
-    },
-    {
-      'request': {
-        'method': 'GET',
-        'url': 'Patient?name=peter'
-      }
-    }
-  ]
-}
-
-fhirClient
-  .batch(batchRequest)
-  .then((response) => {
-    console.log(response);
-  });
-
-const transactionRequest = {
-  'resourceType': 'Bundle',
-  'type': 'transaction',
-  'entry': [
-   {
-     'fullUrl': 'http://example.org/fhir/Patient/123',
-     'resource': {
-       'resourceType': 'Patient',
-       'active': true
-     },
-     'request': {
-       'method': 'POST',
-       'url': 'Patient/123'
-     }
-   },
-   {
-     'request': {
-       'method': 'GET',
-       'url': 'Patient?name=sarah'
-     }
-   }
-  ]
-}
-
-fhirClient
-  .transaction(transactionRequest)
-  .then((response) => {
-    console.log(response);
-  });
 ```
 
 Examples using async/await...
 
 ```javascript
-const Client = require('../lib/client');
-const fhirClient = new Client({ baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open' });
+const Client = require('fhir-kit-client');
+const fhirClient = new Client({
+  baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open'
+  });
 
 async function asyncExamples() {
+  // Get SMART URLs for OAuth
   let response = await fhirClient.smartAuthMetadata();
   console.log(response);
 
-  console.log('-------- waiting...');
 
+  // Read a patient
   response = await fhirClient
     .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' });
   console.log(response);
 
-  console.log('-------- waiting...');
 
-  response = await fhirClient
-    .vread({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4', version: '1' });
-  console.log(response);
-
-  console.log('-------- waiting...');
-
-  response = await fhirClient
+  // Search for a patient with name matching abbott, then paging
+  let searchResponse = await fhirClient
     .search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
-  console.log(response);
-  console.log('-------- waiting...');
+  console.log(searchResponse);
 
-  response = await fhirClient
-    .create({
-      resourceType: 'Patient',
-      body: { resourceType: 'Patient', name: [{ family: ['Lee'], given: ['Ed'] }] },
-    });
-  console.log(response);
+  searchResponse = await fhirClient.nextPage(searchResponse);
+  console.log(searchResponse);
 
-  console.log('-------- waiting...');
-
-  response = await fhirClient
-    .delete({ resourceType: 'Patient', id: '12345' });
-  console.log(response);
-
-  console.log('-------- waiting...');
-
-  response = await fhirClient
-    .update({
-      resourceType: 'Patient',
-      id: '12345',
-      body: { resourceType: 'Patient', birthDate: '1948-04-14' },
-    }).then((response) => {
-      console.log(response);
-    });
-  console.log(response);
-
-  console.log('-------- waiting...');
-
-  response = await fhirClient
-    .patch({
-      resourceType: 'Patient',
-      id: '12345',
-      JSONPatch: [{ op: 'replace', path: '/gender', value: 'male' }],
-    });
-
-  const searchResponse1 = await fhirClient.search(examplePatientSearch);
-  console.log(searchResponse1);
-
-  console.log('--------');
-
-  const searchResponse2 = await fhirClient.nextPage(searchResponse1);
-  console.log(searchResponse2);
-
-  console.log('--------');
-
-  response = await fhirClient.prevPage(searchResponse2);
-  console.log(response);
-
-  const batchRequest = {
-    'resourceType': 'Bundle',
-    'type': 'batch',
-    'entry': [
-      {
-        'request': {
-          'method': 'DELETE',
-          'url': 'Patient/2e27c71e-30c8-4ceb-8c1c-5641e066c0a4'
-        }
-      },
-      {
-        'request': {
-          'method': 'GET',
-          'url': 'Patient?name=peter'
-        }
-      }
-    ]
-  }
-
-  response = await fhirClient.batch(batchRequest);
-  console.log(response);
-
-  const transactionRequest = {
-    'resourceType': 'Bundle',
-    'type': 'transaction',
-    'entry': [
-     {
-       'fullUrl': 'http://example.org/fhir/Patient/123',
-       'resource': {
-         'resourceType': 'Patient',
-         'active': true
-       },
-       'request': {
-         'method': 'POST',
-         'url': 'Patient/123'
-       }
-     },
-     {
-       'request': {
-         'method': 'GET',
-         'url': 'Patient?name=sarah'
-       }
-     }
-    ]
-  }
-
-  response = await fhirClient.transaction(transactionRequest);
-  console.log(response);
+  searchResponse = await fhirClient.prevPage(searchResponse);
+  console.log(searchResponse);
 }
 
 asyncExamples();
 ```
 
-# Launch Examples
-
-See the [examples directory](./examples/) and [examples readme](./examples/README.md) for app launch/authorization demonstrations.
+For more examples see the JS Docs and Launch Examples below.
 
 # Documentation
 
-[JSDoc-generated documentation](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/0.1.0/)
+[JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/0.1.0/)
+
+# Launch Examples (SMART, CDS Hooks)
+
+To see how to follow launch and authorization workflows for FHIR applications, 
+see the [examples directory](./examples/) and [examples README](./examples/README.md).
 
 # Logging
 

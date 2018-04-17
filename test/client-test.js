@@ -274,13 +274,13 @@ describe('Client', function () {
       it('calls compartmentSearch when given a "compartment" param', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
-          .get('/Patient/123/Observation?code=abc')
+          .get('/Patient/123/Condition?category=problem')
           .reply(200);
 
         const level = await this.fhirClient.search({
-          resourceType: 'Observation',
+          resourceType: 'Condition',
           compartment: { resourceType: 'Patient', id: 123 },
-          searchParams: { code: 'abc' },
+          searchParams: { category: 'problem' },
         });
 
         expect(level).to.eq('compartment');
@@ -385,32 +385,34 @@ describe('Client', function () {
       it('returns a matching search results bundle', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
-          .get('/Patient/123/Observation?code=abc')
+          .get('/Patient/385800201/Condition?category=problem')
           .reply(200, () => readStreamFor('compartment-search-results.json'));
 
         const response = await this.fhirClient.compartmentSearch({
-          compartment: { resourceType: 'Patient', id: 123 },
-          resourceType: 'Observation',
-          searchParams: { code: 'abc' },
+          compartment: { resourceType: 'Patient', id: 385800201 },
+          resourceType: 'Condition',
+          searchParams: { category: 'problem' },
         });
 
         expect(response.resourceType).to.equal('Bundle');
-        expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
+        expect(response.type).to.equal('searchset');
+        expect(response.total).to.equal(6);
       });
 
       it('returns an empty search results bundle if nothing is found', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
-          .get('/Patient/123/Observation?code=abc')
+          .get('/Patient/385800201/Condition?category=foo')
           .reply(200, () => readStreamFor('empty-compartment-search-results.json'));
 
         const response = await this.fhirClient.compartmentSearch({
-          compartment: { resourceType: 'Patient', id: 123 },
-          resourceType: 'Observation',
-          searchParams: { code: 'abc' },
+          compartment: { resourceType: 'Patient', id: 385800201 },
+          resourceType: 'Condition',
+          searchParams: { category: 'foo' },
         });
 
         expect(response.resourceType).to.equal('Bundle');
+        expect(response.type).to.equal('searchset');
         expect(response.total).to.equal(0);
       });
     });

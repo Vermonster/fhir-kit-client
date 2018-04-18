@@ -10,6 +10,7 @@ Node FHIR client library
 * Pagination support for search results
 * Batch and transaction support
 * Support for absolute, in-bundle, and contained references
+* Metadata caching on client instance
 * SMART security support
 * Minimal dependencies
 * Contemporary async/await structure
@@ -103,7 +104,7 @@ For more examples see the JS Docs and Launch Examples below.
 
 # Launch Examples (SMART, CDS Hooks)
 
-To see how to follow launch and authorization workflows for FHIR applications, 
+To see how to follow launch and authorization workflows for FHIR applications,
 see the [examples directory](./examples/) and [examples README](./examples/README.md).
 
 # Logging

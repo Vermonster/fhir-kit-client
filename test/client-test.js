@@ -789,10 +789,9 @@ describe('Client', function () {
 
     describe('#history', function () {
       it('calls resourceHistory when given the "resourceType" and "id" params', async function () {
-        nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
-          .get('/Patient/152747/_history')
-          .reply(200);
+        this.fhirClient.resourceHistory = async function () {
+          return 'resource';
+        };
 
         const level = await this.fhirClient.history({ resourceType: 'Patient', id: '152747' });
 
@@ -800,10 +799,9 @@ describe('Client', function () {
       });
 
       it('calls typeHistory when given the "resourceType" but not the "id" param', async function () {
-        nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
-          .get('/Patient/_history')
-          .reply(200);
+        this.fhirClient.typeHistory = async function () {
+          return 'type';
+        };
 
         const level = await this.fhirClient.history({ resourceType: 'Patient' });
 
@@ -811,10 +809,9 @@ describe('Client', function () {
       });
 
       it('calls systemHistory when given no arguments', async function () {
-        nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
-          .get('/_history')
-          .reply(200);
+        this.fhirClient.systemHistory = async function () {
+          return 'system';
+        };
 
         const level = await this.fhirClient.history();
 

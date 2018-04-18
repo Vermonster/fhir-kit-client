@@ -272,10 +272,9 @@ describe('Client', function () {
       });
 
       it('calls compartmentSearch when given a "compartment" param', async function () {
-        nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
-          .get('/Patient/123/Condition?category=problem')
-          .reply(200);
+        this.fhirClient.compartmentSearch = async function () {
+          return 'compartment';
+        };
 
         const level = await this.fhirClient.search({
           resourceType: 'Condition',
@@ -287,10 +286,9 @@ describe('Client', function () {
       });
 
       it('calls resourceSearch when given "resourceType" but not a "compartment" param', async function () {
-        nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
-          .get('/Patient?name=abbott')
-          .reply(200);
+        this.fhirClient.resourceSearch = async function () {
+          return 'resource';
+        };
 
         const level = await this.fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abbott' } });
 
@@ -298,10 +296,9 @@ describe('Client', function () {
       });
 
       it('calls systemSearch when missing both "resourceType" and "compartment" params', async function () {
-        nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
-          .get('/_search?name=abbott')
-          .reply(200);
+        this.fhirClient.systemSearch = async function () {
+          return 'system';
+        };
 
         const level = await this.fhirClient.search({ searchParams: { name: 'abbott' } });
 

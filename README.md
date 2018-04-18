@@ -1,9 +1,12 @@
-[![Build Status](https://travis-ci.org/Vermonster/fhir-kit-client.svg?branch=master)](https://travis-ci.org/Vermonster/fhir-kit-client) [![Coverage Status](https://coveralls.io/repos/github/Vermonster/fhir-kit-client/badge.svg?branch=master)](https://coveralls.io/github/Vermonster/fhir-kit-client?branch=master)
-
 # FHIRKit Client
-Node FHIR client library
+[![npm version](https://badge.fury.io/js/fhir-kit-client.svg)](https://badge.fury.io/js/fhir-kit-client)
+[![Build Status](https://travis-ci.org/Vermonster/fhir-kit-client.svg?branch=master)](https://travis-ci.org/Vermonster/fhir-kit-client)
+[![Coverage Status](https://coveralls.io/repos/github/Vermonster/fhir-kit-client/badge.svg?branch=master)](https://coveralls.io/github/Vermonster/fhir-kit-client?branch=master)
+[![GitHub license](https://img.shields.io/github/license/Vermonster/fhir-kit-client.svg)](https://github.com/Vermonster/fhir-kit-client/blob/master/LICENSE)
 
-# Features
+A Node FHIR client library.
+
+## Features
 
 * Support for STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)
 * Support for all FHIR REST actions

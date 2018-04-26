@@ -122,11 +122,6 @@ DEBUG environment variable, or use `fhir-kit-client:*` to enable both.
 $ DEBUG=fhir-kit-client:* node smart-launch.js
 ```
 
-## TODO
-
-* Search (on the system level)
-* History (all three levels)
-
 ## Contributing
 
 FHIRKit Client is an open source Node.js FHIR client library that welcomes

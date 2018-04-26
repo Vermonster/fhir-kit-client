@@ -1,9 +1,12 @@
-[![Build Status](https://travis-ci.org/Vermonster/fhir-kit-client.svg?branch=master)](https://travis-ci.org/Vermonster/fhir-kit-client) [![Coverage Status](https://coveralls.io/repos/github/Vermonster/fhir-kit-client/badge.svg?branch=master)](https://coveralls.io/github/Vermonster/fhir-kit-client?branch=master)
-
 # FHIRKit Client
+[![npm version](https://badge.fury.io/js/fhir-kit-client.svg)](https://badge.fury.io/js/fhir-kit-client)
+[![Build Status](https://travis-ci.org/Vermonster/fhir-kit-client.svg?branch=master)](https://travis-ci.org/Vermonster/fhir-kit-client)
+[![Coverage Status](https://coveralls.io/repos/github/Vermonster/fhir-kit-client/badge.svg?branch=master)](https://coveralls.io/github/Vermonster/fhir-kit-client?branch=master)
+[![GitHub license](https://img.shields.io/github/license/Vermonster/fhir-kit-client.svg)](https://github.com/Vermonster/fhir-kit-client/blob/master/LICENSE)
+
 Node FHIR client library
 
-# Features
+## Features
 
 * Support for STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)
 * Support for all FHIR REST actions
@@ -17,7 +20,7 @@ Node FHIR client library
 * Modern ES6 Classes
 * TDD with Mocha
 
-# Examples
+## Examples
 
 Examples using promises...
 
@@ -98,16 +101,16 @@ asyncExamples();
 
 For more examples see the JS Docs and Launch Examples below.
 
-# Documentation
+## Documentation
 
 [JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/0.1.0/)
 
-# Launch Examples (SMART, CDS Hooks)
+## Launch Examples (SMART, CDS Hooks)
 
 To see how to follow launch and authorization workflows for FHIR applications,
 see the [examples directory](./examples/) and [examples README](./examples/README.md).
 
-# Logging
+## Logging
 
 The [debug library](https://www.npmjs.com/package/debug) can provide logging
 during development. Two different logging namespaces are provided, `fhir-kit-
@@ -119,7 +122,12 @@ DEBUG environment variable, or use `fhir-kit-client:*` to enable both.
 $ DEBUG=fhir-kit-client:* node smart-launch.js
 ```
 
-# Contributing
+## TODO
+
+* Search (on the system level)
+* History (all three levels)
+
+## Contributing
 
 FHIRKit Client is an open source Node.js FHIR client library that welcomes
 community contributions with enthusiasm.
@@ -132,7 +140,7 @@ Please see our
 [Contributing](https://github.com/Vermonster/fhir-kit-client/blob/master/CONTRIBUTING.md)
 document for more details on how to get started.
 
-# License
+## License
 
 MIT
 

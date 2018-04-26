@@ -38,7 +38,7 @@ const mockAndExpectNotFound = async function (httpVerb, apiVerb) {
 
   switch (httpVerb) {
     case 'get':
-      scope.get(/undefined.*/).reply(404);
+      scope.get(/.*/).reply(404);
       break;
     case 'post':
       scope.post(/.*/).reply(404);
@@ -66,6 +66,12 @@ const mockAndExpectNotFound = async function (httpVerb, apiVerb) {
   }
 
   expect(response).to.be.undefined;
+};
+
+const expectHistoryBundle = function (response, total) {
+  expect(response.resourceType).to.equal('Bundle');
+  expect(response.type).to.equal('history');
+  expect(response.total).to.equal(total);
 };
 
 describe('Client', function () {
@@ -261,35 +267,122 @@ describe('Client', function () {
         mockAndExpectNotFound('get', 'search');
       });
 
+      it('calls compartmentSearch when given a "compartment" param', async function () {
+        this.fhirClient.compartmentSearch = async function () {
+          return 'compartment';
+        };
+
+        const level = await this.fhirClient.search({
+          resourceType: 'Condition',
+          compartment: { resourceType: 'Patient', id: 123 },
+          searchParams: { category: 'problem' },
+        });
+
+        expect(level).to.eq('compartment');
+      });
+
+      it('calls resourceSearch when given "resourceType" but not a "compartment" param', async function () {
+        this.fhirClient.resourceSearch = async function () {
+          return 'resource';
+        };
+
+        const level = await this.fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abbott' } });
+
+        expect(level).to.eq('resource');
+      });
+
+      it('calls systemSearch when missing both "resourceType" and "compartment" params', async function () {
+        this.fhirClient.systemSearch = async function () {
+          return 'system';
+        };
+
+        const level = await this.fhirClient.search({ searchParams: { name: 'abbott' } });
+
+        expect(level).to.eq('system');
+      });
+    });
+
+    describe('#resourceSearch', function () {
+      it('builds request with no arguments', async function () {
+        mockAndExpectNotFound('get', 'resourceSearch');
+      });
+
       it('returns a matching search results bundle', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .get('/Patient?name=abbott')
           .reply(200, () => readStreamFor('search-results.json'));
 
-        const response = await this.fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abbott' } });
+        const response = await this.fhirClient.resourceSearch({
+          resourceType: 'Patient',
+          searchParams: { name: 'abbott' },
+        });
 
         expect(response.resourceType).to.equal('Bundle');
         expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
       });
+    });
 
-      it('returns an empty search results bundle if no match is found', async function () {
+    describe('#systemSearch', function () {
+      it('builds request with no arguments', async function () {
+        mockAndExpectNotFound('get', 'systemSearch');
+      });
+
+      it('returns a matching search results bundle', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
-          .get('/Patient?name=abcdef')
-          .reply(200, () => readStreamFor('empty-search-results.json'));
+          .get('/_search?name=abcdef')
+          .reply(200, () => readStreamFor('system-search-results.json'));
 
-        const response = await this.fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abcdef' } });
+        const response = await this.fhirClient.systemSearch({ searchParams: { name: 'abcdef' } });
 
         expect(response.resourceType).to.equal('Bundle');
-        expect(response.id).to.equal('03e85f06-2f5f-408e-a8fa-17cda0e66f3c');
-        expect(response.total).to.equal(0);
+        expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
       });
     });
 
-    describe('#create', function () {
-      it('create builds request with no arguments', async function () {
-        mockAndExpectNotFound('post', 'create');
+    describe('#compartmentSearch', async function () {
+      it('throws an error without the required compartment arguments', async function () {
+        let response;
+        try {
+          response = await this.fhirClient.compartmentSearch({});
+        } catch (error) {
+          expect(error).to.exist;
+        }
+        expect(response).to.be.undefined;
+      });
+
+      it('returns a matching search results bundle with query params', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient/385800201/Condition?category=problem')
+          .reply(200, () => readStreamFor('compartment-search-with-query-results.json'));
+
+        const response = await this.fhirClient.compartmentSearch({
+          compartment: { resourceType: 'Patient', id: 385800201 },
+          resourceType: 'Condition',
+          searchParams: { category: 'problem' },
+        });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.type).to.equal('searchset');
+        expect(response.total).to.equal(6);
+      });
+
+      it('returns a matching search results bundle without query params', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient/385800201/Condition')
+          .reply(200, () => readStreamFor('compartment-search-results.json'));
+
+        const response = await this.fhirClient.compartmentSearch({
+          compartment: { resourceType: 'Patient', id: 385800201 },
+          resourceType: 'Condition',
+        });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.type).to.equal('searchset');
+        expect(response.total).to.equal(6);
       });
     });
 
@@ -350,8 +443,10 @@ describe('Client', function () {
       });
     });
 
-    it('can set the "Authorization" header to a Bearer token', async function () {
-      this.fhirClient.bearerToken = 'XYZ';
+    describe('#create', function () {
+      it('create builds request with no arguments', async function () {
+        mockAndExpectNotFound('post', 'create');
+      });
 
       it('returns a successful operation outcome', async function () {
         const newPatient = {
@@ -622,7 +717,7 @@ describe('Client', function () {
       });
     });
 
-    describe('#transaction', () => {
+    describe('#transaction', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('post', 'transaction');
       });
@@ -661,6 +756,85 @@ describe('Client', function () {
           expect(error.response.data.resourceType).to.equal('OperationOutcome');
         }
         expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+    });
+
+    describe('#history', function () {
+      it('calls resourceHistory when given the "resourceType" and "id" params', async function () {
+        this.fhirClient.resourceHistory = async function () {
+          return 'resource';
+        };
+
+        const level = await this.fhirClient.history({ resourceType: 'Patient', id: '152747' });
+
+        expect(level).to.eq('resource');
+      });
+
+      it('calls typeHistory when given the "resourceType" but not the "id" param', async function () {
+        this.fhirClient.typeHistory = async function () {
+          return 'type';
+        };
+
+        const level = await this.fhirClient.history({ resourceType: 'Patient' });
+
+        expect(level).to.eq('type');
+      });
+
+      it('calls systemHistory when given no arguments', async function () {
+        this.fhirClient.systemHistory = async function () {
+          return 'system';
+        };
+
+        const level = await this.fhirClient.history();
+
+        expect(level).to.eq('system');
+      });
+    });
+
+    describe('#resourceHistory', function () {
+      it('builds request with no arguments', async function () {
+        mockAndExpectNotFound('get', 'resourceHistory');
+      });
+
+      it('returns a history bundle for a resource', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient/152747/_history')
+          .reply(200, () => readStreamFor('resource-history.json'));
+
+        const response = await this.fhirClient.resourceHistory({ resourceType: 'Patient', id: '152747' });
+
+        expectHistoryBundle(response, 20);
+      });
+    });
+
+    describe('#typeHistory', function () {
+      it('builds request with no arguments', async function () {
+        mockAndExpectNotFound('get', 'typeHistory');
+      });
+
+      it('returns a history bundle for a resource type', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient/_history')
+          .reply(200, () => readStreamFor('type-history.json'));
+
+        const response = await this.fhirClient.typeHistory({ resourceType: 'Patient' });
+
+        expectHistoryBundle(response, 15);
+      });
+    });
+
+    describe('#systemHistory', function () {
+      it('returns a history bundle for all resources', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/_history')
+          .reply(200, () => readStreamFor('system-history.json'));
+
+        const response = await this.fhirClient.systemHistory('_/history');
+
+        expectHistoryBundle(response, 152750);
       });
     });
   });

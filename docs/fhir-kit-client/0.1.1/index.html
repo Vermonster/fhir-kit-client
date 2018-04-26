@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html">Client</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#batch">batch</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#capabilityStatement">capabilityStatement</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#compartmentSearch">compartmentSearch</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#create">create</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#delete">delete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#history">history</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#nextPage">nextPage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#patch">patch</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#prevPage">prevPage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#read">read</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#resolve">resolve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#resourceHistory">resourceHistory</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#resourceSearch">resourceSearch</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#search">search</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#smartAuthMetadata">smartAuthMetadata</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#systemHistory">systemHistory</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#systemSearch">systemSearch</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#transaction">transaction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#typeHistory">typeHistory</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#update">update</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-fhir-kit-client-Client.html#vread">vread</a></span></li><li class="nav-heading">Modules</li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-fhir-kit-client.html">fhir-kit-client</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#authFromCapability">authFromCapability</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#splitReference">splitReference</a></span></li>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><p><a href="https://travis-ci.org/Vermonster/fhir-kit-client"><img src="https://travis-ci.org/Vermonster/fhir-kit-client.svg?branch=master" alt="Build Status"></a> <a href="https://coveralls.io/github/Vermonster/fhir-kit-client?branch=master"><img src="https://coveralls.io/repos/github/Vermonster/fhir-kit-client/badge.svg?branch=master" alt="Coverage Status"></a></p>
+<h1>FHIRKit Client</h1><p>Node FHIR client library</p>
+<h1>Features</h1><ul>
+<li>Support for STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)</li>
+<li>Support for all FHIR REST actions</li>
+<li>Pagination support for search results</li>
+<li>Batch and transaction support</li>
+<li>Support for absolute, in-bundle, and contained references</li>
+<li>Metadata caching on client instance</li>
+<li>SMART security support</li>
+<li>Minimal dependencies</li>
+<li>Contemporary async/await structure</li>
+<li>Modern ES6 Classes</li>
+<li>TDD with Mocha</li>
+</ul>
+<h1>Examples</h1><p>Examples using promises...</p>
+<pre class="prettyprint source lang-javascript"><code>const Client = require('fhir-kit-client');
+const fhirClient = new Client({
+  baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open'
+  });
+
+// Get SMART URLs for OAuth
+fhirClient.smartAuthMetadata().then((response) => {
+  console.log(response);
+  });
+
+
+// Read a patient
+fhirClient
+  .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
+  .then((response) => {
+    console.log(response);
+  });
+
+
+// Search for patients, and page through results
+fhirClient
+  .search({ resourceType: 'Patient', searchParams: { _count: '3', gender: 'female' } })
+  .then((response) => {
+    console.log(response);
+    return response;
+  })
+  .then((response) => {
+    console.log(response);
+    return fhirClient.pager.nextPage(response);
+  })
+  .then((response) => {
+    console.log(response);
+    return fhirClient.pager.prevPage(response);
+  })
+  .catch((error) => {
+    console.error(error);
+  });</code></pre><p>Examples using async/await...</p>
+<pre class="prettyprint source lang-javascript"><code>const Client = require('fhir-kit-client');
+const fhirClient = new Client({
+  baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open'
+  });
+
+async function asyncExamples() {
+  // Get SMART URLs for OAuth
+  let response = await fhirClient.smartAuthMetadata();
+  console.log(response);
+
+
+  // Read a patient
+  response = await fhirClient
+    .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' });
+  console.log(response);
+
+
+  // Search for a patient with name matching abbott, then paging
+  let searchResponse = await fhirClient
+    .search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
+  console.log(searchResponse);
+
+  searchResponse = await fhirClient.nextPage(searchResponse);
+  console.log(searchResponse);
+
+  searchResponse = await fhirClient.prevPage(searchResponse);
+  console.log(searchResponse);
+}
+
+asyncExamples();</code></pre><p>For more examples see the JS Docs and Launch Examples below.</p>
+<h1>Documentation</h1><p><a href="https://vermonster.github.io/fhir-kit-client/fhir-kit-client/0.1.0/">JSDoc-generated documentation with plenty of examples</a></p>
+<h1>Launch Examples (SMART, CDS Hooks)</h1><p>To see how to follow launch and authorization workflows for FHIR applications,
+see the <a href="./examples/">examples directory</a> and <a href="./examples/README.md">examples README</a>.</p>
+<h1>Logging</h1><p>The <a href="https://www.npmjs.com/package/debug">debug library</a> can provide logging
+during development. Two different logging namespaces are provided, <code>fhir-kit-
+client:info</code> logs each request and response, and <code>fhir-kit-client:error</code> logs
+errors. To enable logging during development, add one of the namespaces to the
+DEBUG environment variable, or use <code>fhir-kit-client:*</code> to enable both.</p>
+<pre class="prettyprint source"><code>$ DEBUG=fhir-kit-client:* node smart-launch.js</code></pre><h1>Contributing</h1><p>FHIRKit Client is an open source Node.js FHIR client library that welcomes
+community contributions with enthusiasm.</p>
+<p>All are welcome to participate. By participating in this project, you agree to
+follow the <a href="https://github.com/Vermonster/fhir-kit-client/blob/master/CODE_OF_CONDUCT.md">Code of
+Conduct</a>.</p>
+<p>Please see our
+<a href="https://github.com/Vermonster/fhir-kit-client/blob/master/CONTRIBUTING.md">Contributing</a>
+document for more details on how to get started.</p>
+<h1>License</h1><p>MIT</p>
+<p>Copyright (c) 2018 Vermonster LLC</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Apr 26 2018 12:23:27 GMT-0400 (EDT) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

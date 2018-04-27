@@ -53,11 +53,11 @@ fhirClient
   })
   .then((response) => {
     console.log(response);
-    return fhirClient.pager.nextPage(response);
+    return fhirClient.nextPage(response);
   })
   .then((response) => {
     console.log(response);
-    return fhirClient.pager.prevPage(response);
+    return fhirClient.prevPage(response);
   })
   .catch((error) => {
     console.error(error);

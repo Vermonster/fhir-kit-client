@@ -608,7 +608,7 @@ describe('Client', function () {
       });
     });
 
-    describe('#delete', () => {
+    describe('#delete', function () {
       it('returns a successful operation outcome', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -638,7 +638,7 @@ describe('Client', function () {
       });
     });
 
-    describe('#update', () => {
+    describe('#update', function () {
       const body = { resourceType: 'Patient', id: '152747', birthDate: '1948-10-10' };
 
       it('returns a successful operation outcome', async function () {
@@ -670,7 +670,7 @@ describe('Client', function () {
       });
     });
 
-    describe('#batch', () => {
+    describe('#batch', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('post', 'batch');
       });

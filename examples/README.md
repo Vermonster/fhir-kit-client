@@ -43,8 +43,8 @@ The `/cds-services` route provides a CDS Hooks "discovery endpoint" that dictate
 CDS services the SMART app offers and serves configuration data for the EHR to consume.
 
 Once an EHR consumes this discovery endpoint and is configured to supply the dictated prefetch data,
-it will be able to launch from the `cds-services/patient-view` route. The EHR would post to this route a request body armed with FHIR authorization and prefetch data, among other things.
+it will be able to launch the `cds-services/patient-view` route. The EHR would post to this route a request body armed with FHIR authorization, prefetch data, and more.
 
-In this example app, the access token is supplied to the FHIR client instance in order to make an asynchronous `MedicationOrder` request based on provided EHR patient. The resulting CDS Hook "card" greets the patient
+In this example app, the access token is supplied to the FHIR client instance in order to make an asynchronous `MedicationOrder` request based on the provided EHR patient. The resulting CDS Hook "card" greets the patient
 by name based on prefetch data and offers a count of medication orders based on the asynchronous request.
 (Note that if no data is required beyond that supplied in the prefetch, a card could be served without needing the FHIR client instance.)

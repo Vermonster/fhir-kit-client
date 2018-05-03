@@ -1,7 +1,6 @@
-/* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
+/* eslint import/no-extraneous-dependencies: ['error', {'devDependencies': true}] */
 /* eslint no-console: 0, import/no-unresolved: 0 */
 const express = require('express');
-const session = require('express-session');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const simpleOauthModule = require('simple-oauth2');
@@ -29,23 +28,23 @@ app.use(bodyParser.json());
  * then be used by the FHIR client for further requests, as seen in the MedicationOrder example
  * (though the CDS service may operate via prefetch data alone if desired).
  */
-app.get('/cds-services', async (req, res) => {
-  return res.status(200).json({
-    'services': [
+app.get('/cds-services', async (req, res) => (
+  res.status(200).json({
+    services: [
       {
-        'enabled': 'true',
-        'hook': 'patient-view',
-        'id': 'patient-view',
-        'name': 'Patient Greeter with Med Count',
-        'title': 'Patient Greeter with Med Count',
-        'description': 'Example of CDS service greeting patient based on prefetch and counting meds with FHIR Kit client.',
-        'prefetch': {
-          'patientToGreet': 'Patient/{{Patient.id}}'
-        }
-      }
-    ]
-  });
-});
+        enabled: 'true',
+        hook: 'patient-view',
+        id: 'patient-view',
+        name: 'Patient Greeter with Med Count',
+        title: 'Patient Greeter with Med Count',
+        description: 'Example of CDS service greeting patient based on prefetch and counting meds with FHIR Kit client.',
+        prefetch: {
+          patientToGreet: 'Patient/{{Patient.id}}',
+        },
+      },
+    ],
+  })
+));
 
 
 app.post('/cds-services/patient-view', async (req, res) => {
@@ -54,8 +53,8 @@ app.post('/cds-services/patient-view', async (req, res) => {
   const tokenObject = {
     access_token: fhirAuthorization.access_token,
     expires_in: fhirAuthorization.expires_in,
-    scope: fhirAuthorization.scope
-  }
+    scope: fhirAuthorization.scope,
+  };
 
   const fhirClient = new Client({ baseUrl: fhirServer });
   const { authorizeUrl } = await fhirClient.smartAuthMetadata();
@@ -81,22 +80,22 @@ app.post('/cds-services/patient-view', async (req, res) => {
 
     fhirClient.bearerToken = token.access_token;
 
-    const medOrders = await fhirClient.search({resourceType: 'MedicationOrder', searchParams: {patient: req.body.patient }});
+    const medOrders = await fhirClient.search({ resourceType: 'MedicationOrder', searchParams: { patient: req.body.patient } });
 
-    return res.status(200).json( {
-       "cards": [
-         {
-           "summary": `Hello ${req.body.prefetch.patientToGreet.resource.name[0].given[0]}! You have ${medOrders.total} medication orders on file.`,
-           "source": {
-             "label": "Patient greeting and med count service"
-           },
-           "indicator": "info",
-           "suggestions": [],
-           "links": []
-         }
-       ],
-       "decisions": []
-     })
+    return res.status(200).json({
+      cards: [
+        {
+          summary: `Hello ${req.body.prefetch.patientToGreet.resource.name[0].given[0]}! You have ${medOrders.total} medication orders on file.`,
+          source: {
+            label: 'Patient greeting and med count service',
+          },
+          indicator: 'info',
+          suggestions: [],
+          links: [],
+        },
+      ],
+      decisions: [],
+    });
   } catch (error) {
     console.error('Access Token Error', error.message);
     return res.status(500).json('Authentication failed');

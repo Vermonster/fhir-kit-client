@@ -25,7 +25,7 @@ ISS).
 
 ## [examples/smart-standalone](./examples/smart-standalone)
 
-This provides the same routes above,
+This example provides the same routes above,
 but instead of an EHR launching from the `/launch` route, a user would directly
 visit the route with two different parameters: iss and scope. For example:
 
@@ -35,6 +35,16 @@ The EHR will again then provide a launch context and access token.
 
 To run, follow the same instructions above listed for the *examples/smart-ehr* example.
 
-## Upcoming Examples
+## [examples/cds-hooks](./examples/cds-hooks)
 
-- [examples/cds-hooks](./examples/cds-hooks): Triggering a Clinical Decision Support (CDS) app from within an EHR according to [CDS Hooks specifications](https://cds-hooks.org/specification/1.0/).
+This example triggers a Clinical Decision Support (CDS) app from within an EHR according to [CDS Hooks specifications](https://cds-hooks.org/specification/1.0/).
+
+The `/cds-services` route provides a CDS Hooks "discovery endpoint" that dictates to an EHR which
+CDS services the SMART app offers and serves configuration data for the EHR to consume.
+
+Once an EHR consumes this discovery endpoint and is configured to supply the dictated prefetch data,
+it will be able to launch from the `cds-services/patient-view` route. The EHR would post to this route a request body armed with FHIR authorization and prefetch data, among other things.
+
+In this example app, the access token is supplied to the FHIR client instance in order to make an asynchronous `MedicationOrder` request based on provided EHR patient. The resulting CDS Hook "card" greets the patient
+by name based on prefetch data and offers a count of medication orders based on the asynchronous request.
+(Note that if no data is required beyond that supplied in the prefetch, a card could be served without needing the FHIR client instance.)

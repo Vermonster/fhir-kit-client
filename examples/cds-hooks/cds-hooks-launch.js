@@ -13,11 +13,23 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Discovery endpoint
-// Lists available CDS hooks services
+/**
+ * This is an example of a SMART app responding to CDS Hooks requests from an EHR.
+ *
+ * In this example, there are two routes:
+ *  - /cds-services
+ *  - /cds-services/patient-view
+ *
+ * The EHR will call the cds-services route (the "discovery endpoint")
+ * in order to configure any available CDS services for this SMART application.
+ *
+ * Based on this configuration, the EHR may then post to /cds-services/patient-view
+ * with FHIR authorization details (i.e., access_token and scope) and prefetch data
+ * as prescribed by the cds-services discovery route. The provided access token may
+ * then be used by the FHIR client for further requests, as seen in the MedicationOrder example
+ * (though the CDS service may operate via prefetch data alone if desired).
+ */
 app.get('/cds-services', async (req, res) => {
-  // SEE http://cds-hooks.org/specification/1.0/#fhir-resource-access
-
   return res.status(200).json({
     'services': [
       {
@@ -37,19 +49,6 @@ app.get('/cds-services', async (req, res) => {
 
 
 app.post('/cds-services/patient-view', async (req, res) => {
-  // SEE http://cds-hooks.org/specification/1.0/#fhir-resource-access
-
-  // EXAMPLE:
-  // {
-  //   "fhirAuthorization" : {
-  //     "access_token" : "some-opaque-fhir-access-token",
-  //     "token_type" : "Bearer",
-  //     "expires_in" : 300,
-  //     "scope" : "patient/Patient.read patient/Observation.read",
-  //     "subject" : "cds-service4"
-  //   }
-  // }
-
   const { fhirServer, fhirAuthorization } = req.body;
 
   const tokenObject = {

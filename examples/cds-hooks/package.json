@@ -14,5 +14,8 @@
     "cors": "^2.8.4",
     "express": "^4.14.0",
     "simple-oauth2": "1.5.2"
+  },
+  "dependencies": {
+    "express-jwt": "^5.3.1"
   }
 }

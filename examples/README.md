@@ -48,3 +48,7 @@ it will be able to launch the `cds-services/patient-view` route. The EHR would p
 In this example app, the access token is supplied to the FHIR client instance in order to make an asynchronous `MedicationOrder` request based on the provided EHR patient. The resulting CDS Hook "card" greets the patient
 by name based on prefetch data and offers a count of medication orders based on the asynchronous request.
 (Note that if no data is required beyond that supplied in the prefetch, a card could be served without needing the FHIR client instance.)
+
+### Turning on JWT (JSON Web Token) Validation
+
+Note that if a secure FHIR server client ID and secret are available to test against, JWT validation can be turned on for the example CDS Hooks application by uncommenting lines 17-2o as indicated in `examples/cds-hooks/cds-hooks-launch.js` and replacing CLIENT_ID and CLIENT_SECRET throughout.

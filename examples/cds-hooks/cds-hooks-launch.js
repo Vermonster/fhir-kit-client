@@ -3,6 +3,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const jwt = require('express-jwt');
 const simpleOauthModule = require('simple-oauth2');
 const Client = require('../../lib/client');
 
@@ -11,6 +12,12 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+ // NOTE: To use against a secured server, uncomment lines 17-20 below.
+// app.use(jwt({
+//   secret: '<CLIENT_SECRET>',
+//   credentialsRequired: false
+// }));
 
 /**
  * This is an example of a SMART app responding to CDS Hooks requests from an EHR.
@@ -27,6 +34,7 @@ app.use(bodyParser.json());
  * as prescribed by the cds-services discovery route. The provided access token may
  * then be used by the FHIR client for further requests, as seen in the MedicationOrder example
  * (though the CDS service may operate via prefetch data alone if desired).
+ *
  */
 app.get('/cds-services', async (req, res) => (
   res.status(200).json({
@@ -45,7 +53,6 @@ app.get('/cds-services', async (req, res) => (
     ],
   })
 ));
-
 
 app.post('/cds-services/patient-view', async (req, res) => {
   const { fhirServer, fhirAuthorization } = req.body;

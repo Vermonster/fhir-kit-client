@@ -246,7 +246,15 @@
             }
           ]
         }
-      ]
+      ],
+      "interaction": [
+                {
+                    "code": "history-system"
+                },
+                {
+                    "code": "transaction"
+                }
+            ]
     }
   ]
 }

@@ -459,12 +459,12 @@ describe('Client', function () {
 
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
-          .post('/Patient')
+          .post('/Patient', newPatient)
           .reply(201, () => readStreamFor('patient-created.json'));
 
         const response = await this.fhirClient.create({
           resourceType: newPatient.resourceType,
-          resource: newPatient,
+          body: newPatient,
         });
 
         expect(response.resourceType).to.equal('OperationOutcome');
@@ -479,14 +479,14 @@ describe('Client', function () {
 
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
-          .post('/Foo')
+          .post('/Foo', newRecord)
           .reply(400, () => readStreamFor('unknown-resource.json'));
 
         let response;
         try {
           response = await this.fhirClient.create({
             resourceType: newRecord.resourceType,
-            resource: newRecord,
+            body: newRecord,
           });
         } catch (error) {
           expect(error.response.status).to.eq(400);

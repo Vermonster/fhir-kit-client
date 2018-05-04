@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const jwt = require('express-jwt');
+const jwksRsa = require('jwks-rsa')
 const simpleOauthModule = require('simple-oauth2');
 const Client = require('../../lib/client');
 
@@ -13,11 +14,43 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
- // NOTE: To use against a secured server, uncomment lines 17-20 below.
+  // Retrieve the JWKS and filter for potential signing keys.
+  // Extract the JWT from the request's authorization header.
+  // Decode the JWT and grab the kid property from the header.
+  // Find the signing key in the filtered JWKS with a matching kid property.
+  // Using the x5c property build a certificate which will be used to verify the JWT signature.
+
+
+// NOTE: To use against a secured server, uncomment lines 17-20 below.
 // app.use(jwt({
 //   secret: '<CLIENT_SECRET>',
 //   credentialsRequired: false
 // }));
+
+app.use(jwt({
+  // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: 'https://sb-auth.smarthealthit.org/jwk'
+  }),
+
+  // Validate the audience and the issuer.
+  audience: 'urn:my-resource-server',
+  issuer: 'https://sb-auth.smarthealthit.org/',
+  algorithms: [ 'RS256' ]
+}));
+
+
+
+
+
+
+
+
+
+
 
 /**
  * This is an example of a SMART app responding to CDS Hooks requests from an EHR.
@@ -65,6 +98,9 @@ app.post('/cds-services/patient-view', async (req, res) => {
 
   const fhirClient = new Client({ baseUrl: fhirServer });
   const { authorizeUrl } = await fhirClient.smartAuthMetadata();
+
+  console.log(`${authorizeUrl.protocol}//${authorizeUrl.host}`);
+  console.log(authorizeUrl.pathname);
 
   // Create a new oAuth2 object using the Client capability statement:
   const oauth2 = simpleOauthModule.create({

@@ -7,9 +7,14 @@ const jwksRsa = require('jwks-rsa');
 const simpleOauthModule = require('simple-oauth2');
 const Client = require('../../lib/client');
 
+// JWT DECODING
+// const jwt = require('jsonwebtoken');
+
 const app = express();
-// NOTE: To use against a secured server, uncomment lines 24-28 below.
-// const jwt = require('express-jwt');
+
+// JWT VALIDATION ONLY
+// NOTE: To use against a secured server, uncomment lines 12-14 below.
+const jwt = require('express-jwt');
 // app.use(jwt({
 //   secret: '<CLIENT_SECRET>',
 //   credentialsRequired: false
@@ -25,9 +30,10 @@ app.use(bodyParser.json());
 // Decode the JWT and grab the kid property from the header.
 // Find the signing key in the filtered JWKS with a matching kid property.
 // Using the x5c property build a certificate which will be used to verify the JWT signature.
-
+//
 app.use(jwt({
-  // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
+  // const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vc2FuZGJveC5jZHMtaG9va3Mub3JnIiwiYXVkOiI6Imh0dHBzOi8vZGJkOTg1ZWQubmdyb2suaW8vY2RzLXNlcnZpY2VzL3BhdGllbnQtdmlldyIsImV4cCI6MTUyNTcyMzk4NywiaWF0IjoxNTI1NzE3NTg3LCJqdGkiOiIyYzhkM2Q0YS0zYjkwLTQ5YTQtYTU4Yi1kY2I5NjRlNTUwNTgiLCJraWQiOiJyc2ExIn0.QVenCzXwkRA70AJZdpgF1ScBl8zOQOywG78RC8w8k9w';
+  // Dynamically provide a signing key based on the kid in the header and the signing keys provided by the JWKS endpoint.
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
@@ -40,15 +46,6 @@ app.use(jwt({
   issuer: 'https://sb-auth.smarthealthit.org/',
   algorithms: [ 'RS256' ]
 }));
-
-
-
-
-
-
-
-
-
 
 
 /**
@@ -68,8 +65,18 @@ app.use(jwt({
  * (though the CDS service may operate via prefetch data alone if desired).
  *
  */
-app.get('/cds-services', async (req, res) => (
-  res.status(200).json({
+app.get('/cds-services', async (req, res) => {
+  console.log(req.headers);
+
+  console.log(token);
+
+  const decodedToken = jwt.decode(token);
+
+  // decodedToken.kid = 'rsa1';
+  //
+  console.log(decodedToken);
+
+  return res.status(200).json({
     services: [
       {
         enabled: 'true',
@@ -83,8 +90,8 @@ app.get('/cds-services', async (req, res) => (
         },
       },
     ],
-  })
-));
+  });
+});
 
 app.post('/cds-services/patient-view', async (req, res) => {
   const { fhirServer, fhirAuthorization } = req.body;

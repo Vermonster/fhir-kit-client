@@ -3,29 +3,28 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const jwt = require('express-jwt');
-const jwksRsa = require('jwks-rsa')
+const jwksRsa = require('jwks-rsa');
 const simpleOauthModule = require('simple-oauth2');
 const Client = require('../../lib/client');
 
 const app = express();
+// NOTE: To use against a secured server, uncomment lines 24-28 below.
+// const jwt = require('express-jwt');
+// app.use(jwt({
+//   secret: '<CLIENT_SECRET>',
+//   credentialsRequired: false
+// }));
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-  // Retrieve the JWKS and filter for potential signing keys.
-  // Extract the JWT from the request's authorization header.
-  // Decode the JWT and grab the kid property from the header.
-  // Find the signing key in the filtered JWKS with a matching kid property.
-  // Using the x5c property build a certificate which will be used to verify the JWT signature.
-
-
-// NOTE: To use against a secured server, uncomment lines 17-20 below.
-// app.use(jwt({
-//   secret: '<CLIENT_SECRET>',
-//   credentialsRequired: false
-// }));
+// TODO?:
+// Retrieve the JWKS and filter for potential signing keys.
+// Extract the JWT from the request's authorization header.
+// Decode the JWT and grab the kid property from the header.
+// Find the signing key in the filtered JWKS with a matching kid property.
+// Using the x5c property build a certificate which will be used to verify the JWT signature.
 
 app.use(jwt({
   // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.

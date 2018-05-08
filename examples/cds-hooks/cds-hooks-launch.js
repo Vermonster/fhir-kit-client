@@ -3,50 +3,114 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const https = require('https');
+const jwt = require('jsonwebtoken');
+const jwkToPem = require('jwk-to-pem');
 const jwksRsa = require('jwks-rsa');
 const simpleOauthModule = require('simple-oauth2');
 const Client = require('../../lib/client');
-
-// JWT DECODING
-// const jwt = require('jsonwebtoken');
+const axios = require('axios');
+const fs = require('fs');
 
 const app = express();
 
-// JWT VALIDATION ONLY
-// NOTE: To use against a secured server, uncomment lines 12-14 below.
-const jwt = require('express-jwt');
-// app.use(jwt({
-//   secret: '<CLIENT_SECRET>',
-//   credentialsRequired: false
-// }));
+// openssl ec -in ecprivatekey.pem -pubout -out ecpublickey.pem
+
+// JWK Set Url
+// const jku = 'http://sandbox.cds-hooks.org/.well-known/jwks.json';
+// const pemPath = './ecpublickey.pem';
+
+const clientId = '<CLIENT_SECRET>';
+const clientSecret = '<CLIENT_KEY>';
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// TODO?:
-// Retrieve the JWKS and filter for potential signing keys.
-// Extract the JWT from the request's authorization header.
-// Decode the JWT and grab the kid property from the header.
-// Find the signing key in the filtered JWKS with a matching kid property.
-// Using the x5c property build a certificate which will be used to verify the JWT signature.
-//
-app.use(jwt({
-  // const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vc2FuZGJveC5jZHMtaG9va3Mub3JnIiwiYXVkOiI6Imh0dHBzOi8vZGJkOTg1ZWQubmdyb2suaW8vY2RzLXNlcnZpY2VzL3BhdGllbnQtdmlldyIsImV4cCI6MTUyNTcyMzk4NywiaWF0IjoxNTI1NzE3NTg3LCJqdGkiOiIyYzhkM2Q0YS0zYjkwLTQ5YTQtYTU4Yi1kY2I5NjRlNTUwNTgiLCJraWQiOiJyc2ExIn0.QVenCzXwkRA70AJZdpgF1ScBl8zOQOywG78RC8w8k9w';
-  // Dynamically provide a signing key based on the kid in the header and the signing keys provided by the JWKS endpoint.
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: 'https://sb-auth.smarthealthit.org/jwk'
-  }),
+async function authenticateEHR(req, res, next) {
+  const token = req.headers.authorization.replace('Bearer ', '');
+  const decodedJwt = jwt.decode(token, { complete: true });
+  const asymmetricAlgs = ['ES256', 'ES384', 'ES384', 'RS256', 'RS384', 'RS512'];
+  const alg = decodedJwt.header.alg;
+  const jku = decodedJwt.header.jku;
 
-  // Validate the audience and the issuer.
-  audience: 'urn:my-resource-server',
-  issuer: 'https://sb-auth.smarthealthit.org/',
-  algorithms: [ 'RS256' ]
-}));
+  console.log('token: ' + token);
+  console.log('decodedJwt: ' + JSON.stringify(decodedJwt));
 
+  let pem, verified;
+
+  if (asymmetricAlgs.includes(alg)) {
+    if (typeof pemPath !== 'undefined') {
+      // WITH PUBLIC KEY
+      pem = fs.readFileSync(pemPath);
+    }
+    else if (typeof jku !== 'undefined') {
+      // WITH JWKS.JSON
+      const jwks = await axios.get(jku);
+      pem = jwkToPem(jwks.data.keys[0]);
+    }
+
+    try {
+      verified = jwt.verify(token, pem, { algorithms: [alg] });
+      console.log('Verified with PEM');
+    } catch(error) {
+      console.error('Invalid Token Error', error.message);
+      return res.status(401).json('Authentication failed');
+    }
+  }
+
+  console.log('Authenticated Token: ' + JSON.stringify(verified));
+
+  return next();
+}
+
+async function authenticateClient(req, res, next) {
+  const { fhirServer, fhirAuthorization } = req.body;
+
+  if (typeof fhirAuthorization === 'undefined') {
+    return next();
+  } else {
+    const tokenObject = {
+      access_token: fhirAuthorization.access_token,
+      expires_in: fhirAuthorization.expires_in,
+      scope: fhirAuthorization.scope,
+    };
+
+    req.fhirClient = new Client({ baseUrl: fhirServer });
+    const { authorizeUrl } = await req.fhirClient.smartAuthMetadata();
+
+    console.log(`${authorizeUrl.protocol}//${authorizeUrl.host}`);
+    console.log(authorizeUrl.pathname);
+
+    // Create a new oAuth2 object using the Client capability statement:
+    const oauth2 = simpleOauthModule.create({
+      client: {
+        id: clientId,
+        secret: clientSecret,
+      },
+      auth: {
+        tokenHost: fhirServer,
+        authorizeHost: `${authorizeUrl.protocol}//${authorizeUrl.host}`,
+        authorizePath: authorizeUrl.pathname,
+      },
+    });
+
+    try {
+      // Create the access token wrapper
+      const { token } = oauth2.accessToken.create(tokenObject);
+
+      console.log('The token is : ', token);
+
+      req.fhirClient.bearerToken = token.access_token;
+
+    } catch (error) {
+      console.error('Access Token Error', error.message);
+      return res.status(500).json('Authentication failed');
+    }
+
+    return next();
+  }
+}
 
 /**
  * This is an example of a SMART app responding to CDS Hooks requests from an EHR.
@@ -65,17 +129,7 @@ app.use(jwt({
  * (though the CDS service may operate via prefetch data alone if desired).
  *
  */
-app.get('/cds-services', async (req, res) => {
-  console.log(req.headers);
-
-  console.log(token);
-
-  const decodedToken = jwt.decode(token);
-
-  // decodedToken.kid = 'rsa1';
-  //
-  console.log(decodedToken);
-
+app.get('/cds-services', authenticateEHR, async (req, res) => {
   return res.status(200).json({
     services: [
       {
@@ -86,69 +140,36 @@ app.get('/cds-services', async (req, res) => {
         title: 'Patient Greeter with Med Count',
         description: 'Example of CDS service greeting patient based on prefetch and counting meds with FHIR Kit client.',
         prefetch: {
-          patientToGreet: 'Patient/{{Patient.id}}',
+          // patientToGreet: 'Patient/{{Patient.id}}',
+          patientToGreet: 'Patient/{{context.patientId}}'
         },
       },
     ],
   });
 });
 
-app.post('/cds-services/patient-view', async (req, res) => {
-  const { fhirServer, fhirAuthorization } = req.body;
+app.post('/cds-services/patient-view', [ authenticateEHR, authenticateClient ], async (req, res) => {
+  let patientGreeting = `Hello ${req.body.prefetch.patientToGreet.resource.name[0].given[0]}! `;
 
-  const tokenObject = {
-    access_token: fhirAuthorization.access_token,
-    expires_in: fhirAuthorization.expires_in,
-    scope: fhirAuthorization.scope,
-  };
-
-  const fhirClient = new Client({ baseUrl: fhirServer });
-  const { authorizeUrl } = await fhirClient.smartAuthMetadata();
-
-  console.log(`${authorizeUrl.protocol}//${authorizeUrl.host}`);
-  console.log(authorizeUrl.pathname);
-
-  // Create a new oAuth2 object using the Client capability statement:
-  const oauth2 = simpleOauthModule.create({
-    client: {
-      id: '<CLIENT_ID>',
-      secret: '<CLIENT_SECRET>',
-    },
-    auth: {
-      tokenHost: fhirServer,
-      authorizeHost: `${authorizeUrl.protocol}//${authorizeUrl.host}`,
-      authorizePath: authorizeUrl.pathname,
-    },
-  });
-
-  try {
-    // Create the access token wrapper
-    const { token } = oauth2.accessToken.create(tokenObject);
-
-    console.log('The token is : ', token);
-
-    fhirClient.bearerToken = token.access_token;
-
-    const medOrders = await fhirClient.search({ resourceType: 'MedicationOrder', searchParams: { patient: req.body.patient } });
-
-    return res.status(200).json({
-      cards: [
-        {
-          summary: `Hello ${req.body.prefetch.patientToGreet.resource.name[0].given[0]}! You have ${medOrders.total} medication orders on file.`,
-          source: {
-            label: 'Patient greeting and med count service',
-          },
-          indicator: 'info',
-          suggestions: [],
-          links: [],
-        },
-      ],
-      decisions: [],
-    });
-  } catch (error) {
-    console.error('Access Token Error', error.message);
-    return res.status(500).json('Authentication failed');
+  if (typeof req.fhirClient !== 'undefined') {
+    const medOrders = await req.fhirClient.search({ resourceType: 'MedicationOrder', searchParams: { patient: req.body.patient } });
+    patientGreeting += `You have ${medOrders.total} medication orders on file.`;
   }
+
+  return res.status(200).json({
+    cards: [
+      {
+        summary: patientGreeting,
+        source: {
+          label: 'Patient greeting and med count service',
+        },
+        indicator: 'info',
+        suggestions: [],
+        links: [],
+      },
+    ],
+    decisions: [],
+  });
 });
 
 app.listen(3000, () => {

@@ -18,6 +18,10 @@ const app = express();
 const clientId = '<CLIENT_SECRET>';
 const clientSecret = '<CLIENT_KEY>';
 
+const whitelistedEHRs = [
+  { iss: 'https://sandbox.cds-hooks.org', sub: '48163c5e-88b5-4cb3-92d3-23b800caa927' },
+];
+
 /**
  * This is an example of a SMART app responding to CDS Hooks requests from an EHR.
  *
@@ -55,12 +59,17 @@ async function authenticateEHR(req, res, next) {
   const decodedJwt = jwt.decode(token, { complete: true });
   const asymmetricAlgs = ['ES256', 'ES384', 'ES384', 'RS256', 'RS384', 'RS512'];
   const { alg, jku, kid } = decodedJwt.header;
-
-  console.log(`token: ${token}`);
-  console.log(`decodedJwt: ${JSON.stringify(decodedJwt)}`);
+  const { iss, sub } = decodedJwt.payload;
 
   let pem;
   let verified;
+
+  const isWhitelisted = whitelistedEHRs.find(ehr => ehr.iss === iss && ehr.sub === sub);
+
+  if (!isWhitelisted) { return res.status(401).json('Authentication failed'); }
+
+  console.log(`token: ${token}`);
+  console.log(`decodedJwt: ${JSON.stringify(decodedJwt)}`);
 
   if (asymmetricAlgs.includes(alg)) {
     if (typeof pemPath !== 'undefined') {

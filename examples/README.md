@@ -45,10 +45,22 @@ CDS services the SMART app offers and serves configuration data for the EHR to c
 Once an EHR consumes this discovery endpoint and is configured to supply the dictated prefetch data,
 it will be able to launch the `cds-services/patient-view` route. The EHR would post to this route a request body armed with FHIR authorization, prefetch data, and more.
 
-In this example app, the access token is supplied to the FHIR client instance in order to make an asynchronous `MedicationOrder` request based on the provided EHR patient. The resulting CDS Hook "card" greets the patient
+In this example app, an access token may be supplied to the FHIR client instance in order to make an asynchronous `MedicationOrder` request based on the provided EHR patient. The resulting CDS Hook "card" greets the patient
 by name based on prefetch data and offers a count of medication orders based on the asynchronous request.
 (Note that if no data is required beyond that supplied in the prefetch, a card could be served without needing the FHIR client instance.)
 
-### Turning on JWT (JSON Web Token) Validation
+### JWT (JSON Web Token) Validation
 
-Note that if a secure FHIR server client ID and secret are available to test against, JWT validation can be turned on for the example CDS Hooks application by uncommenting lines 17-2o as indicated in `examples/cds-hooks/cds-hooks-launch.js` and replacing CLIENT_ID and CLIENT_SECRET throughout.
+All requests in the example are first directed through the `authenticateEHR` middleware.
+
+`authenticateEHR` expects a JSON Web Token (JWT) from the EHR's authorization request header. It is used to establish that the request is from a trusted party. The JWT can be verified by one of 3 different ways in this example:
+
+  1) By setting a PEM file in the current directory on line 15 of `cds-hooks-launch.js`.
+  2) By generating a PEM file from a `jku` variable set on line 16.
+  3) By generating a PEM file from a `jku` in the decoded JWT header.
+
+The library `jwk-to-pem` takes RSA or EC fields from a JWK to generate a public key. Both RSA and ECC algorithms are supported.
+
+To generate a public key through a private key from the EHR, use openssl, .e.g:
+
+`openssl ec -in ecprivatekey.pem -pubout -out ecpublickey.pem`

@@ -33,6 +33,7 @@ async function authenticateEHR(req, res, next) {
   const asymmetricAlgs = ['ES256', 'ES384', 'ES384', 'RS256', 'RS384', 'RS512'];
   const alg = decodedJwt.header.alg;
   const jku = decodedJwt.header.jku;
+  const kid = decodedJwt.header.kid;
 
   console.log('token: ' + token);
   console.log('decodedJwt: ' + JSON.stringify(decodedJwt));
@@ -47,7 +48,9 @@ async function authenticateEHR(req, res, next) {
     else if (typeof jku !== 'undefined') {
       // WITH JWKS.JSON
       const jwks = await axios.get(jku);
-      pem = jwkToPem(jwks.data.keys[0]);
+      const targetJwk = jwks.data.keys.find((key) => { return key.kid === kid });
+
+      pem = jwkToPem(targetJwk);
     }
 
     try {

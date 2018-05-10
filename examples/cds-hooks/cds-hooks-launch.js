@@ -37,7 +37,7 @@ const whitelistedEHRs = [
 
  * Before every request, the EHR is first directed through the `authenticateEHR` middleware.
  *
- * authenticateEHR` expects a JSON Web Token (JWT) from the EHR's authorization
+ * `authenticateEHR` expects a JSON Web Token (JWT) from the EHR's authorization
  * request header. It is used to establish that the request is from a trusted party.
  * The JWT can be verified by one of 3 different ways in this example:
  *

@@ -15,8 +15,7 @@
     "cors": "^2.8.4",
     "express": "^4.14.0",
     "jsonwebtoken": "^8.2.1",
-    "jwk-to-pem": "^2.0.0",
-    "simple-oauth2": "1.5.2"
+    "jwk-to-pem": "^2.0.0"
   },
   "dependencies": {}
 }

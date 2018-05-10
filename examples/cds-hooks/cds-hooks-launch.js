@@ -5,18 +5,15 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const jwkToPem = require('jwk-to-pem');
-const simpleOauthModule = require('simple-oauth2');
 const Client = require('../../lib/client');
 const axios = require('axios');
 const fs = require('fs');
 
 const app = express();
 
+/* global pemPath */
 // const pemPath = './ecpublickey.pem';
 // const jku = 'http://sandbox.cds-hooks.org/.well-known/jwks.json';
-
-const clientId = '<CLIENT_SECRET>';
-const clientSecret = '<CLIENT_KEY>';
 
 const whitelistedEHRs = [
   { iss: 'https://sandbox.cds-hooks.org', sub: '48163c5e-88b5-4cb3-92d3-23b800caa927' },
@@ -27,7 +24,7 @@ const whitelistedEHRs = [
  *
  * In this example, there are two routes:
  *  - /cds-services
- *  - /cds-services/patient-view
+ *  - /cds-services/patient-greeter
  *
  * The EHR will call the cds-services route (the "discovery endpoint")
  * in order to configure any available CDS services for this SMART application.
@@ -108,42 +105,10 @@ async function authenticateClient(req, res, next) {
     return next();
   }
 
-  const tokenObject = {
-    access_token: fhirAuthorization.access_token,
-    expires_in: fhirAuthorization.expires_in,
-    scope: fhirAuthorization.scope,
-  };
-
   req.fhirClient = new Client({ baseUrl: fhirServer });
-  const { authorizeUrl } = await req.fhirClient.smartAuthMetadata();
 
-  console.log(`${authorizeUrl.protocol}//${authorizeUrl.host}`);
-  console.log(authorizeUrl.pathname);
-
-  // Create a new oAuth2 object using the Client capability statement:
-  const oauth2 = simpleOauthModule.create({
-    client: {
-      id: clientId,
-      secret: clientSecret,
-    },
-    auth: {
-      tokenHost: fhirServer,
-      authorizeHost: `${authorizeUrl.protocol}//${authorizeUrl.host}`,
-      authorizePath: authorizeUrl.pathname,
-    },
-  });
-
-  try {
-    // Create the access token wrapper
-    const { token } = oauth2.accessToken.create(tokenObject);
-
-    console.log('The token is : ', token);
-
-    req.fhirClient.bearerToken = token.access_token;
-  } catch (error) {
-    console.error('Access Token Error', error.message);
-    return res.status(500).json('Authentication failed');
-  }
+  console.log('The token is : ', fhirAuthorization.access_token);
+  req.fhirClient.bearerToken = fhirAuthorization.access_token;
 
   return next();
 }
@@ -152,10 +117,8 @@ app.get('/cds-services', authenticateEHR, async (req, res) =>
   res.status(200).json({
     services: [
       {
-        enabled: 'true',
         hook: 'patient-view',
-        id: 'patient-view',
-        name: 'Patient Greeter with Med Count',
+        id: 'patient-greeter',
         title: 'Patient Greeter with Med Count',
         description: 'Example of CDS service greeting patient based on prefetch and counting meds with FHIR Kit client.',
         prefetch: {
@@ -165,11 +128,11 @@ app.get('/cds-services', authenticateEHR, async (req, res) =>
     ],
   }));
 
-app.post('/cds-services/patient-view', [authenticateEHR, authenticateClient], async (req, res) => {
+app.post('/cds-services/patient-greeter', [authenticateEHR, authenticateClient], async (req, res) => {
   let patientGreeting = `Hello ${req.body.prefetch.patientToGreet.resource.name[0].given[0]}! `;
 
   if (typeof req.fhirClient !== 'undefined') {
-    const medOrders = await req.fhirClient.search({ resourceType: 'MedicationOrder', searchParams: { patient: req.body.patient } });
+    const medOrders = await req.fhirClient.search({ resourceType: 'MedicationOrder', searchParams: { patient: req.body.context.patientId } });
     patientGreeting += `You have ${medOrders.total} medication orders on file.`;
   }
 
@@ -181,11 +144,8 @@ app.post('/cds-services/patient-view', [authenticateEHR, authenticateClient], as
           label: 'Patient greeting and med count service',
         },
         indicator: 'info',
-        suggestions: [],
-        links: [],
       },
     ],
-    decisions: [],
   });
 });
 

@@ -39,11 +39,11 @@ To run, follow the same instructions above listed for the *examples/smart-ehr* e
 
 This example triggers a Clinical Decision Support (CDS) app from within an EHR according to [CDS Hooks specifications](https://cds-hooks.org/specification/1.0/).
 
-The `/cds-services` route provides a CDS Hooks "discovery endpoint" that dictates to an EHR which
+The `/cds-services` route provides a CDS Hooks "discovery endpoint" that informs the EHR which
 CDS services the SMART app offers and serves configuration data for the EHR to consume.
 
-Once an EHR consumes this discovery endpoint and is configured to supply the dictated prefetch data,
-it will be able to launch the `cds-services/patient-view` route. The EHR would post to this route a request body armed with FHIR authorization, prefetch data, and more.
+Once an EHR consumes this discovery endpoint and is configured to supply the specified prefetch data,
+it will be able to launch the `cds-services/patient-greeter` route. The EHR would post to this route a request body with FHIR authorization details, prefetch data, and more.
 
 In this example app, an access token may be supplied to the FHIR client instance in order to make an asynchronous `MedicationOrder` request based on the provided EHR patient. The resulting CDS Hook "card" greets the patient
 by name based on prefetch data and offers a count of medication orders based on the asynchronous request.

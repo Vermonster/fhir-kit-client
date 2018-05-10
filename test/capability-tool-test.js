@@ -47,7 +47,7 @@ describe('CapabilityTool', function () {
       expect(birthDateSearchSupport).to.be.true;
     });
 
-    it('returns false when a specific search param capability is in the capability statement', function () {
+    it('returns false when a specific search param capability is not in the capability statement', function () {
       const birthDateSearchSupport = this.capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'searchParam', where: { name: 'foo' } });
 
       expect(birthDateSearchSupport).to.be.false;

@@ -248,13 +248,60 @@
         }
       ],
       "interaction": [
-                {
-                    "code": "history-system"
-                },
-                {
-                    "code": "transaction"
-                }
-            ]
+        {
+          "code": "history-system"
+        },
+        {
+          "code": "batch"
+        },
+        {
+          "code": "search-system"
+        }
+      ],
+      "searchParam": [
+        {
+          "name": "_text",
+          "definition": "http://hl7.org/fhir/SearchParameter/DomainResource-text",
+          "type": "string",
+          "documentation": "Search on the narrative of the resource"
+        },
+        {
+          "name": "_query",
+          "definition": "http://hl7.org/fhir/SearchParameter/Resource-query",
+          "type": "token",
+          "documentation": "A custom search profile that describes a specific defined query operation"
+        },
+        {
+          "name": "_profile",
+          "definition": "http://hl7.org/fhir/SearchParameter/Resource-profile",
+          "type": "uri",
+          "documentation": "Profiles this resource claims to conform to"
+        },
+        {
+          "name": "_lastUpdated",
+          "definition": "http://hl7.org/fhir/SearchParameter/Resource-lastUpdated",
+          "type": "date",
+          "documentation": "When the resource version last changed"
+        },
+        {
+          "name": "_security",
+          "definition": "http://hl7.org/fhir/SearchParameter/Resource-security",
+          "type": "token",
+          "documentation": "Security Labels applied to this resource"
+        },
+        {
+          "name": "_id",
+          "definition": "http://hl7.org/fhir/SearchParameter/Resource-id",
+          "type": "token",
+          "documentation": "Logical id of this artifact"
+        },
+        {
+          "name": "_content",
+          "definition": "http://hl7.org/fhir/SearchParameter/Resource-content",
+          "type": "string",
+          "documentation": "Search on the entire content of the resource"
+        }
+      ]
     }
   ]
 }

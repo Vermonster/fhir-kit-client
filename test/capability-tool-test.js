@@ -16,6 +16,62 @@ describe('CapabilityTool', function () {
     this.capabilities = new CapabilityTool(capabilityStatement);
   });
 
+  describe('#serverCan', () => {
+    it('returns true when a server interaction is supported', function() {
+      const batchSupport = this.capabilities.serverCan('batch');
+
+      expect(batchSupport).to.be.true;
+    });
+
+    it('returns false when a server interaction is not supported', function() {
+      const transactionSupport = this.capabilities.serverCan('transaction');
+
+      expect(transactionSupport).to.be.false;
+    });
+  });
+
+  describe('#resourceCan', () => {
+    it('returns true when a resource interaction is supported', function() {
+      const patientReadSupport = this.capabilities.resourceCan('Patient', 'read');
+
+      expect(patientReadSupport).to.be.true;
+    });
+
+    it('returns false when a resource interaction is not supported', function() {
+      const patientFooSupport = this.capabilities.resourceCan('Patient', 'foo');
+
+      expect(patientFooSupport).to.be.false;
+    });
+  });
+
+  describe('#serverSearch', () => {
+    it('returns true when a server-level search parameter is supported', function() {
+      const textSearchSupport = this.capabilities.serverSearch('_text');
+
+      expect(textSearchSupport).to.be.true;
+    });
+
+    it('returns false when a server-level search parameter is not supported', function() {
+      const tagSearchSupport = this.capabilities.serverSearch('_tag');
+
+      expect(tagSearchSupport).to.be.false;
+    });
+  });
+
+  describe('#resourceSearch', () => {
+    it('returns true when a resource-level search parameter is supported', function() {
+      const genderSearchSupport = this.capabilities.resourceSearch('Patient', 'gender');
+
+      expect(genderSearchSupport).to.be.true;
+    });
+
+    it('returns false when a resource-level search parameter is not supported', function() {
+      const fooSearchSupport = this.capabilities.serverSearch('foo');
+
+      expect(fooSearchSupport).to.be.false;
+    });
+  });
+
   describe('#supportFor', () => {
     it('returns false when no arguments are passed', function () {
       const noArgSupport = this.capabilities.supportFor({});
@@ -30,9 +86,9 @@ describe('CapabilityTool', function () {
     });
 
     it('returns false when a resource interaction capability is not in the capability statement', function () {
-      const patientReadSupport = this.capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'interaction', where: { code: 'foo' } });
+      const patientFooSupport = this.capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'interaction', where: { code: 'foo' } });
 
-      expect(patientReadSupport).to.be.false;
+      expect(patientFooSupport).to.be.false;
     });
 
     it('returns true when a conditional create capability is in the capability statement', function () {
@@ -48,9 +104,9 @@ describe('CapabilityTool', function () {
     });
 
     it('returns false when a specific search param capability is not in the capability statement', function () {
-      const birthDateSearchSupport = this.capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'searchParam', where: { name: 'foo' } });
+      const fooSearchSupport = this.capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'searchParam', where: { name: 'foo' } });
 
-      expect(birthDateSearchSupport).to.be.false;
+      expect(fooSearchSupport).to.be.false;
     });
 
     it('returns true when conditional delete is in the capability statement', function () {

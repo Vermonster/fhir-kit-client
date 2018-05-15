@@ -190,4 +190,12 @@ describe('CapabilityTool', function () {
       expect(searchIncludeContents).to.deep.equal(expectedSearchIncludes);
     });
   });
+
+  describe('#serverCapabilities', () => {
+    it('returns all REST capabilities for server mode in the capability statement', function() {
+      const serverCapabilities = this.capabilities.serverCapabilities();
+
+      expect(serverCapabilities).to.equal(this.capabilities.capabilityStatement.rest[0]);
+    });
+  });
 });

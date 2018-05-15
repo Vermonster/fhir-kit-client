@@ -17,13 +17,13 @@ describe('CapabilityTool', function () {
   });
 
   describe('#serverCan', () => {
-    it('returns true when a server interaction is supported', function() {
+    it('returns true when a server interaction is supported', function () {
       const batchSupport = this.capabilities.serverCan('batch');
 
       expect(batchSupport).to.be.true;
     });
 
-    it('returns false when a server interaction is not supported', function() {
+    it('returns false when a server interaction is not supported', function () {
       const transactionSupport = this.capabilities.serverCan('transaction');
 
       expect(transactionSupport).to.be.false;
@@ -31,13 +31,13 @@ describe('CapabilityTool', function () {
   });
 
   describe('#resourceCan', () => {
-    it('returns true when a resource interaction is supported', function() {
+    it('returns true when a resource interaction is supported', function () {
       const patientReadSupport = this.capabilities.resourceCan('Patient', 'read');
 
       expect(patientReadSupport).to.be.true;
     });
 
-    it('returns false when a resource interaction is not supported', function() {
+    it('returns false when a resource interaction is not supported', function () {
       const patientFooSupport = this.capabilities.resourceCan('Patient', 'foo');
 
       expect(patientFooSupport).to.be.false;
@@ -45,13 +45,13 @@ describe('CapabilityTool', function () {
   });
 
   describe('#serverSearch', () => {
-    it('returns true when a server-level search parameter is supported', function() {
+    it('returns true when a server-level search parameter is supported', function () {
       const textSearchSupport = this.capabilities.serverSearch('_text');
 
       expect(textSearchSupport).to.be.true;
     });
 
-    it('returns false when a server-level search parameter is not supported', function() {
+    it('returns false when a server-level search parameter is not supported', function () {
       const tagSearchSupport = this.capabilities.serverSearch('_tag');
 
       expect(tagSearchSupport).to.be.false;
@@ -59,13 +59,13 @@ describe('CapabilityTool', function () {
   });
 
   describe('#resourceSearch', () => {
-    it('returns true when a resource-level search parameter is supported', function() {
+    it('returns true when a resource-level search parameter is supported', function () {
       const genderSearchSupport = this.capabilities.resourceSearch('Patient', 'gender');
 
       expect(genderSearchSupport).to.be.true;
     });
 
-    it('returns false when a resource-level search parameter is not supported', function() {
+    it('returns false when a resource-level search parameter is not supported', function () {
       const fooSearchSupport = this.capabilities.serverSearch('foo');
 
       expect(fooSearchSupport).to.be.false;
@@ -192,7 +192,7 @@ describe('CapabilityTool', function () {
   });
 
   describe('#serverCapabilities', () => {
-    it('returns all REST capabilities for server mode in the capability statement', function() {
+    it('returns all REST capabilities for server mode in the capability statement', function () {
       const serverCapabilities = this.capabilities.serverCapabilities();
 
       expect(serverCapabilities).to.equal(this.capabilities.capabilityStatement.rest[0]);

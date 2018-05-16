@@ -162,6 +162,18 @@ describe('CapabilityTool', function () {
       expect(noArgSupport).to.be.false;
     });
 
+    it('returns false when resourceCapabilities are undefined', function () {
+      const undefinedSearch = this.capabilities.searchParamsFor({ resourceType: 'foo' });
+
+      expect(undefinedSearch).to.be.false;
+    });
+
+    it('returns false when searchParams are undefined', function () {
+      const undefinedSearch = this.capabilities.searchParamsFor({ resourceType: 'Binary' });
+
+      expect(undefinedSearch).to.be.false;
+    });
+
     it('returns an array of supported search params for the searchParam capability', function () {
       const supportedSearchParams = this.capabilities.searchParamsFor({ resourceType: 'Patient', capabilityType: 'searchParam' });
       const expectedSearchParams = ['_language', 'birthdate', 'deceased', 'address-state', 'gender', 'animal-species', 'link', 'language', 'animal-breed', 'address-country', 'death-date', 'phonetic', 'telecom', 'address-city', 'email', 'given', 'identifier', 'address', 'general-practitioner', 'active', 'address-postalcode', 'phone', 'organization', 'address-use', 'name', '_id', 'family'];

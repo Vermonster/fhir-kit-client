@@ -245,6 +245,53 @@
               "documentation": "A portion of the family name of the patient"
             }
           ]
+        },
+        {
+          "type": "Binary",
+          "profile": {
+            "reference": "http://hl7.org/fhir/StructureDefinition/Binary"
+          },
+          "interaction": [
+            {
+              "code": "read",
+              "documentation": "Implemented per the specification (or Insert other doco here)"
+            },
+            {
+              "code": "vread",
+              "documentation": "Implemented per the specification (or Insert other doco here)"
+            },
+            {
+              "code": "update",
+              "documentation": "Implemented per the specification (or Insert other doco here)"
+            },
+            {
+              "code": "delete",
+              "documentation": "Implemented per the specification (or Insert other doco here)"
+            },
+            {
+              "code": "history-instance",
+              "documentation": "Implemented per the specification (or Insert other doco here)"
+            },
+            {
+              "code": "history-type",
+              "documentation": "Implemented per the specification (or Insert other doco here)"
+            },
+            {
+              "code": "create",
+              "documentation": "Implemented per the specification (or Insert other doco here)"
+            },
+            {
+              "code": "search-type",
+              "documentation": "Implemented per the specification (or Insert other doco here)"
+            }
+          ],
+          "conditionalCreate": true,
+          "conditionalUpdate": true,
+          "conditionalDelete": "multiple",
+          "referencePolicy": [
+            "literal",
+            "logical"
+          ]
         }
       ],
       "interaction": [

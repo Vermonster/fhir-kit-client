@@ -74,7 +74,7 @@ describe('CapabilityTool', function () {
 
   describe('#supportFor', function () {
     it('returns false when no arguments are passed', function () {
-      const noArgSupport = this.capabilities.supportFor({});
+      const noArgSupport = this.capabilities.supportFor();
 
       expect(noArgSupport).to.be.false;
     });
@@ -142,7 +142,7 @@ describe('CapabilityTool', function () {
 
   describe('#interactionsFor', function () {
     it('returns false when no arguments are passed', function () {
-      const noArgSupport = this.capabilities.interactionsFor({});
+      const noArgSupport = this.capabilities.interactionsFor();
 
       expect(noArgSupport).to.be.false;
     });
@@ -157,7 +157,7 @@ describe('CapabilityTool', function () {
 
   describe('#searchParamsFor', function () {
     it('returns false when no arguments are passed', function () {
-      const noArgSupport = this.capabilities.interactionsFor({});
+      const noArgSupport = this.capabilities.searchParamsFor();
 
       expect(noArgSupport).to.be.false;
     });
@@ -182,9 +182,17 @@ describe('CapabilityTool', function () {
     });
   });
 
+  describe('#resourceCapabilities', function () {
+    it('returns undefined when no arguments are passed', function () {
+      const noArgSupport = this.capabilities.resourceCapabilities();
+
+      expect(noArgSupport).to.be.undefined;
+    });
+  });
+
   describe('#capabilityContents', function () {
     it('returns undefined when no arguments are passed', function () {
-      const noArgSupport = this.capabilities.capabilityContents({});
+      const noArgSupport = this.capabilities.capabilityContents();
 
       expect(noArgSupport).to.be.undefined;
     });

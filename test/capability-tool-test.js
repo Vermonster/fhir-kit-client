@@ -16,7 +16,7 @@ describe('CapabilityTool', function () {
     this.capabilities = new CapabilityTool(capabilityStatement);
   });
 
-  describe('#serverCan', () => {
+  describe('#serverCan', function () {
     it('returns true when a server interaction is supported', function () {
       const batchSupport = this.capabilities.serverCan('batch');
 
@@ -30,7 +30,7 @@ describe('CapabilityTool', function () {
     });
   });
 
-  describe('#resourceCan', () => {
+  describe('#resourceCan', function () {
     it('returns true when a resource interaction is supported', function () {
       const patientReadSupport = this.capabilities.resourceCan('Patient', 'read');
 
@@ -44,7 +44,7 @@ describe('CapabilityTool', function () {
     });
   });
 
-  describe('#serverSearch', () => {
+  describe('#serverSearch', function () {
     it('returns true when a server-level search parameter is supported', function () {
       const textSearchSupport = this.capabilities.serverSearch('_text');
 
@@ -58,7 +58,7 @@ describe('CapabilityTool', function () {
     });
   });
 
-  describe('#resourceSearch', () => {
+  describe('#resourceSearch', function () {
     it('returns true when a resource-level search parameter is supported', function () {
       const genderSearchSupport = this.capabilities.resourceSearch('Patient', 'gender');
 
@@ -72,50 +72,50 @@ describe('CapabilityTool', function () {
     });
   });
 
-  describe('#supportFor', () => {
+  describe('#supportFor', function () {
     it('returns false when no arguments are passed', function () {
       const noArgSupport = this.capabilities.supportFor({});
 
       expect(noArgSupport).to.be.false;
     });
 
-    it('returns true when a resource interaction capability is in the capability statement', function () {
+    it('returns true when a resource-level interaction capability is in the capability statement', function () {
       const patientReadSupport = this.capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'interaction', where: { code: 'read' } });
 
       expect(patientReadSupport).to.be.true;
     });
 
-    it('returns false when a resource interaction capability is not in the capability statement', function () {
+    it('returns false when a resource-level interaction capability is not in the capability statement', function () {
       const patientFooSupport = this.capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'interaction', where: { code: 'foo' } });
 
       expect(patientFooSupport).to.be.false;
     });
 
-    it('returns true when a conditional create capability is in the capability statement', function () {
+    it('returns true when a resource-level capability is in the capability statement', function () {
       const conditionalCreateSupport = this.capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'conditionalCreate' });
 
       expect(conditionalCreateSupport).to.be.true;
     });
 
-    it('returns true when a specific search param capability is in the capability statement', function () {
+    it('returns true when a resource-level search param capability is in the capability statement', function () {
       const birthDateSearchSupport = this.capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'searchParam', where: { name: 'birthdate' } });
 
       expect(birthDateSearchSupport).to.be.true;
     });
 
-    it('returns false when a specific search param capability is not in the capability statement', function () {
+    it('returns false when a resource-level search param capability is not in the capability statement', function () {
       const fooSearchSupport = this.capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'searchParam', where: { name: 'foo' } });
 
       expect(fooSearchSupport).to.be.false;
     });
 
-    it('returns true when conditional delete is in the capability statement', function () {
+    it('returns true when a resource-level conditional delete capability is in the capability statement', function () {
       const conditionalDeleteSupport = this.capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'conditionalDelete' });
 
       expect(conditionalDeleteSupport).to.be.true;
     });
 
-    it('returns false when resource is not in the capability statement', function () {
+    it('returns false when a resource is not in the capability statement', function () {
       const fooSupport = this.capabilities.supportFor({ resourceType: 'Foo', capabilityType: 'interactions' });
 
       expect(fooSupport).to.be.false;
@@ -140,7 +140,7 @@ describe('CapabilityTool', function () {
     });
   });
 
-  describe('#interactionsFor', () => {
+  describe('#interactionsFor', function () {
     it('returns false when no arguments are passed', function () {
       const noArgSupport = this.capabilities.interactionsFor({});
 
@@ -155,7 +155,7 @@ describe('CapabilityTool', function () {
     });
   });
 
-  describe('#searchParamsFor', () => {
+  describe('#searchParamsFor', function () {
     it('returns false when no arguments are passed', function () {
       const noArgSupport = this.capabilities.interactionsFor({});
 
@@ -170,7 +170,7 @@ describe('CapabilityTool', function () {
     });
   });
 
-  describe('#capabilityContents', () => {
+  describe('#capabilityContents', function () {
     it('returns undefined when no arguments are passed', function () {
       const noArgSupport = this.capabilities.capabilityContents({});
 
@@ -191,7 +191,7 @@ describe('CapabilityTool', function () {
     });
   });
 
-  describe('#serverCapabilities', () => {
+  describe('#serverCapabilities', function () {
     it('returns all REST capabilities for server mode in the capability statement', function () {
       const serverCapabilities = this.capabilities.serverCapabilities();
 

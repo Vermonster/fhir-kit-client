@@ -129,7 +129,7 @@ app.get('/cds-services', authenticateEHR, async (req, res) =>
   }));
 
 app.post('/cds-services/patient-greeter', [authenticateEHR, authenticateClient], async (req, res) => {
-  let patientGreeting = `Hello ${req.body.prefetch.patientToGreet.resource.name[0].given[0]}! `;
+  let patientGreeting = `Hello ${req.body.prefetch.patientToGreet.name[0].given[0]}! `;
 
   if (typeof req.fhirClient !== 'undefined') {
     const medOrders = await req.fhirClient.search({ resourceType: 'MedicationOrder', searchParams: { patient: req.body.context.patientId } });

@@ -141,10 +141,10 @@ describe('CapabilityTool', function () {
   });
 
   describe('#interactionsFor', function () {
-    it('returns false when no arguments are passed', function () {
+    it('returns an empty array when no arguments are passed', function () {
       const noArgSupport = this.capabilities.interactionsFor();
 
-      expect(noArgSupport).to.be.false;
+      expect(noArgSupport).to.deep.equal([]);
     });
 
     it('returns an array of supported interactions for the interaction capability', function () {
@@ -156,22 +156,22 @@ describe('CapabilityTool', function () {
   });
 
   describe('#searchParamsFor', function () {
-    it('returns false when no arguments are passed', function () {
+    it('returns an empty array when no arguments are passed', function () {
       const noArgSupport = this.capabilities.searchParamsFor();
 
-      expect(noArgSupport).to.be.false;
+      expect(noArgSupport).to.deep.equal([]);
     });
 
-    it('returns false when resourceCapabilities are undefined', function () {
+    it('returns an empty array when resourceCapabilities are undefined', function () {
       const undefinedSearch = this.capabilities.searchParamsFor({ resourceType: 'foo' });
 
-      expect(undefinedSearch).to.be.false;
+      expect(undefinedSearch).to.deep.equal([]);
     });
 
-    it('returns false when searchParams are undefined', function () {
+    it('returns an empty array when searchParams are undefined', function () {
       const undefinedSearch = this.capabilities.searchParamsFor({ resourceType: 'Binary' });
 
-      expect(undefinedSearch).to.be.false;
+      expect(undefinedSearch).to.deep.equal([]);
     });
 
     it('returns an array of supported search params for the searchParam capability', function () {

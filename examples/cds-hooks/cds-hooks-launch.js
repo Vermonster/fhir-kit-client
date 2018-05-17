@@ -101,11 +101,11 @@ async function authenticateEHR(req, res, next) {
 async function authenticateClient(req, res, next) {
   const { fhirServer, fhirAuthorization } = req.body;
 
+  req.fhirClient = new Client({ baseUrl: fhirServer });
+
   if (typeof fhirAuthorization === 'undefined') {
     return next();
   }
-
-  req.fhirClient = new Client({ baseUrl: fhirServer });
 
   console.log('The token is : ', fhirAuthorization.access_token);
   req.fhirClient.bearerToken = fhirAuthorization.access_token;

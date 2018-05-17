@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const jwkToPem = require('jwk-to-pem');
 const Client = require('../../lib/client');
+const CapabilityTool = require('../../lib/capability-tool');
 const axios = require('axios');
 const fs = require('fs');
 
@@ -132,7 +133,22 @@ app.post('/cds-services/patient-greeter', [authenticateEHR, authenticateClient],
   let patientGreeting = `Hello ${req.body.prefetch.patientToGreet.name[0].given[0]}! `;
 
   if (typeof req.fhirClient !== 'undefined') {
-    const medOrders = await req.fhirClient.search({ resourceType: 'MedicationOrder', searchParams: { patient: req.body.context.patientId } });
+    const capabilityStatement = await req.fhirClient.capabilityStatement();
+    const capabilities = new CapabilityTool(capabilityStatement);
+
+    const medOrderSupport = capabilities.resourceCan('MedicationOrder', 'read');
+    const medRequestSupport = capabilities.resourceCan('MedicationRequest', 'read');
+    const searchParams = { patient: req.body.context.patientId };
+
+    let medOrders;
+    if (medOrderSupport) {
+      medOrders = await req.fhirClient.search({ resourceType: 'MedicationOrder', searchParams });
+    } else if (medRequestSupport) {
+      medOrders = await req.fhirClient.search({ resourceType: 'MedicationRequest', searchParams });
+    } else {
+      medOrders = { total: '0' };
+    }
+
     patientGreeting += `You have ${medOrders.total} medication orders on file.`;
   }
 

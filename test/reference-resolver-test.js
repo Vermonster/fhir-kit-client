@@ -14,7 +14,7 @@ function readStreamFor(fixture) {
   return fs.createReadStream(path.normalize(`${__dirname}/fixtures/${fixture}`, 'utf8'));
 }
 
-describe('ReferenceResolver', () => {
+describe('ReferenceResolver', function () {
   beforeEach(function () {
     const baseUrl = 'https://example.com';
     const config = { baseUrl };
@@ -23,9 +23,9 @@ describe('ReferenceResolver', () => {
     this.resolver = new ReferenceResolver(this.fhirClient);
   });
 
-  describe('#resolve', () => {
-    context('with an absolute reference', () => {
-      context('on the current FHIR server', () => {
+  describe('#resolve', function () {
+    context('with an absolute reference', function () {
+      context('on the current FHIR server', function () {
         it('requests the resource from the FHIR server and returns it', async function () {
           const resourceType = 'Patient';
           const id = 'eb3271e1-ae1b-4644-9332-41e32c829486';
@@ -43,7 +43,7 @@ describe('ReferenceResolver', () => {
         });
       });
 
-      context('on a different FHIR server', () => {
+      context('on a different FHIR server', function () {
         it('requests the resource from the FHIR server and returns it', async function () {
           const baseUrl = 'https://www.example.org/fhir';
           const resourceType = 'Patient';
@@ -63,7 +63,7 @@ describe('ReferenceResolver', () => {
       });
     });
 
-    context('with a relative reference', () => {
+    context('with a relative reference', function () {
       it('requests the resource from baseUrl and returns it', async function () {
         const resourceType = 'Patient';
         const id = 'eb3271e1-ae1b-4644-9332-41e32c829486';
@@ -80,7 +80,7 @@ describe('ReferenceResolver', () => {
       });
     });
 
-    context('with a contained reference', () => {
+    context('with a contained reference', function () {
       it('returns the contained resource', async function () {
         const resource = JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/contained-resource.json`, 'utf8')));
         const reference = '#p1';
@@ -106,11 +106,11 @@ describe('ReferenceResolver', () => {
       });
     });
 
-    context('with a bundle', () => {
+    context('with a bundle', function () {
       const bundle = JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/bundle-references.json`, 'utf8')));
 
-      context('when the resource exists in the bundle', () => {
-        context('with an absolute reference', () => {
+      context('when the resource exists in the bundle', function () {
+        context('with an absolute reference', function () {
           it('returns the resource', async function () {
             const reference = 'https://example.com/fhir/Patient/23';
 
@@ -121,7 +121,7 @@ describe('ReferenceResolver', () => {
           });
         });
 
-        context('with a relative reference', () => {
+        context('with a relative reference', function () {
           it('returns the resource', async function () {
             const reference = 'Patient/23';
 
@@ -132,7 +132,7 @@ describe('ReferenceResolver', () => {
           });
         });
 
-        context('with a uuid', () => {
+        context('with a uuid', function () {
           it('returns the resource', async function () {
             const uuid = '04121321-4af5-424c-a0e1-ed3aab1c349d';
             const reference = `urn:uuid:${uuid}`;
@@ -145,8 +145,8 @@ describe('ReferenceResolver', () => {
         });
       });
 
-      context('when the resource is not in the bundle', () => {
-        context('with an absolute reference', () => {
+      context('when the resource is not in the bundle', function () {
+        context('with an absolute reference', function () {
           it('requests the resource from the FHIR server and returns it', async function () {
             const reference = 'Patient/eb3271e1-ae1b-4644-9332-41e32c829486';
             const absoluteReference = `${this.baseUrl}/${reference}`;
@@ -163,7 +163,7 @@ describe('ReferenceResolver', () => {
           });
         });
 
-        context('with a relative reference', () => {
+        context('with a relative reference', function () {
           it('requests the resource from baseUrl and returns it', async function () {
             const reference = 'Patient/eb3271e1-ae1b-4644-9332-41e32c829486';
             nock(this.baseUrl)

@@ -3,14 +3,14 @@ const { expect } = require('chai');
 
 const { splitReference } = require('../lib/utils');
 
-describe('utils', () => {
-  describe('splitReference', () => {
+describe('utils', function () {
+  describe('splitReference', function () {
     const baseUrl = 'https://www.example.com/fhir';
     const id = '1234';
 
-    context('with an absolute reference', () => {
-      context('with an STU3 reference', () => {
-        it('returns the baseUrl, resource type, and id', () => {
+    context('with an absolute reference', function () {
+      context('with an STU3 reference', function () {
+        it('returns the baseUrl, resource type, and id', function () {
           const resourceType = 'MedicationRequest';
           const absoluteReference = `${baseUrl}/${resourceType}/${id}`;
           expect(splitReference(absoluteReference).baseUrl).to.equal(baseUrl);
@@ -19,8 +19,8 @@ describe('utils', () => {
         });
       });
 
-      context('with a DSTU2 reference', () => {
-        it('returns the baseUrl, resource type, and id', () => {
+      context('with a DSTU2 reference', function () {
+        it('returns the baseUrl, resource type, and id', function () {
           const resourceType = 'MedicationOrder';
           const absoluteReference = `${baseUrl}/${resourceType}/${id}`;
           expect(splitReference(absoluteReference).baseUrl).to.equal(baseUrl);
@@ -30,8 +30,8 @@ describe('utils', () => {
       });
     });
 
-    context('with a relative reference', () => {
-      it('returns the resource type and id', () => {
+    context('with a relative reference', function () {
+      it('returns the resource type and id', function () {
         const resourceType = 'Patient';
         const relativeReference = `${resourceType}/${id}`;
         expect(splitReference(relativeReference).baseUrl).to.be.undefined;
@@ -40,8 +40,8 @@ describe('utils', () => {
       });
     });
 
-    context('with an invalid reference', () => {
-      it('throws an error', () => {
+    context('with an invalid reference', function () {
+      it('throws an error', function () {
         const resourceType = 'Patent'; // intentional misspelling so reference is invalid
         const absoluteReference = `${baseUrl}/${resourceType}/${id}`;
         const expectedError = `${absoluteReference} is not a recognized FHIR reference`;

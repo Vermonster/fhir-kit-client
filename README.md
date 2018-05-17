@@ -15,6 +15,7 @@ Node FHIR client library
 * Support for absolute, in-bundle, and contained references
 * Metadata caching on client instance
 * SMART security support
+* Capability-checking tool based on server capability statements
 * Minimal dependencies
 * Contemporary async/await structure
 * Modern ES6 Classes

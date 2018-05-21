@@ -25,7 +25,7 @@ ISS).
 
 ## [examples/smart-standalone](./examples/smart-standalone)
 
-This provides the same routes above,
+This example provides the same routes above,
 but instead of an EHR launching from the `/launch` route, a user would directly
 visit the route with two different parameters: iss and scope. For example:
 
@@ -35,6 +35,32 @@ The EHR will again then provide a launch context and access token.
 
 To run, follow the same instructions above listed for the *examples/smart-ehr* example.
 
-## Upcoming Examples
+## [examples/cds-hooks](./examples/cds-hooks)
 
-- [examples/cds-hooks](./examples/cds-hooks): Triggering a Clinical Decision Support (CDS) app from within an EHR according to [CDS Hooks specifications](https://cds-hooks.org/specification/1.0/).
+This example triggers a Clinical Decision Support (CDS) app from within an EHR according to [CDS Hooks specifications](https://cds-hooks.org/specification/1.0/).
+
+The `/cds-services` route provides a CDS Hooks "discovery endpoint" that informs the EHR which
+CDS services the SMART app offers and serves configuration data for the EHR to consume.
+
+Once an EHR consumes this discovery endpoint and is configured to supply the specified prefetch data,
+it will be able to launch the `cds-services/patient-greeter` route. The EHR would post to this route a request body with FHIR authorization details, prefetch data, and more.
+
+In this example app, an access token may be supplied to the FHIR client instance in order to make an asynchronous `MedicationOrder` request based on the provided EHR patient. The resulting CDS Hook "card" greets the patient
+by name based on prefetch data and offers a count of medication orders based on the asynchronous request.
+(Note that if no data is required beyond that supplied in the prefetch, a card could be served without needing the FHIR client instance.)
+
+### JWT (JSON Web Token) Validation
+
+All requests in the example are first directed through the `authenticateEHR` middleware.
+
+`authenticateEHR` expects a JSON Web Token (JWT) from the EHR's authorization request header. It is used to establish that the request is from a trusted party. The JWT can be verified by one of 3 different ways in this example:
+
+  1) By setting a PEM file in the current directory on line 15 of `cds-hooks-launch.js`.
+  2) By generating a PEM file from a `jku` variable set on line 16.
+  3) By generating a PEM file from a `jku` in the decoded JWT header.
+
+The library `jwk-to-pem` takes RSA or EC fields from a JWK to generate a public key. Both RSA and ECC algorithms are supported.
+
+To generate a public key through a private key from the EHR, use openssl, .e.g:
+
+`openssl ec -in ecprivatekey.pem -pubout -out ecpublickey.pem`

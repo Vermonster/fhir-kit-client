@@ -116,10 +116,10 @@ describe('Client', function () {
         const authMetadata = await this.fhirClient.smartAuthMetadata();
 
         expect(authMetadata).to.deep.equal({
-          authorizeUrl: new URL('https://sb-auth.smarthealthit.org/authorize'),
-          tokenUrl: new URL('https://sb-auth.smarthealthit.org/token'),
-          registerUrl: new URL('https://sb-auth.smarthealthit.org/register'),
-          manageUrl: new URL('https://sb-auth.smarthealthit.org/manage'),
+          authorizeUrl: new URL('https://launch.smarthealthit.org/v/r3/auth/authorize'),
+          tokenUrl: new URL('https://launch.smarthealthit.org/v/r3/auth/token'),
+          registerUrl: new URL('https://launch.smarthealthit.org/v/r3/auth/register'),
+          manageUrl: new URL('https://launch.smarthealthit.org/v/r3/auth/manage'),
         });
       });
     });
@@ -387,6 +387,23 @@ describe('Client', function () {
     });
 
     describe('pagination', function () {
+      describe('#goToPage', function () {
+        it('returns httpClient get for a specified page number', async function () {
+          nock(this.baseUrl)
+            .matchHeader('accept', 'application/json+fhir')
+            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
+            .reply(200, () => readStreamFor('search-results-page-2.json'));
+
+          const searchResults = readFixture('search-results-page-1.json');
+
+          this.fhirClient.pagination.initialize(searchResults);
+
+          const response = await this.fhirClient.pagination.goToPage(2);
+          const url = 'https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset';
+
+          expect(response.link[0].url).to.equal(url);
+        });
+      });
       describe('#nextPage', function () {
         it('returns httpClient get for the next link', async function () {
           nock(this.baseUrl)
@@ -395,16 +412,21 @@ describe('Client', function () {
             .reply(200, () => readStreamFor('search-results-page-2.json'));
 
           const searchResults = readFixture('search-results-page-1.json');
-          const response = await this.fhirClient.nextPage(searchResults);
+
+          this.fhirClient.pagination.initialize(searchResults);
+
+          const response = await this.fhirClient.pagination.nextPage();
           const url = 'https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset';
 
           expect(response.link[0].url).to.equal(url);
         });
 
         it('returns undefined if no next page exists', function () {
-          const results = readFixture('search-results.json');
+          const searchResults = readFixture('search-results.json');
 
-          expect(this.fhirClient.nextPage(results)).to.equal(undefined);
+          this.fhirClient.pagination.initialize(searchResults);
+
+          expect(this.fhirClient.pagination.nextPage()).to.equal(undefined);
         });
       });
 
@@ -416,15 +438,21 @@ describe('Client', function () {
             .reply(200, () => readStreamFor('search-results-page-1.json'));
 
           const searchResults = readFixture('search-results-page-2.json');
-          const response = await this.fhirClient.prevPage(searchResults);
+
+          this.fhirClient.pagination.initialize(searchResults);
+
+          const response = await this.fhirClient.prevPage();
           const url = 'https://example.com/Patient?_count=3&gender=female';
 
           expect(response.link[0].url).to.equal(url);
         });
 
         it('returns undefined if no previous page exists', function () {
-          const results = readFixture('search-results.json');
-          expect(this.fhirClient.prevPage(results)).to.equal(undefined);
+          const searchResults = readFixture('search-results.json');
+
+          this.fhirClient.pagination.initialize(searchResults);
+
+          expect(this.fhirClient.prevPage()).to.equal(undefined);
         });
 
         it('detects and responds to "prev" relations', async function () {
@@ -435,7 +463,10 @@ describe('Client', function () {
 
           const searchResults = readFixture('search-results-page-2.json');
           searchResults.link[2].relation = 'prev';
-          const response = await this.fhirClient.prevPage(searchResults);
+
+          this.fhirClient.pagination.initialize(searchResults);
+
+          const response = await this.fhirClient.prevPage();
           const url = 'https://example.com/Patient?_count=3&gender=female';
 
           expect(response.link[0].url).to.equal(url);

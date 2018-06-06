@@ -391,7 +391,7 @@ describe('Client', function () {
         it('returns httpClient get for a specified page number', async function () {
           nock(this.baseUrl)
             .matchHeader('accept', 'application/json+fhir')
-            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
+            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3')
             .reply(200, () => readStreamFor('search-results-page-2.json'));
 
           const searchResults = readFixture('search-results-page-1.json');
@@ -399,7 +399,7 @@ describe('Client', function () {
           this.fhirClient.pagination.initialize(searchResults);
 
           const response = await this.fhirClient.pagination.goToPage(2);
-          const url = 'https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset';
+          const url = 'https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3';
 
           expect(response.link[0].url).to.equal(url);
         });
@@ -408,7 +408,7 @@ describe('Client', function () {
         it('returns httpClient get for the next link', async function () {
           nock(this.baseUrl)
             .matchHeader('accept', 'application/json+fhir')
-            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
+            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3')
             .reply(200, () => readStreamFor('search-results-page-2.json'));
 
           const searchResults = readFixture('search-results-page-1.json');
@@ -416,7 +416,7 @@ describe('Client', function () {
           this.fhirClient.pagination.initialize(searchResults);
 
           const response = await this.fhirClient.pagination.nextPage();
-          const url = 'https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset';
+          const url = 'https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3';
 
           expect(response.link[0].url).to.equal(url);
         });
@@ -434,7 +434,7 @@ describe('Client', function () {
         it('returns httpClient get for the previous link', async function () {
           nock(this.baseUrl)
             .matchHeader('accept', 'application/json+fhir')
-            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset')
+            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3')
             .reply(200, () => readStreamFor('search-results-page-1.json'));
 
           const searchResults = readFixture('search-results-page-2.json');
@@ -458,7 +458,7 @@ describe('Client', function () {
         it('detects and responds to "prev" relations', async function () {
           nock(this.baseUrl)
             .matchHeader('accept', 'application/json+fhir')
-            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset')
+            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3')
             .reply(200, () => readStreamFor('search-results-page-1.json'));
 
           const searchResults = readFixture('search-results-page-2.json');

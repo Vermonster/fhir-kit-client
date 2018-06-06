@@ -9,15 +9,15 @@
   "link": [
     {
       "relation": "self",
-      "url": "https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset"
+      "url": "https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3"
     },
     {
       "relation": "next",
-      "url": "https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=6&_count=3&_pretty=true&_bundletype=searchset"
+      "url": "https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=6&_count=3"
     },
     {
       "relation": "previous",
-      "url": "https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset"
+      "url": "https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3"
     }
   ],
   "entry": [

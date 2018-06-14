@@ -111,6 +111,12 @@ For more examples see the JS Docs and Launch Examples below.
 To see how to follow launch and authorization workflows for FHIR applications,
 see the [examples directory](./examples/) and [examples README](./examples/README.md).
 
+## Example React App
+
+[FHIRKit Create React App](https://github.com/Vermonster/fhir-kit-create-react)
+provides a [create-react-app](https://github.com/facebook/create-react-app)
+template that can be used to create a sample React app using FHIRKit Client.
+
 ## Logging
 
 The [debug library](https://www.npmjs.com/package/debug) can provide logging

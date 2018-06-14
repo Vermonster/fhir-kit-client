@@ -116,10 +116,10 @@ describe('Client', function () {
         const authMetadata = await this.fhirClient.smartAuthMetadata();
 
         expect(authMetadata).to.deep.equal({
-          authorizeUrl: new URL('https://launch.smarthealthit.org/v/r3/auth/authorize'),
-          tokenUrl: new URL('https://launch.smarthealthit.org/v/r3/auth/token'),
-          registerUrl: new URL('https://launch.smarthealthit.org/v/r3/auth/register'),
-          manageUrl: new URL('https://launch.smarthealthit.org/v/r3/auth/manage'),
+          authorizeUrl: new URL('https://sb-auth.smarthealthit.org/authorize'),
+          tokenUrl: new URL('https://sb-auth.smarthealthit.org/token'),
+          registerUrl: new URL('https://sb-auth.smarthealthit.org/register'),
+          manageUrl: new URL('https://sb-auth.smarthealthit.org/manage'),
         });
       });
     });
@@ -441,7 +441,7 @@ describe('Client', function () {
 
           this.fhirClient.pagination.initialize(searchResults);
 
-          const response = await this.fhirClient.prevPage();
+          const response = await this.fhirClient.pagination.prevPage();
           const url = 'https://example.com/Patient?_count=3&gender=female';
 
           expect(response.link[0].url).to.equal(url);
@@ -452,7 +452,7 @@ describe('Client', function () {
 
           this.fhirClient.pagination.initialize(searchResults);
 
-          expect(this.fhirClient.prevPage()).to.equal(undefined);
+          expect(this.fhirClient.pagination.prevPage()).to.equal(undefined);
         });
 
         it('detects and responds to "prev" relations', async function () {
@@ -466,7 +466,7 @@ describe('Client', function () {
 
           this.fhirClient.pagination.initialize(searchResults);
 
-          const response = await this.fhirClient.prevPage();
+          const response = await this.fhirClient.pagination.prevPage();
           const url = 'https://example.com/Patient?_count=3&gender=female';
 
           expect(response.link[0].url).to.equal(url);

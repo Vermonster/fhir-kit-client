@@ -2,7 +2,7 @@
 
 This directory contains example apps demonstrating an application launch.
 
-## [examples/smart-ehr](./examples/smart-ehr)
+## [examples/smart-ehr](./smart-ehr)
 
 This example provides two routes, `/launch` and `/callback`, through which an EHR
 may launch the SMART app within the EHR's provided launch context.
@@ -23,7 +23,7 @@ send back a launch_context containing, among other things, an access token to
 set in the Authorization header and use for subsequent FHIR requests (to the
 ISS).
 
-## [examples/smart-standalone](./examples/smart-standalone)
+## [examples/smart-standalone](./smart-standalone)
 
 This example provides the same routes above,
 but instead of an EHR launching from the `/launch` route, a user would directly
@@ -35,7 +35,7 @@ The EHR will again then provide a launch context and access token.
 
 To run, follow the same instructions above listed for the *examples/smart-ehr* example.
 
-## [examples/cds-hooks](./examples/cds-hooks)
+## [examples/cds-hooks](./cds-hooks)
 
 This example triggers a Clinical Decision Support (CDS) app from within an EHR according to [CDS Hooks specifications](https://cds-hooks.org/specification/1.0/).
 

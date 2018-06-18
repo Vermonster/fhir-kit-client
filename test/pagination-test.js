@@ -220,3 +220,20 @@ describe('Pagination', function () {
     });
   });
 });
+
+describe('Pagination with custom parameters', function() {
+  it('merges custom search parameter names with defaults', function() {
+    this.baseUrl = 'https://example.com';
+    this.httpClient = new HttpClient({ baseUrl: this.baseUrl });
+    this.pagination = new Pagination(this.httpClient, {
+      searchIdParam: 'my-search-id',
+      offsetParam: '_offset'
+    });
+
+    expect(this.pagination.paramNames).to.deep.equal({
+      searchIdParam: 'my-search-id',
+      offsetParam: '_offset',
+      countParam: '_count'
+    });
+  });
+});

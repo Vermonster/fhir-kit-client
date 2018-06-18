@@ -913,18 +913,18 @@ describe('Client', function () {
   });
 });
 
-describe('Client with custom pagination parameters', function() {
-  it('merges custom search parameter names with defaults', function() {
+describe('Client with custom pagination parameters', function () {
+  it('merges custom search parameter names with defaults', function () {
     const baseUrl = 'https://example.com';
     const paginationParams = { searchIdParam: 'my-search-id', offsetParam: '_offset' };
-    const config = { baseUrl, paginationParams};
+    const config = { baseUrl, paginationParams };
 
     this.fhirClient = new Client(config);
 
     expect(this.fhirClient.pagination.paramNames).to.deep.equal({
       searchIdParam: 'my-search-id',
       offsetParam: '_offset',
-      countParam: '_count'
+      countParam: '_count',
     });
   });
 });

@@ -1,7 +1,6 @@
 /* eslint-disable func-names, no-unused-expressions */
 const fs = require('fs');
 const path = require('path');
-const { URL } = require('url');
 
 const { expect } = require('chai');
 const nock = require('nock');
@@ -25,13 +24,13 @@ function readFixture(filename) {
 }
 
 describe('Pagination', function () {
-  beforeEach(function() {
+  beforeEach(function () {
     this.baseUrl = 'https://example.com';
     this.httpClient = new HttpClient({ baseUrl: this.baseUrl });
     this.pagination = new Pagination(this.httpClient);
   });
 
-  describe('#initialize', function() {
+  describe('#initialize', function () {
     it('sets the current bundle', async function () {
       expect(this.pagination.currentResults).to.be.null;
 
@@ -46,8 +45,8 @@ describe('Pagination', function () {
       const expectedParameters = {
         _getpages: '678cd733-8823-4324-88a7-51d369cf78a9',
         _getpagesoffset: '3',
-        _count: '3'
-      }
+        _count: '3',
+      };
 
       const searchResults = readFixture('search-results-page-1.json');
 
@@ -55,7 +54,7 @@ describe('Pagination', function () {
 
       Object.entries(expectedParameters).forEach(([paramName, param]) => {
         expect(this.pagination[paramName]).to.equal(param);
-      })
+      });
     });
   });
 
@@ -221,19 +220,19 @@ describe('Pagination', function () {
   });
 });
 
-describe('Pagination with custom parameters', function() {
-  it('merges custom search parameter names with defaults', function() {
+describe('Pagination with custom parameters', function () {
+  it('merges custom search parameter names with defaults', function () {
     this.baseUrl = 'https://example.com';
     this.httpClient = new HttpClient({ baseUrl: this.baseUrl });
     this.pagination = new Pagination(this.httpClient, {
       searchIdParam: 'my-search-id',
-      offsetParam: '_offset'
+      offsetParam: '_offset',
     });
 
     expect(this.pagination.paramNames).to.deep.equal({
       searchIdParam: 'my-search-id',
       offsetParam: '_offset',
-      countParam: '_count'
+      countParam: '_count',
     });
   });
 });

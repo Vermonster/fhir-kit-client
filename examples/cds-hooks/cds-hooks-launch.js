@@ -114,7 +114,7 @@ async function authenticateClient(req, res, next) {
   return next();
 }
 
-app.get('/cds-services', authenticateEHR, async (req, res) =>
+app.get('/cds-services', async (req, res) =>
   res.status(200).json({
     services: [
       {

@@ -729,7 +729,7 @@ describe('Client', function () {
           .reply(200, () => readStreamFor('transaction-results.json'));
 
         const body = readFixture('transaction-request.json');
-        const response = await this.fhirClient.transaction({ body });
+        const response = await this.fhirClient.transaction(body);
 
         expect(response.resourceType).to.equal('Bundle');
         expect(response.type).to.equal('transaction-response');
@@ -750,7 +750,7 @@ describe('Client', function () {
 
         let response;
         try {
-          response = await this.fhirClient.transaction({ body });
+          response = await this.fhirClient.transaction(body);
         } catch (error) {
           expect(error.response.status).to.equal(404);
           expect(error.response.data.resourceType).to.equal('OperationOutcome');

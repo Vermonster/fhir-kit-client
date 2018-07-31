@@ -503,7 +503,7 @@ There should be no interdependencies between entries in the bundle.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line382">line 382</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line385">line 385</a>
     </li></ul></dd>
     
 
@@ -699,11 +699,14 @@ There should be no interdependencies between entries in the bundle.</p>
 }
 
 // Using promises
-fhirClient.batch(requestBundle);
-          .then((data) => { console.log(data); });
+fhirClient.batch({
+  body: requestBundle
+}).then((data) => { console.log(data); });
 
 // Using async
-let response = await fhirClient.batch(requestBundle);
+let response = await fhirClient.batch({
+  body: requestBundle
+});
 console.log(response);</code></pre>
 
 </div>
@@ -879,7 +882,7 @@ The resourceType and id must be specified.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line587">line 587</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line593">line 593</a>
     </li></ul></dd>
     
 
@@ -1705,7 +1708,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line623">line 623</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line629">line 629</a>
     </li></ul></dd>
     
 
@@ -1978,7 +1981,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line453">line 453</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line459">line 459</a>
     </li></ul></dd>
     
 
@@ -2427,7 +2430,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line464">line 464</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line470">line 470</a>
     </li></ul></dd>
     
 
@@ -3075,7 +3078,7 @@ client.resolve('#patient-1' someResource).then((patient) => {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line651">line 651</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line657">line 657</a>
     </li></ul></dd>
     
 
@@ -3325,7 +3328,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line530">line 530</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line536">line 536</a>
     </li></ul></dd>
     
 
@@ -3580,7 +3583,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line496">line 496</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line502">line 502</a>
     </li></ul></dd>
     
 
@@ -4018,7 +4021,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line692">line 692</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line698">line 698</a>
     </li></ul></dd>
     
 
@@ -4140,7 +4143,7 @@ Only the parameters defined for all resources can be used.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line555">line 555</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line561">line 561</a>
     </li></ul></dd>
     
 
@@ -4371,7 +4374,7 @@ The transaction fails if any resource overlap in DELETE, POST and PUT.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line442">line 442</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line448">line 448</a>
     </li></ul></dd>
     
 
@@ -4567,11 +4570,14 @@ The transaction fails if any resource overlap in DELETE, POST and PUT.</p>
 }
 
 // Using promises
-fhirClient.transaction(requestBundle);
-          .then((data) => { console.log(data); });
+fhirClient.transaction({
+  body: requestBundle
+}).then((data) => { console.log(data); });
 
 // Using async
-let response = await fhirClient.transaction(requestBundle);
+let response = await fhirClient.transaction({
+  body: requestBundle
+});
 console.log(response);</code></pre>
 
 </div>
@@ -4626,7 +4632,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line673">line 673</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line679">line 679</a>
     </li></ul></dd>
     
 

@@ -51,7 +51,6 @@
     "nyc": "^11.6.0"
   },
   "dependencies": {
-    "axios": "^0.18.0",
     "debug": "^3.1.0",
     "node-fetch": "^2.1.2"
   },

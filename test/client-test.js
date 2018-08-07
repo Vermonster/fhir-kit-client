@@ -173,19 +173,29 @@ describe('Client', function () {
     });
   });
 
-  describe('Authorization header', function () {
-    describe('#read', function () {
-      it('sets the header to a Bearer token', async function () {
-        this.fhirClient.bearerToken = 'XYZ';
+  describe('#bearerToken=', function () {
+    it('sets the header Authorization to a Bearer token', async function () {
+      this.fhirClient.bearerToken = 'XYZ';
 
-        nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
-          .matchHeader('Authorization', 'Bearer XYZ')
-          .get('/Patient/test-access-token')
-          .reply(200, () => readStreamFor('patient.json'));
+      nock(this.baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('Authorization', 'Bearer XYZ')
+        .get('/Patient/test-access-token')
+        .reply(200, () => readStreamFor('patient.json'));
 
-        await this.fhirClient.read({ resourceType: 'Patient', id: 'test-access-token' });
-      });
+      await this.fhirClient.read({ resourceType: 'Patient', id: 'test-access-token' });
+    });
+
+    it('sets the header only for the current instance', async function () {
+      const otherFHIRClient = new Client({ baseUrl: this.baseUrl });
+      this.fhirClient.bearerToken = 'XYZ';
+
+      nock(this.baseUrl, { badheaders: ['Authorization'] })
+        .matchHeader('accept', 'application/json+fhir')
+        .get('/Patient/test-access-token')
+        .reply(200, () => readStreamFor('patient.json'));
+
+      await otherFHIRClient.read({ resourceType: 'Patient', id: 'test-access-token' });
     });
   });
 

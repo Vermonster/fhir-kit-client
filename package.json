@@ -1,6 +1,6 @@
 {
   "name": "fhir-kit-client",
-  "version": "0.3.1",
+  "version": "0.4.1",
   "description": "FHIR Client",
   "keywords": [
     "FHIR",
@@ -51,8 +51,9 @@
     "nyc": "^11.6.0"
   },
   "dependencies": {
-    "axios": "^0.18.0",
-    "debug": "^3.1.0"
+    "debug": "^3.1.0",
+    "es6-promise": "^4.2.4",
+    "isomorphic-fetch": "^2.2.1"
   },
   "nyc": {
     "exclude": [

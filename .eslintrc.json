@@ -11,5 +11,8 @@
     "filenames/match-regex": [2, "^[a-z\\-]+$", true],
     "filenames/match-exported": [2, "kebab"],
     "valid-jsdoc": 2
+  },
+  "globals": {
+    "fetch": false
   }
 }

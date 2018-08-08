@@ -1,6 +1,6 @@
 {
   "name": "fhir-kit-client",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "FHIR Client",
   "keywords": [
     "FHIR",

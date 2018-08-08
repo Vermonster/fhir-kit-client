@@ -5,6 +5,9 @@ const session = require('express-session');
 const simpleOauthModule = require('simple-oauth2');
 const Client = require('../../lib/client');
 
+const CLIENT_ID = '<CLIENT_ID>';
+const CLIENT_SECRET = '<CLIENT_SECRET>';
+
 const app = express();
 
 // Use session to pass the iss information to the callback
@@ -48,8 +51,8 @@ app.get('/launch', async (req, res) => {
   // Create a new oAuth2 object using the Client capability statement:
   const oauth2 = simpleOauthModule.create({
     client: {
-      id: '<CLIENT_ID>',
-      secret: '<CLIENT_SECRET>',
+      id: CLIENT_ID,
+      secret: CLIENT_SECRET,
     },
     auth: {
       tokenHost: `${tokenUrl.protocol}//${tokenUrl.host}`,
@@ -81,8 +84,8 @@ app.get('/callback', async (req, res) => {
   // Create a new oAuth2 object using the Client capability statement:
   const oauth2 = simpleOauthModule.create({
     client: {
-      id: '<CLIENT_ID>',
-      secret: '<CLIENT_SECRET>',
+      id: CLIENT_ID,
+      secret: CLIENT_SECRET,
     },
     auth: {
       tokenHost: `${tokenUrl.protocol}//${tokenUrl.host}`,

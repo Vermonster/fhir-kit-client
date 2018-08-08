@@ -5,6 +5,8 @@ const session = require('express-session');
 const simpleOauthModule = require('simple-oauth2');
 const Client = require('../../lib/client');
 
+const CLIENT_ID = '<CLIENT_ID>';
+
 const app = express();
 
 // Use session to pass the iss information to the callback
@@ -33,6 +35,7 @@ app.use(session({
  * set in the Authorization header and use for subsequent FHIR requests (to the
  * ISS).
  */
+
 app.get('/launch', async (req, res) => {
   const { iss, launch } = req.query;
 
@@ -44,7 +47,7 @@ app.get('/launch', async (req, res) => {
   // Create a new oAuth2 object using the Client capability statement:
   const oauth2 = simpleOauthModule.create({
     client: {
-      id: 'C35DF2FD-83E2-4CBE-8943-A4CE1628C96C',
+      id: CLIENT_ID,
     },
     auth: {
       tokenHost: `${tokenUrl.protocol}//${tokenUrl.host}`,
@@ -74,10 +77,10 @@ app.get('/callback', async (req, res) => {
   const fhirClient = new Client({ baseUrl: iss });
   const { authorizeUrl, tokenUrl } = await fhirClient.smartAuthMetadata();
 
-  // Create a new oAuth2 object using the Client capability statement:
+  // Create a new OAuth2 object using the Client capability statement:
   const oauth2 = simpleOauthModule.create({
     client: {
-      id: 'C35DF2FD-83E2-4CBE-8943-A4CE1628C96C',
+      id: CLIENT_ID,
     },
     auth: {
       tokenHost: `${tokenUrl.protocol}//${tokenUrl.host}`,

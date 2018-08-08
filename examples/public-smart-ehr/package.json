@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node smart-ehr-launch.js"
+    "start": "node public-smart-ehr-launch.js"
   },
   "keywords": [],
   "author": "",

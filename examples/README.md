@@ -5,12 +5,41 @@ This directory contains example apps demonstrating an application launch.
 ## [examples/smart-ehr](./smart-ehr)
 
 This example provides two routes, `/launch` and `/callback`, through which an EHR
-may launch the SMART app within the EHR's provided launch context.
+may launch the SMART app within the EHR's provided launch context. This example demonstrates a confidential app, meaning that the application runs on a trusted server and can protect secret data, such as the CLIENT_SECRET variable.
 
 To use:
 1. `yarn install`
 2. Run `yarn start` to serve the web app through port 3000.
 3. Change `<CLIENT_ID>` and `<CLIENT_SECRET>` as needed.
+4. To test with external servers, try tunneling to localhost:3000 with a service like [ngrok](http://ngrok.com/).
+
+An EHR can then visit the launch route with two parameters: iss and launch. The
+SMART app will make a request to the OAuth server's authorization URL.
+Then, it will redirect to the SMART app callback.
+
+In the callback route, another request is made (using the simple-oauth
+library) to request a token from the OAuth2 server. The server will then
+send back a launch_context containing, among other things, an access token to
+set in the Authorization header and use for subsequent FHIR requests (to the
+ISS).
+
+## [examples/public-smart-ehr](./public-smart-ehr)
+
+The public-smart-ehr example is almost identical to the smart-ehr code above, but it is assumed that this app would be downloaded to a device and run in an environment that cannot protect a client secret (eg. a browser). This example is a public app, as opposed to the confidential, server app shown in the smart-ehr example. This means that the public-smart-ehr app:
+
+  - is assumed to run on an end-user's device rather than on a trusted server
+  - cannot protect secret variables (in this case, CLIENT_SECRET)
+  - should be hosted within a trusted server environment
+
+Because it is the less secure option with no ability to store confidential information, it is recommended that refresh tokens have a shorter lifetime. 
+
+The example provides two routes, `/launch` and `/callback`, through which an EHR
+may launch the SMART app within the EHR's provided launch context.
+
+To use:
+1. `yarn install`
+2. Run `yarn start` to serve the web app through port 3000.
+3. Change `<CLIENT_ID>` as needed.
 4. To test with external servers, try tunneling to localhost:3000 with a service like [ngrok](http://ngrok.com/).
 
 An EHR can then visit the launch route with two parameters: iss and launch. The

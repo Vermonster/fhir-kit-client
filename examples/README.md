@@ -31,7 +31,8 @@ The public-smart-ehr example is almost identical to the confidential-smart-ehr c
   - cannot protect secret variables (in this case, CLIENT_SECRET)
   - should be hosted within a trusted server environment
 
-Because it is the less secure option with no ability to store confidential information, it is recommended that refresh tokens have a shorter lifetime. 
+The app's launch URL is required to be preregistered with the EHR. This required step helps to mitigate security risks.
+Because the public app is the less secure option with no ability to store confidential information, it is recommended that refresh tokens for public apps have a shorter lifetime.   
 
 The example provides two routes, `/launch` and `/callback`, through which an EHR
 may launch the SMART app within the EHR's provided launch context.

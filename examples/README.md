@@ -2,7 +2,7 @@
 
 This directory contains example apps demonstrating an application launch.
 
-## [examples/smart-ehr](./smart-ehr)
+## [examples/confidential-smart-ehr](./confidential-smart-ehr)
 
 This example provides two routes, `/launch` and `/callback`, through which an EHR
 may launch the SMART app within the EHR's provided launch context. This example demonstrates a confidential app, meaning that the application runs on a trusted server and can protect secret data, such as the CLIENT_SECRET variable.
@@ -25,7 +25,7 @@ ISS).
 
 ## [examples/public-smart-ehr](./public-smart-ehr)
 
-The public-smart-ehr example is almost identical to the smart-ehr code above, but it is assumed that this app would be downloaded to a device and run in an environment that cannot protect a client secret (eg. a browser). This example is a public app, as opposed to the confidential, server app shown in the smart-ehr example. This means that the public-smart-ehr app:
+The public-smart-ehr example is almost identical to the confidential-smart-ehr code above, but it is assumed that this app would be downloaded to a device and run in an environment that cannot protect a client secret (eg. a browser). This means that the public-smart-ehr app:
 
   - is assumed to run on an end-user's device rather than on a trusted server
   - cannot protect secret variables (in this case, CLIENT_SECRET)
@@ -62,7 +62,7 @@ visit the route with two different parameters: iss and scope. For example:
 
 The EHR will again then provide a launch context and access token.
 
-To run, follow the same instructions above listed for the *examples/smart-ehr* example.
+To run, follow the same instructions above listed for the *examples/confidential-smart-ehr* example.
 
 ## [examples/cds-hooks](./cds-hooks)
 

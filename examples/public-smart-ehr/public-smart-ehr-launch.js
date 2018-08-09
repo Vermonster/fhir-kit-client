@@ -62,7 +62,7 @@ app.get('/launch', async (req, res) => {
     redirect_uri: 'http://localhost:3000/callback',
     launch,
     aud: iss,
-    scope: 'launch openid profile',
+    scope: 'launch openid profile user/Patient.read',
     state: '3(#0/!~',
   });
 

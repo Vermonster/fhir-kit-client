@@ -1,0 +1,14 @@
+{
+  "name": "public-fhir-kit-client",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "yarn build && serve --single",
+    "build": "browserify main.js > bundle.js"
+  },
+  "author": "Vermonster <info@vermonster.com>",
+  "license": "MIT",
+  "dependencies": {
+    "browserify": "16.2.2",
+    "serve": "9.6.0"
+  }
+}

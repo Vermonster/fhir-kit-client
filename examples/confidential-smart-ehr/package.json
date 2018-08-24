@@ -1,0 +1,17 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node confidential-smart-ehr-launch.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "express": "^4.14.0",
+    "express-session": "^1.15.6",
+    "simple-oauth2": "1.5.2"
+  }
+}

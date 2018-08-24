@@ -18,21 +18,15 @@ app.use(session({
   saveUninitialized: true,
 }));
 
-
 /**
- * This is an example of a SMART app launching absent of an EHR context.
+ * This is an example of a SMART app launching from within an EHR.
  *
  * In this example, there are two routes:
  *  - /launch
  *  - /callback
  *
- * A user will visit the launch route independent of the EHR with two parameters,
- # the ISS and scope. For example:
- #
- # https://localhost:3000/launch?iss=http://example.com/fhir&scope=openid%20profile
- # %20offline_access%20user%2F*.*%20patient%2F*.*%20launch%2Fencounter%20launch%2Fpatient
- #
- * The SMART app will make a request to the OAuth server's authorization URL.
+ * The EHR will call the launch route with two parameters: iss and launch. The
+ * SMART app will make a request to the OAuth server's authorization URL.
  * Then, it will redirect to the SMART app callback.
  *
  * In the callback route, another request is made (using the simple-oauth
@@ -41,8 +35,10 @@ app.use(session({
  * set in the Authorization header and use for subsequent FHIR requests (to the
  * ISS).
  */
+
 app.get('/launch', async (req, res) => {
-  const { iss, scope } = req.query;
+  const { iss, launch } = req.query;
+
   const fhirClient = new Client({ baseUrl: iss });
   const { authorizeUrl, tokenUrl } = await fhirClient.smartAuthMetadata();
 
@@ -65,8 +61,9 @@ app.get('/launch', async (req, res) => {
   // Authorization uri definition
   const authorizationUri = oauth2.authorizationCode.authorizeURL({
     redirect_uri: 'http://localhost:3000/callback',
+    launch,
     aud: iss,
-    scope,
+    scope: 'launch openid profile user/Patient.read',
     state: '3(#0/!~',
   });
 

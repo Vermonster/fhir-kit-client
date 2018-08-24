@@ -18,7 +18,6 @@ app.use(session({
   saveUninitialized: true,
 }));
 
-
 /**
  * This is an example of a SMART app launching from within an EHR.
  *
@@ -36,6 +35,7 @@ app.use(session({
  * set in the Authorization header and use for subsequent FHIR requests (to the
  * ISS).
  */
+
 app.get('/launch', async (req, res) => {
   const { iss, launch } = req.query;
 

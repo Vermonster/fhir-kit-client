@@ -10,6 +10,7 @@
     "consistent-return": 0,
     "filenames/match-regex": [2, "^[a-z\\-]+$", true],
     "filenames/match-exported": [2, "kebab"],
+    "object-curly-newline": [2, { "consistent": true }],
     "valid-jsdoc": 2
   },
   "globals": {

@@ -82,8 +82,13 @@ describe('Client', function () {
     this.fhirClient = new Client(config);
   });
 
-  it('initializes without config', function () {
-    expect(new Client()).to.exist;
+  it('throws an error if baseUrl is blank', function () {
+    expect(() => new Client()).to.throw('baseUrl cannot be blank');
+    expect(() => { this.fhirClient.baseUrl = ''; }).to.throw('baseUrl cannot be blank');
+  });
+
+  it('throws an error if baseUrl is not a string', function () {
+    expect(() => new Client({ baseUrl: 1 })).to.throw('baseUrl must be a string');
   });
 
   it('initializes with config', function () {

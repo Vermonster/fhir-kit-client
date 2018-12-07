@@ -225,6 +225,23 @@ describe('Client', function () {
         }
         expect(response).to.be.undefined;
       });
+
+      it('handles non-json error responses', async function () {
+        const errorBody = 'An error occurred';
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient/abcdef')
+          .reply(404, () => errorBody);
+
+        let response;
+        try {
+          response = await this.fhirClient.read({ resourceType: 'Patient', id: 'abcdef' });
+        } catch (error) {
+          expect(error.response.status).to.equal(404);
+          expect(error.response.data).to.equal(errorBody);
+        }
+        expect(response).to.be.undefined;
+      });
     });
 
     describe('#vread', function () {

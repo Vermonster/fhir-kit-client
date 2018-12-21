@@ -36,7 +36,7 @@ describe('ReferenceResolver', function () {
             .get(`/${reference}`)
             .reply(200, () => readStreamFor('patient.json'));
 
-          const response = await this.resolver.resolve(absoluteReference);
+          const response = await this.resolver.resolve({ reference: absoluteReference });
 
           expect(response.resourceType).to.equal(resourceType);
           expect(response.id).to.equal(id);
@@ -55,7 +55,7 @@ describe('ReferenceResolver', function () {
             .get(`/${reference}`)
             .reply(200, () => readStreamFor('patient.json'));
 
-          const response = await this.resolver.resolve(absoluteReference);
+          const response = await this.resolver.resolve({ reference: absoluteReference });
 
           expect(response.resourceType).to.equal(resourceType);
           expect(response.id).to.equal(id);
@@ -73,7 +73,7 @@ describe('ReferenceResolver', function () {
           .get(`/${reference}`)
           .reply(200, () => readStreamFor('patient.json'));
 
-        const response = await this.resolver.resolve(reference);
+        const response = await this.resolver.resolve({ reference });
 
         expect(response.resourceType).to.equal(resourceType);
         expect(response.id).to.equal(id);
@@ -82,22 +82,22 @@ describe('ReferenceResolver', function () {
 
     context('with a contained reference', function () {
       it('returns the contained resource', async function () {
-        const resource = JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/contained-resource.json`, 'utf8')));
+        const context = JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/contained-resource.json`, 'utf8')));
         const reference = '#p1';
 
-        const containedResource = await this.resolver.resolve(reference, resource);
+        const containedResource = await this.resolver.resolve({ reference, context });
 
         expect(containedResource.resourceType).to.equal('Practitioner');
         expect(containedResource.id).to.equal(reference.slice(1));
       });
 
       it('throws an error if the resource cannot be found', async function () {
-        const resource = JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/contained-resource.json`, 'utf8')));
+        const context = JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/contained-resource.json`, 'utf8')));
         const reference = '#p2';
 
         let containedResource;
         try {
-          containedResource = await this.resolver.resolve(reference, resource);
+          containedResource = await this.resolver.resolve({ reference, context });
         } catch (error) {
           expect(error.message).to.eql(`Unable to resolve contained reference: ${reference}`);
         }
@@ -114,7 +114,7 @@ describe('ReferenceResolver', function () {
           it('returns the resource', async function () {
             const reference = 'https://example.com/fhir/Patient/23';
 
-            const resource = await this.resolver.resolve(reference, bundle);
+            const resource = await this.resolver.resolve({ reference, context: bundle });
 
             expect(resource.resourceType).to.equal('Patient');
             expect(resource.id).to.equal('23');
@@ -125,7 +125,7 @@ describe('ReferenceResolver', function () {
           it('returns the resource', async function () {
             const reference = 'Patient/23';
 
-            const resource = await this.resolver.resolve(reference, bundle);
+            const resource = await this.resolver.resolve({ reference, context: bundle });
 
             expect(resource.resourceType).to.equal('Patient');
             expect(resource.id).to.equal('23');
@@ -137,7 +137,7 @@ describe('ReferenceResolver', function () {
             const uuid = '04121321-4af5-424c-a0e1-ed3aab1c349d';
             const reference = `urn:uuid:${uuid}`;
 
-            const resource = await this.resolver.resolve(reference, bundle);
+            const resource = await this.resolver.resolve({ reference, context: bundle });
 
             expect(resource.resourceType).to.equal('Patient');
             expect(resource.id).to.equal(uuid);
@@ -155,7 +155,10 @@ describe('ReferenceResolver', function () {
               .get(`/${reference}`)
               .reply(200, () => readStreamFor('patient.json'));
 
-            const response = await this.resolver.resolve(absoluteReference, bundle);
+            const response = await this.resolver.resolve({
+              reference: absoluteReference,
+              context: bundle,
+            });
 
             const { resourceType, id } = splitReference(reference);
             expect(response.resourceType).to.equal(resourceType);
@@ -171,7 +174,7 @@ describe('ReferenceResolver', function () {
               .get(`/${reference}`)
               .reply(200, () => readStreamFor('patient.json'));
 
-            const response = await this.resolver.resolve(reference, bundle);
+            const response = await this.resolver.resolve({ reference, context: bundle });
 
             const { resourceType, id } = splitReference(reference);
             expect(response.resourceType).to.equal(resourceType);

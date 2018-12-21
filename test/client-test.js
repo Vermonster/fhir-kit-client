@@ -97,6 +97,18 @@ describe('Client', function () {
   });
 
   describe('#smartAuthMetadata', function () {
+    it('builds a request with custom headers', async function () {
+      nock(this.baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('abc', 'XYZ')
+        .get('/metadata')
+        .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
+
+      const authMetadata = await this.fhirClient.smartAuthMetadata({ headers: { abc: 'XYZ' } });
+
+      expect(authMetadata).to.deep.equal({});
+    });
+
     context('SMART URIs are not present', function () {
       it('returns an empty object', async function () {
         nock(this.baseUrl)
@@ -131,6 +143,20 @@ describe('Client', function () {
   });
 
   describe('#capabilityStatement', function () {
+    it('builds a request with custom headers', async function () {
+      const scope = nock(this.baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('abc', 'XYZ')
+        .get('/metadata')
+        .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
+
+      const capabilityStatement = await this.fhirClient.capabilityStatement({ headers: { abc: 'XYZ' } });
+
+      // The metadata returns as expected after hitting the FHIR server.
+      expect(scope.activeMocks()).to.be.empty;
+      expect(capabilityStatement.resourceType).to.equal('CapabilityStatement');
+    });
+
     it('returns a FHIR resource from the FHIR server if metadata is not present', async function () {
       const scope = nock(this.baseUrl)
         .matchHeader('accept', 'application/json+fhir')
@@ -161,6 +187,26 @@ describe('Client', function () {
   });
 
   describe('#resolve', async function () {
+    it('builds a request with custom headers', async function () {
+      const resourceType = 'Patient';
+      const id = 'eb3271e1-ae1b-4644-9332-41e32c829486';
+      const reference = `${resourceType}/${id}`;
+      const absoluteReference = `${this.baseUrl}/${reference}`;
+      nock(this.baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('abc', 'XYZ')
+        .get(`/${reference}`)
+        .reply(200, () => readStreamFor('patient.json'));
+
+      const response = await this.fhirClient.resolve({
+        reference: absoluteReference,
+        headers: { abc: 'XYZ' },
+      });
+
+      expect(response.resourceType).to.equal(resourceType);
+      expect(response.id).to.equal(id);
+    });
+
     it('resolves a reference and returns a resource', async function () {
       const resourceType = 'Patient';
       const id = 'eb3271e1-ae1b-4644-9332-41e32c829486';
@@ -171,7 +217,7 @@ describe('Client', function () {
         .get(`/${reference}`)
         .reply(200, () => readStreamFor('patient.json'));
 
-      const response = await this.fhirClient.resolve(absoluteReference);
+      const response = await this.fhirClient.resolve({ reference: absoluteReference });
 
       expect(response.resourceType).to.equal(resourceType);
       expect(response.id).to.equal(id);
@@ -204,10 +250,52 @@ describe('Client', function () {
     });
   });
 
+  describe('#customHeaders=', function () {
+    it('sets custom headers', async function () {
+      this.fhirClient.customHeaders = { abc: 'XYZ' };
+
+      nock(this.baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('abc', 'XYZ')
+        .matchHeader('def', 'UVW')
+        .get('/Patient/test-access-token')
+        .reply(200, () => readStreamFor('patient.json'));
+
+      expect(this.fhirClient.customHeaders).to.deep.equal({ abc: 'XYZ' });
+      await this.fhirClient.read({ resourceType: 'Patient', id: 'test-access-token', headers: { def: 'UVW' } });
+    });
+
+    it('can be overridden by custom request headers', async function () {
+      this.fhirClient.customHeaders = { abc: 'XYZ' };
+
+      nock(this.baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('abc', 'DEF')
+        .get('/Patient/test-access-token')
+        .reply(200, () => readStreamFor('patient.json'));
+
+      await this.fhirClient.read({ resourceType: 'Patient', id: 'test-access-token', headers: { abc: 'DEF' } });
+    });
+  });
+
   describe('API verbs', function () {
     describe('#read', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('get', 'read');
+      });
+
+      it('builds requests with custom headers', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('abc', 'XYZ')
+          .get('/Patient/test-access-token')
+          .reply(200, () => readStreamFor('patient.json'));
+
+        await this.fhirClient.read({
+          resourceType: 'Patient',
+          id: 'test-access-token',
+          headers: { abc: 'XYZ' },
+        });
       });
 
       it('throws errors for a missing resource', async function () {
@@ -261,6 +349,19 @@ describe('Client', function () {
         expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
       });
 
+      it('builds a request with custom headers', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('abc', 'XYZ')
+          .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/1')
+          .reply(200, () => readStreamFor('patient.json'));
+
+        const response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '1', headers: { abc: 'XYZ' } });
+
+        expect(response.resourceType).to.equal('Patient');
+        expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
+      });
+
       it('throws errors for an absent resource', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -295,6 +396,36 @@ describe('Client', function () {
     });
 
     describe('#search', function () {
+      it('passes headers to each search method', async function () {
+        const customHeader = { abc: 'XYZ' };
+        const searchMethod = async function ({ headers }) {
+          return headers;
+        };
+        this.fhirClient.compartmentSearch = searchMethod;
+        this.fhirClient.resourceSearch = searchMethod;
+        this.fhirClient.systemSearch = searchMethod;
+
+        const compartmentHeaders = await this.fhirClient.search({
+          resourceType: 'Condition',
+          compartment: { resourceType: 'Patient', id: 123 },
+          searchParams: { category: 'problem' },
+          headers: customHeader,
+        });
+        const resourceHeaders = await this.fhirClient.search({
+          resourceType: 'Patient',
+          searchParams: { name: 'abbott' },
+          headers: customHeader,
+        });
+        const systemHeaders = await this.fhirClient.search({
+          searchParams: { name: 'abbott' },
+          headers: customHeader,
+        });
+
+        expect(compartmentHeaders).to.eq(customHeader);
+        expect(resourceHeaders).to.eq(customHeader);
+        expect(systemHeaders).to.eq(customHeader);
+      });
+
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('get', 'search');
       });
@@ -339,6 +470,23 @@ describe('Client', function () {
         mockAndExpectNotFound('get', 'resourceSearch');
       });
 
+      it('builds a request with custom headers', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('abc', 'XYZ')
+          .get('/Patient?name=abbott')
+          .reply(200, () => readStreamFor('search-results.json'));
+
+        const response = await this.fhirClient.resourceSearch({
+          resourceType: 'Patient',
+          searchParams: { name: 'abbott' },
+          headers: { abc: 'XYZ' },
+        });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
+      });
+
       it('returns a matching search results bundle', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -358,6 +506,22 @@ describe('Client', function () {
     describe('#systemSearch', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('get', 'systemSearch');
+      });
+
+      it('builds a request with custom headers', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('abc', 'XYZ')
+          .get('/_search?name=abcdef')
+          .reply(200, () => readStreamFor('system-search-results.json'));
+
+        const response = await this.fhirClient.systemSearch({
+          searchParams: { name: 'abcdef' },
+          headers: { abc: 'XYZ' },
+        });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
       });
 
       it('returns a matching search results bundle', async function () {
@@ -382,6 +546,24 @@ describe('Client', function () {
           expect(error).to.exist;
         }
         expect(response).to.be.undefined;
+      });
+
+      it('builds a request with custom headers', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('abc', 'XYZ')
+          .get('/Patient/385800201/Condition')
+          .reply(200, () => readStreamFor('compartment-search-results.json'));
+
+        const response = await this.fhirClient.compartmentSearch({
+          compartment: { resourceType: 'Patient', id: 385800201 },
+          resourceType: 'Condition',
+          headers: { abc: 'XYZ' },
+        });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.type).to.equal('searchset');
+        expect(response.total).to.equal(6);
       });
 
       it('returns a matching search results bundle with query params', async function () {
@@ -420,6 +602,19 @@ describe('Client', function () {
 
     describe('pagination', function () {
       describe('#nextPage', function () {
+        it('builds a request with custsom headers', async function () {
+          nock(this.baseUrl)
+            .matchHeader('accept', 'application/json+fhir')
+            .matchHeader('abc', 'XYZ')
+            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
+            .reply(200, () => readStreamFor('search-results-page-2.json'));
+
+          const searchResults = readFixture('search-results-page-1.json');
+          const response = await this.fhirClient.nextPage(searchResults, { abc: 'XYZ' });
+          const url = 'https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset';
+
+          expect(response.link[0].url).to.equal(url);
+        });
         it('returns httpClient get for the next link', async function () {
           nock(this.baseUrl)
             .matchHeader('accept', 'application/json+fhir')
@@ -441,6 +636,20 @@ describe('Client', function () {
       });
 
       describe('#prevPage', function () {
+        it('builds a request with custom headers', async function () {
+          nock(this.baseUrl)
+            .matchHeader('accept', 'application/json+fhir')
+            .matchHeader('abc', 'XYZ')
+            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset')
+            .reply(200, () => readStreamFor('search-results-page-1.json'));
+
+          const searchResults = readFixture('search-results-page-2.json');
+          const response = await this.fhirClient.prevPage(searchResults, { abc: 'XYZ' });
+          const url = 'https://example.com/Patient?_count=3&gender=female';
+
+          expect(response.link[0].url).to.equal(url);
+        });
+
         it('returns httpClient get for the previous link', async function () {
           nock(this.baseUrl)
             .matchHeader('accept', 'application/json+fhir')
@@ -478,6 +687,31 @@ describe('Client', function () {
     describe('#create', function () {
       it('create builds request with no arguments', async function () {
         mockAndExpectNotFound('post', 'create');
+      });
+
+      it('builds a request with custom headers', async function () {
+        const newPatient = {
+          resourceType: 'Patient',
+          active: true,
+          name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+          gender: 'female',
+          birthDate: '1948-04-14',
+        };
+
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('abc', 'XYZ')
+          .post('/Patient', newPatient)
+          .reply(201, () => readStreamFor('patient-created.json'));
+
+        const response = await this.fhirClient.create({
+          resourceType: newPatient.resourceType,
+          body: newPatient,
+          headers: { abc: 'XYZ' },
+        });
+
+        expect(response.resourceType).to.equal('OperationOutcome');
+        expect(response.issue[0].diagnostics).to.have.string('Successfully created resource');
       });
 
       it('returns a successful operation outcome', async function () {
@@ -533,6 +767,23 @@ describe('Client', function () {
         mockAndExpectNotFound('delete', 'delete');
       });
 
+      it('builds a request with custom headers', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('abc', 'XYZ')
+          .delete('/Patient/152746')
+          .reply(200, () => readStreamFor('patient-deleted.json'));
+
+        const response = await this.fhirClient.delete({
+          resourceType: 'Patient',
+          id: 152746,
+          headers: { abc: 'XYZ' },
+        });
+
+        expect(response.resourceType).to.equal('OperationOutcome');
+        expect(response.issue[0].diagnostics).to.have.string('Successfully deleted 1 resource');
+      });
+
       it('returns a successful operation outcome', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -569,6 +820,24 @@ describe('Client', function () {
 
       const body = { resourceType: 'Patient', id: '152747', birthDate: '1948-10-10' };
 
+      it('builds a request with custom headers', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('abc', 'XYZ')
+          .put('/Patient/152747')
+          .reply(200, () => readStreamFor('patient-updated.json'));
+
+        const response = await this.fhirClient.update({
+          resourceType: 'Patient',
+          id: '152747',
+          body,
+          headers: { abc: 'XYZ' },
+        });
+
+        expect(response.resourceType).to.equal('OperationOutcome');
+        expect(response.issue[0].diagnostics).to.have.string('_history/2');
+      });
+
       it('returns a successful operation outcome', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -601,6 +870,26 @@ describe('Client', function () {
     describe('#patch', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('patch', 'patch');
+      });
+
+      it('builds a request with custom headers', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('content-type', 'application/json-patch+json')
+          .matchHeader('abc', 'XYZ')
+          .patch('/Patient/152747')
+          .reply(200, () => readStreamFor('patient-patched.json'));
+
+        const jsonPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
+        const response = await this.fhirClient.patch({
+          resourceType: 'Patient',
+          id: '152747',
+          body: jsonPatch,
+          headers: { abc: 'XYZ' },
+        });
+
+        expect(response.resourceType).to.equal('OperationOutcome');
+        expect(response.issue[0].diagnostics).to.have.string('_history/3');
       });
 
       it('returns a successful operation outcome', async function () {
@@ -640,71 +929,23 @@ describe('Client', function () {
       });
     });
 
-    describe('#delete', function () {
-      it('returns a successful operation outcome', async function () {
-        nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
-          .delete('/Patient/152746')
-          .reply(200, () => readStreamFor('patient-deleted.json'));
-
-        const response = await this.fhirClient.delete({ resourceType: 'Patient', id: 152746 });
-
-        expect(response.resourceType).to.deep.equal('OperationOutcome');
-        expect(response.issue[0].diagnostics).to.have.string('Successfully deleted 1 resource');
-      });
-
-      it('throws an error for a missing resource', async function () {
-        nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
-          .delete('/Patient/abcdef')
-          .reply(404, () => readStreamFor('patient-not-found.json'));
-
-        let response;
-        try {
-          response = await this.fhirClient.delete({ resourceType: 'Patient', id: 'abcdef' });
-        } catch (error) {
-          expect(error.response.status).to.equal(404);
-          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
-        }
-        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
-      });
-    });
-
-    describe('#update', function () {
-      const body = { resourceType: 'Patient', id: '152747', birthDate: '1948-10-10' };
-
-      it('returns a successful operation outcome', async function () {
-        nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
-          .put('/Patient/152747')
-          .reply(200, () => readStreamFor('patient-updated.json'));
-
-        const response = await this.fhirClient.update({ resourceType: 'Patient', id: '152747', body });
-
-        expect(response.resourceType).to.deep.equal('OperationOutcome');
-        expect(response.issue[0].diagnostics).to.have.string('_history/2');
-      });
-
-      it('throws an error for a missing resource', async function () {
-        nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
-          .put('/Patient/abcdef')
-          .reply(404, () => readStreamFor('patient-not-found.json'));
-
-        let response;
-        try {
-          response = await this.fhirClient.update({ resourceType: 'Patient', id: 'abcdef', body });
-        } catch (error) {
-          expect(error.response.status).to.equal(404);
-          expect(error.response.data.resourceType).to.deep.equal('OperationOutcome');
-        }
-        expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
-      });
-    });
-
     describe('#batch', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('post', 'batch');
+      });
+
+      it('builds a request with custom headers', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('abc', 'XYZ')
+          .post('/')
+          .reply(200, () => readStreamFor('batch-results.json'));
+
+        const body = readFixture('batch-request.json');
+        const response = await this.fhirClient.batch({ body, headers: { abc: 'XYZ' } });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.type).to.equal('batch-response');
       });
 
       it('returns a matching batch response bundle', async function () {
@@ -754,6 +995,20 @@ describe('Client', function () {
         mockAndExpectNotFound('post', 'transaction');
       });
 
+      it('builds a request with custom headers', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('abc', 'XYZ')
+          .post('/')
+          .reply(200, () => readStreamFor('transaction-results.json'));
+
+        const body = readFixture('transaction-request.json');
+        const response = await this.fhirClient.transaction({ body, headers: { abc: 'XYZ' } });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.type).to.equal('transaction-response');
+      });
+
       it('returns a transaction response bundle with matching response statuses', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -792,6 +1047,31 @@ describe('Client', function () {
     });
 
     describe('#history', function () {
+      it('passes headers to each history method', async function () {
+        const customHeader = { abc: 'XYZ' };
+        const historyMethod = async function ({ headers }) {
+          return headers;
+        };
+        this.fhirClient.resourceHistory = historyMethod;
+        this.fhirClient.typeHistory = historyMethod;
+        this.fhirClient.systemHistory = historyMethod;
+
+        const resourceHeaders = await this.fhirClient.history({
+          resourceType: 'Patient',
+          id: '152747',
+          headers: customHeader,
+        });
+        const typeHeaders = await this.fhirClient.history({
+          resourceType: 'Patient',
+          headers: customHeader,
+        });
+        const systemHeaders = await this.fhirClient.history({ headers: customHeader });
+
+        expect(resourceHeaders).to.eq(customHeader);
+        expect(typeHeaders).to.eq(customHeader);
+        expect(systemHeaders).to.eq(customHeader);
+      });
+
       it('calls resourceHistory when given the "resourceType" and "id" params', async function () {
         this.fhirClient.resourceHistory = async function () {
           return 'resource';
@@ -828,6 +1108,22 @@ describe('Client', function () {
         mockAndExpectNotFound('get', 'resourceHistory');
       });
 
+      it('builds a request with custom headers', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('abc', 'XYZ')
+          .get('/Patient/152747/_history')
+          .reply(200, () => readStreamFor('resource-history.json'));
+
+        const response = await this.fhirClient.resourceHistory({
+          resourceType: 'Patient',
+          id: '152747',
+          headers: { abc: 'XYZ' },
+        });
+
+        expectHistoryBundle(response, 20);
+      });
+
       it('returns a history bundle for a resource', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -845,6 +1141,21 @@ describe('Client', function () {
         mockAndExpectNotFound('get', 'typeHistory');
       });
 
+      it('builds a request with custom headers', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('abc', 'XYZ')
+          .get('/Patient/_history')
+          .reply(200, () => readStreamFor('type-history.json'));
+
+        const response = await this.fhirClient.typeHistory({
+          resourceType: 'Patient',
+          headers: { abc: 'XYZ' },
+        });
+
+        expectHistoryBundle(response, 15);
+      });
+
       it('returns a history bundle for a resource type', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -858,13 +1169,25 @@ describe('Client', function () {
     });
 
     describe('#systemHistory', function () {
+      it('builds a request with custom headers', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('abc', 'XYZ')
+          .get('/_history')
+          .reply(200, () => readStreamFor('system-history.json'));
+
+        const response = await this.fhirClient.systemHistory({ headers: { abc: 'XYZ' } });
+
+        expectHistoryBundle(response, 152750);
+      });
+
       it('returns a history bundle for all resources', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .get('/_history')
           .reply(200, () => readStreamFor('system-history.json'));
 
-        const response = await this.fhirClient.systemHistory('_/history');
+        const response = await this.fhirClient.systemHistory();
 
         expectHistoryBundle(response, 152750);
       });

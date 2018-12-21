@@ -261,6 +261,7 @@ describe('Client', function () {
         .get('/Patient/test-access-token')
         .reply(200, () => readStreamFor('patient.json'));
 
+      expect(this.fhirClient.customHeaders).to.deep.equal({ abc: 'XYZ' });
       await this.fhirClient.read({ resourceType: 'Patient', id: 'test-access-token', headers: { def: 'UVW' } });
     });
 

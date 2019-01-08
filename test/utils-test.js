@@ -1,7 +1,7 @@
 /* eslint-disable func-names, no-unused-expressions */
 const { expect } = require('chai');
 
-const { splitReference } = require('../lib/utils');
+const { splitReference, validateID } = require('../lib/utils');
 
 describe('utils', function () {
   describe('splitReference', function () {
@@ -46,6 +46,31 @@ describe('utils', function () {
         const absoluteReference = `${baseUrl}/${resourceType}/${id}`;
         const expectedError = `${absoluteReference} is not a recognized FHIR reference`;
         expect(() => splitReference(absoluteReference)).to.throw(expectedError);
+      });
+    });
+  });
+
+  describe('validateID', function () {
+    const expectedError = 'Invalid FHIR ressource ID.';
+    context('with a valid id', function () {
+      it('should not throws an error', function () {
+        expect(() => validateID('1234')).to.not.throws();
+      });
+    });
+    context('with a too long id', function () {
+      it('should throws an error', function () {
+        expect(() => validateID('1111111111111111111111111111111111111111111111111' +
+        '1111111111111111111111111111111111111111111111111')).to.throw(expectedError);
+      });
+    });
+    context('with a too short id', function () {
+      it('should throws an error', function () {
+        expect(() => validateID('')).to.throw(expectedError);
+      });
+    });
+    context('with invalid characters', function () {
+      it('should throws an error', function () {
+        expect(() => validateID('1234/_history/456')).to.throw(expectedError);
       });
     });
   });

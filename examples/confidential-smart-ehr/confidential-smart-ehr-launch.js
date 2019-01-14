@@ -56,6 +56,9 @@ app.get('/launch', async (req, res) => {
       authorizeHost: `${authorizeUrl.protocol}//${authorizeUrl.host}`,
       authorizePath: authorizeUrl.pathname,
     },
+    options: {
+      authorizationMethod: 'body',
+    },
   });
 
   // Authorization uri definition
@@ -90,11 +93,15 @@ app.get('/callback', async (req, res) => {
       authorizeHost: `${authorizeUrl.protocol}//${authorizeUrl.host}`,
       authorizePath: authorizeUrl.pathname,
     },
+    options: {
+      authorizationMethod: 'body',
+    },
   });
 
   const { code } = req.query;
   const options = {
     code,
+    redirect_uri: 'http://localhost:3000/callback',
   };
 
   try {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Home - Documentation</title>
+    <title>pagination.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,137 +29,63 @@
 
 <div id="main">
     
+    <h1 class="page-title">pagination.js</h1>
+    
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+  * Class for paging Bundles.
+  * @private
+  *
+  */
+class Pagination {
+  /**
+   * Add pagination functionality for the provided client.
+   *
+   * @private
+   * @param {HttpClient} httpClient a configured instance of http client.
+   */
+  constructor(httpClient) {
+    this.httpClient = httpClient;
+  }
 
+  /**
+   * Return the next page of results.
+   *
+   * @param {object} results a bundle result of a FHIR search
+   * @param {Object} [headers] - Optional custom headers to add to the request
+   *
+   * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
+   */
+  nextPage(results, headers) {
+    const nextLink = results.link.find(link => link.relation === 'next');
+    return nextLink ? this.httpClient.get(nextLink.url, headers) : undefined;
+  }
 
-
-
-
-
-
-
-
-    
-
-
-    <section class="readme">
-        <article><h1>FHIRKit Client</h1><p><a href="https://badge.fury.io/js/fhir-kit-client"><img src="https://badge.fury.io/js/fhir-kit-client.svg" alt="npm version"></a>
-<a href="https://travis-ci.org/Vermonster/fhir-kit-client"><img src="https://travis-ci.org/Vermonster/fhir-kit-client.svg?branch=master" alt="Build Status"></a>
-<a href="https://coveralls.io/github/Vermonster/fhir-kit-client?branch=master"><img src="https://coveralls.io/repos/github/Vermonster/fhir-kit-client/badge.svg?branch=master" alt="Coverage Status"></a>
-<a href="https://github.com/Vermonster/fhir-kit-client/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Vermonster/fhir-kit-client.svg" alt="GitHub license"></a></p>
-<p>Node FHIR client library</p>
-<h2>Features</h2><ul>
-<li>Support for STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)</li>
-<li>Support for all FHIR REST actions</li>
-<li>Pagination support for search results</li>
-<li>Batch and transaction support</li>
-<li>Support for absolute, in-bundle, and contained references</li>
-<li>Metadata caching on client instance</li>
-<li>SMART security support</li>
-<li>Capability-checking tool based on server capability statements</li>
-<li>Minimal dependencies</li>
-<li>Contemporary async/await structure</li>
-<li>Modern ES6 Classes</li>
-<li>TDD with Mocha</li>
-<li>URL and WHATWG Fetch polyfill (so it works in client-only apps without much trouble)</li>
-</ul>
-<h2>Examples</h2><p>Examples using promises...</p>
-<pre class="prettyprint source lang-javascript"><code>const Client = require('fhir-kit-client');
-const fhirClient = new Client({
-  baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open'
-  });
-
-// Get SMART URLs for OAuth
-fhirClient.smartAuthMetadata().then((response) => {
-  console.log(response);
-  });
-
-
-// Read a patient
-fhirClient
-  .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
-  .then((response) => {
-    console.log(response);
-  });
-
-
-// Search for patients, and page through results
-fhirClient
-  .search({ resourceType: 'Patient', searchParams: { _count: '3', gender: 'female' } })
-  .then((response) => {
-    console.log(response);
-    return response;
-  })
-  .then((response) => {
-    console.log(response);
-    return fhirClient.nextPage(response);
-  })
-  .then((response) => {
-    console.log(response);
-    return fhirClient.prevPage(response);
-  })
-  .catch((error) => {
-    console.error(error);
-  });</code></pre><p>Examples using async/await...</p>
-<pre class="prettyprint source lang-javascript"><code>const Client = require('fhir-kit-client');
-const fhirClient = new Client({
-  baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open'
-  });
-
-async function asyncExamples() {
-  // Get SMART URLs for OAuth
-  let response = await fhirClient.smartAuthMetadata();
-  console.log(response);
-
-
-  // Read a patient
-  response = await fhirClient
-    .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' });
-  console.log(response);
-
-
-  // Search for a patient with name matching abbott, then paging
-  let searchResponse = await fhirClient
-    .search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
-  console.log(searchResponse);
-
-  searchResponse = await fhirClient.nextPage(searchResponse);
-  console.log(searchResponse);
-
-  searchResponse = await fhirClient.prevPage(searchResponse);
-  console.log(searchResponse);
+  /**
+   * Return the previous page of results.
+   *
+   * @param {object} results a bundle result of a FHIR search
+   * @param {Object} [headers] - Optional custom headers to add to the request
+   *
+   * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
+   */
+  prevPage(results, headers) {
+    const prevLink = results.link.find(link => link.relation.match(/^prev(ious)?$/));
+    return prevLink ? this.httpClient.get(prevLink.url, headers) : undefined;
+  }
 }
 
-asyncExamples();</code></pre><p>For more examples see the JS Docs and Launch Examples below.</p>
-<h2>Documentation</h2><p><a href="https://vermonster.github.io/fhir-kit-client/fhir-kit-client/0.4.4/index.html">JSDoc-generated documentation with plenty of examples</a></p>
-<h2>Launch Examples (SMART, CDS Hooks)</h2><p>To see how to follow launch and authorization workflows for FHIR applications,
-see the <a href="./examples/">examples directory</a> and <a href="./examples/README.md">examples README</a>.</p>
-<h2>Example React App</h2><p><a href="https://github.com/Vermonster/fhir-kit-create-react">FHIRKit Create React App</a>
-provides a <a href="https://github.com/facebook/create-react-app">create-react-app</a>
-template that can be used to create a sample React app using FHIRKit Client.</p>
-<h2>Logging</h2><p>The <a href="https://www.npmjs.com/package/debug">debug library</a> can provide logging
-during development. Two different logging namespaces are provided, <code>fhir-kit-
-client:info</code> logs each request and response, and <code>fhir-kit-client:error</code> logs
-errors. To enable logging during development, add one of the namespaces to the
-DEBUG environment variable, or use <code>fhir-kit-client:*</code> to enable both.</p>
-<pre class="prettyprint source"><code>$ DEBUG=fhir-kit-client:* node smart-launch.js</code></pre><h2>Contributing</h2><p>FHIRKit Client is an open source Node.js FHIR client library that welcomes
-community contributions with enthusiasm.</p>
-<p>All are welcome to participate. By participating in this project, you agree to
-follow the <a href="https://github.com/Vermonster/fhir-kit-client/blob/master/CODE_OF_CONDUCT.md">Code of
-Conduct</a>.</p>
-<p>Please see our
-<a href="https://github.com/Vermonster/fhir-kit-client/blob/master/CONTRIBUTING.md">Contributing</a>
-document for more details on how to get started.</p>
-<h2>License</h2><p>MIT</p>
-<p>Copyright (c) 2018 Vermonster LLC</p></article>
+module.exports = Pagination;
+</code></pre>
+        </article>
     </section>
-
-
 
 
 
@@ -169,7 +95,7 @@ document for more details on how to get started.</p>
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Dec 07 2018 14:24:36 GMT-0500 (EST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jan 16 2019 16:36:30 GMT-0500 (EST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

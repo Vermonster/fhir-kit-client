@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Global - Documentation</title>
+    <title>smart.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,445 +29,76 @@
 
 <div id="main">
     
-    <h1 class="page-title">Global</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-        
-        </h2>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-        
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="authFromCapability"><span class="type-signature"></span>authFromCapability<span class="signature">(capabilityStatement)</span><span class="type-signature"> &rarr; {Object}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Get the SMART OAuth URIs from a Capability Statement
-http://docs.smarthealthit.org/authorization/conformance-statement/</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="smart.js.html">smart.js</a>, <a href="smart.js.html#line23">line 23</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>capabilityStatement</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Object</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>a FHIR capabilityStatement</p>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>Object</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    <p>contains the following SMART URIs: authorizeUrl, tokenUrl,
-  registerUrl, manageUrl</p>
-</div>
-
-    
-</div>
-
-
-
-<div class="section-examples">
-<h5>Example</h5>
-
-    <pre class="prettyprint"><code>{
-  authorizeUrl,
-  tokenUrl,
-  registerUrl,
-  manageUrl,
-} = authFromCapability(capabilityStatement);</code></pre>
-
-</div>
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="splitReference"><span class="type-signature"></span>splitReference<span class="signature">(reference)</span><span class="type-signature"> &rarr; {Object}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Split a FHIR reference into its baseUrl (if present), type, and id</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line21">line 21</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>reference</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>String</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>the FHIR reference</p>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>Object</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    <p>Contains baseUrl, resourceType, and id fields. baseUrl will be
-undefined for relative references</p>
-</div>
-
-    
-</div>
-
-
-
-<div class="section-examples">
-<h5>Example</h5>
-
-    <pre class="prettyprint"><code>// With an absolute reference
-{ baseUrl, resourceType, id } = splitReference('http://www.example.com/fhir/Patient/1');
-console.log(`${baseUrl}/${resourceType}/${id}`);
-
-// With a relative reference
-{ resourceType, id } = splitReference('Patient/1');
-console.log('${resourceType}/${id}');</code></pre>
-
-</div>
-
-</div>
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">smart.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const { URL } = require('universal-url');
+
+const smartOauthUrl = 'http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris';
+const { logError } = require('./logging');
+
+/**
+ * Get the SMART OAuth URIs from a Capability Statement
+ * http://docs.smarthealthit.org/authorization/conformance-statement/
+ *
+ * @example
+ *
+ * {
+ *   authorizeUrl,
+ *   tokenUrl,
+ *   registerUrl,
+ *   manageUrl,
+ * } = authFromCapability(capabilityStatement);
+ *
+ * @param {Object} capabilityStatement - a FHIR capabilityStatement
+ * @return {Object} contains the following SMART URIs: authorizeUrl, tokenUrl,
+ *   registerUrl, manageUrl
+ */
+function authFromCapability(capabilityStatement) {
+  const authMetadata = {};
+
+  try {
+    capabilityStatement.rest.forEach((restItem) => {
+      const uris = restItem.security.extension.find(x => x.url === smartOauthUrl);
+
+      uris.extension.forEach((ext) => {
+        switch (ext.url) {
+          case 'authorize':
+            authMetadata.authorizeUrl = new URL(ext.valueUri);
+            break;
+          case 'token':
+            authMetadata.tokenUrl = new URL(ext.valueUri);
+            break;
+          case 'register':
+            authMetadata.registerUrl = new URL(ext.valueUri);
+            break;
+          case 'manage':
+            authMetadata.manageUrl = new URL(ext.valueUri);
+            break;
+          default:
+        }
+      });
+    });
+    return authMetadata;
+  } catch (error) {
+    logError(error);
+    return authMetadata;
+  }
+}
+
+module.exports = {
+  authFromCapability,
+};
+</code></pre>
+        </article>
+    </section>
 
 
 
@@ -477,7 +108,7 @@ console.log('${resourceType}/${id}');</code></pre>
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Dec 07 2018 14:24:36 GMT-0500 (EST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jan 16 2019 16:36:30 GMT-0500 (EST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

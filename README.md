@@ -8,7 +8,7 @@ Node FHIR client library
 
 ## Features
 
-* Support for STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)
+* Support for R4 (4.0.0, 3.5.0, 3.3.0, 3.2.0), STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)
 * Support for all FHIR REST actions
 * Pagination support for search results
 * Batch and transaction support
@@ -105,7 +105,7 @@ For more examples see the JS Docs and Launch Examples below.
 
 ## Documentation
 
-[JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/1.0.0/index.html)
+[JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/1.1.0/index.html)
 
 ## Launch Examples (SMART, CDS Hooks)
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>fhir-kit-client - Documentation</title>
+    <title>reference-resolver.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,58 +29,159 @@
 
 <div id="main">
     
-    <h1 class="page-title">fhir-kit-client</h1>
+    <h1 class="page-title">reference-resolver.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-    
-</header>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const { splitReference } = require('./utils');
 
-<article>
-    <div class="container-overview">
-    
-        
+/**
+ * Class used by Client to resolve FHIR References. Do not use this class
+ * directly, use Client#resolve instead.
+ *
+ * @private
+ */
+module.exports = class {
+  /**
+   * Create a Reference Resolver.
+   *
+   * @param {Client} client FHIR Client
+   */
+  constructor(client) {
+    this.client = client;
+  }
 
-        
-    
-    </div>
+  /**
+   * Resolve a reference and return FHIR resource
+   *
+   * From: http://hl7.org/fhir/STU3/references.html, a reference can be: 1)
+   * absolute URL, 2) relative URL or 3) an internal fragement.  In the case of
+   * (2), there are rules on resolving references that are in a FHIR bundle.
+   *
+   * @async
+   *
+   * @example
+   *
+   * // Always does a new http request
+   * client.resolve({ reference: 'http://test.com/fhir/Patient/1' }).then((patient) => {
+   *   console.log(patient);
+   * });
+   *
+   * // Always does a new http request, using the client.baseUrl
+   * client.resolve({ reference: 'Patient/1' }).then((patient) => {
+   *   console.log(patient);
+   * });
+   *
+   * // Try to resolve a patient in the bundle, otherwise build request
+   * // at client.baseUrl
+   * client.resolve({ reference: 'Patient/1', context: bundle }).then((patient) => {
+   *   console.log(patient);
+   * });
+   *
+   * // Resolve a patient contained in someResource (see:
+   * // http://hl7.org/fhir/STU3/references.html#contained)
+   * client.resolve({ reference: '#patient-1', context: someResource }).then((patient) => {
+   *   console.log(patient);
+   * });
+   *
+   * @param {Object} params - The request parameters.
+   * @param {String} params.reference - FHIR reference
+   * @param {Object} [params.context] - Optional bundle or FHIR resource
+   * @param {Object} [params.headers] - Optional custom headers to add to the
+   *   request
+   *
+   * @return {Promise&lt;Object>} FHIR resource
+   */
+  async resolve({ reference, context, headers } = {}) {
+    if (context === undefined) {
+      if (reference.startsWith('http')) {
+        return this.resolveAbsoluteReference(reference, headers);
+      }
+      return this.client.httpClient.get(reference, headers);
+    }
+    if (reference.startsWith('#')) {
+      return this.resolveContainedReference(reference, context, headers);
+    }
+    return this.resolveBundleReference(reference, context, headers);
+  }
 
-    
+  /**
+   * Private function to resolve absolute references
+   *
+   * @private
+   *
+   * @async
+   *
+   * @param {String} reference the FHIR reference
+   * @param {Object} [headers] - Optional custom headers to add to the request
+   *
+   * @return {Promise&lt;Object>} FHIR resource
+   */
+  async resolveAbsoluteReference(reference, headers) {
+    if (reference.startsWith(this.client.baseUrl)) {
+      return this.client.httpClient.get(reference, headers);
+    }
+    const { baseUrl, resourceType, id } = splitReference(reference);
+    const Client = require('./client'); // eslint-disable-line global-require
+    return (new Client({ baseUrl })).read({ resourceType, id, headers });
+  }
 
-    
+  /**
+   * Private function to resolve contained references
+   *
+   * @private
+   *
+   * @param {String} reference the FHIR reference
+   * @param {Object} [context] FHIR resource
+   *
+   * @return {Object} FHIR resource
+   * @throws Will throw if a contained resource which matches the reference
+   *   can't be found
+   */
+  resolveContainedReference(reference, context) { // eslint-disable-line class-methods-use-this
+    if (context.contained) {
+      const referenceId = reference.slice(1);
+      const containedResource = context.contained.find(resource => resource.id === referenceId);
+      if (containedResource) {
+        return containedResource;
+      }
+    }
+    throw (new Error(`Unable to resolve contained reference: ${reference}`));
+  }
 
-    
-        <h3 class="subsection-title">Classes</h3>
+  /**
+   * Private function to resolve references in a bundle. If not contained in the
+   * bundle, the resources will be fetched from a FHIR server.
+   *
+   * @private
+   *
+   * @async
+   *
+   * @param {String} reference - the FHIR reference
+   * @param {Object} bundle - FHIR bundle
+   * @param {Object} [headers] - Optional custom headers to add to the request
+   *
+   * @return {Promise&lt;Object>} - FHIR resource
+   */
+  async resolveBundleReference(reference, bundle, headers) {
+    const referenceRegEx = new RegExp(`(^|/)${reference}$`);
+    const entry = bundle.entry.find(bundleEntry => referenceRegEx.test(bundleEntry.fullUrl));
 
-        <dl>
-            <dt><a href="module-fhir-kit-client-Client.html">Client</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-     
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    if (!entry) {
+      return this.resolve({ reference, headers });
+    }
+    return entry.resource;
+  }
+};
+</code></pre>
+        </article>
+    </section>
 
 
 
@@ -90,7 +191,7 @@
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Dec 07 2018 14:24:36 GMT-0500 (EST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jan 16 2019 16:36:30 GMT-0500 (EST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -20,7 +20,7 @@ Node FHIR client library
 * Contemporary async/await structure
 * Modern ES6 Classes
 * TDD with Mocha
-* URL and WHATWG Fetch polyfill (so it works in client-only apps without much trouble)
+* URL polyfill (so it works in client-only apps without much trouble)
 
 ## Examples
 

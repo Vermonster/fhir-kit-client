@@ -501,6 +501,21 @@ describe('Client', function () {
         expect(response.resourceType).to.equal('Bundle');
         expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
       });
+
+      it('supports repeated query params', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient?_include=Observation&_include=MedicationRequest')
+          .reply(200, () => readStreamFor('search-results.json'));
+
+        const response = await this.fhirClient.resourceSearch({
+          resourceType: 'Patient',
+          searchParams: { _include: ['Observation', 'MedicationRequest'] },
+        });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
+      });
     });
 
     describe('#systemSearch', function () {
@@ -530,7 +545,24 @@ describe('Client', function () {
           .get('/_search?name=abcdef')
           .reply(200, () => readStreamFor('system-search-results.json'));
 
-        const response = await this.fhirClient.systemSearch({ searchParams: { name: 'abcdef' } });
+        const response = await this.fhirClient.systemSearch({
+          searchParams: { name: 'abcdef' },
+        });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
+      });
+
+      it('supports repeated query params', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/_search?_include=Observation&_include=MedicationRequest&name=abcdef')
+          .reply(200, () => readStreamFor('system-search-results.json'));
+
+        const response = await this.fhirClient.systemSearch({
+          searchParams: { name: 'abcdef',
+            _include: ['Observation', 'MedicationRequest'] },
+        });
 
         expect(response.resourceType).to.equal('Bundle');
         expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
@@ -576,6 +608,26 @@ describe('Client', function () {
           compartment: { resourceType: 'Patient', id: 385800201 },
           resourceType: 'Condition',
           searchParams: { category: 'problem' },
+        });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.type).to.equal('searchset');
+        expect(response.total).to.equal(6);
+      });
+
+      it('supports repeated query params', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient/385800201/Condition?_include=Observation&_include=MedicationRequest&category=problem')
+          .reply(200, () => readStreamFor('compartment-search-with-query-results.json'));
+
+        const response = await this.fhirClient.compartmentSearch({
+          compartment: { resourceType: 'Patient', id: 385800201 },
+          resourceType: 'Condition',
+          searchParams: {
+            category: 'problem',
+            _include: ['Observation', 'MedicationRequest'],
+          },
         });
 
         expect(response.resourceType).to.equal('Bundle');

@@ -20,7 +20,7 @@ Node FHIR client library
 * Contemporary async/await structure
 * Modern ES6 Classes
 * TDD with Mocha
-* URL and WHATWG Fetch polyfill (so it works in client-only apps without much trouble)
+* URL polyfill (so it works in client-only apps without much trouble)
 
 ## Examples
 
@@ -105,7 +105,7 @@ For more examples see the JS Docs and Launch Examples below.
 
 ## Documentation
 
-[JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/1.1.0/index.html)
+[JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/1.2.0/index.html)
 
 ## Launch Examples (SMART, CDS Hooks)
 

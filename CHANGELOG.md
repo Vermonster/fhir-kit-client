@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.2.0 (Jan. 16, 2019)
+- Keep connections alive ([#82](https://github.com/Vermonster/fhir-kit-client/issues/82))
+- Support repeated query parameters ([#87](https://github.com/Vermonster/fhir-kit-client/issues/87))
+
 ### 1.1.0 (Jan. 16, 2019)
 - Add R4 support ([#77](https://github.com/Vermonster/fhir-kit-client/issues/77))
 - Fix broken examples ([#79](https://github.com/Vermonster/fhir-kit-client/issues/79))

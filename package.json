@@ -1,6 +1,6 @@
 {
   "name": "fhir-kit-client",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "FHIR Client",
   "keywords": [
     "FHIR",
@@ -54,6 +54,7 @@
     "debug": "^3.1.0",
     "es6-promise": "^4.2.4",
     "query-string": "^6.2.0",
+    "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
     "universal-url": "^1.0.1"
   },

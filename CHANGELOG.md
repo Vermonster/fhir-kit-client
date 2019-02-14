@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.2.1 (Feb. 14, 2019)
+- Add missing `request` dependency
+
 ### 1.2.0 (Jan. 16, 2019)
 - Keep connections alive ([#82](https://github.com/Vermonster/fhir-kit-client/issues/82))
 - Support repeated query parameters ([#87](https://github.com/Vermonster/fhir-kit-client/issues/87))

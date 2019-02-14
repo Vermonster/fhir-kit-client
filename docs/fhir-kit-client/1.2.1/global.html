@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>reference-resolver.js - Documentation</title>
+    <title>Global - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,159 +29,445 @@
 
 <div id="main">
     
-    <h1 class="page-title">reference-resolver.js</h1>
+    <h1 class="page-title">Global</h1>
     
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>const { splitReference } = require('./utils');
+        <h2>
+        
+        </h2>
+        
+    
+</header>
 
-/**
- * Class used by Client to resolve FHIR References. Do not use this class
- * directly, use Client#resolve instead.
- *
- * @private
- */
-module.exports = class {
-  /**
-   * Create a Reference Resolver.
-   *
-   * @param {Client} client FHIR Client
-   */
-  constructor(client) {
-    this.client = client;
-  }
+<article>
+    <div class="container-overview">
+    
+        
 
-  /**
-   * Resolve a reference and return FHIR resource
-   *
-   * From: http://hl7.org/fhir/STU3/references.html, a reference can be: 1)
-   * absolute URL, 2) relative URL or 3) an internal fragement.  In the case of
-   * (2), there are rules on resolving references that are in a FHIR bundle.
-   *
-   * @async
-   *
-   * @example
-   *
-   * // Always does a new http request
-   * client.resolve({ reference: 'http://test.com/fhir/Patient/1' }).then((patient) => {
-   *   console.log(patient);
-   * });
-   *
-   * // Always does a new http request, using the client.baseUrl
-   * client.resolve({ reference: 'Patient/1' }).then((patient) => {
-   *   console.log(patient);
-   * });
-   *
-   * // Try to resolve a patient in the bundle, otherwise build request
-   * // at client.baseUrl
-   * client.resolve({ reference: 'Patient/1', context: bundle }).then((patient) => {
-   *   console.log(patient);
-   * });
-   *
-   * // Resolve a patient contained in someResource (see:
-   * // http://hl7.org/fhir/STU3/references.html#contained)
-   * client.resolve({ reference: '#patient-1', context: someResource }).then((patient) => {
-   *   console.log(patient);
-   * });
-   *
-   * @param {Object} params - The request parameters.
-   * @param {String} params.reference - FHIR reference
-   * @param {Object} [params.context] - Optional bundle or FHIR resource
-   * @param {Object} [params.headers] - Optional custom headers to add to the
-   *   request
-   *
-   * @return {Promise&lt;Object>} FHIR resource
-   */
-  async resolve({ reference, context, headers } = {}) {
-    if (context === undefined) {
-      if (reference.startsWith('http')) {
-        return this.resolveAbsoluteReference(reference, headers);
-      }
-      return this.client.httpClient.get(reference, headers);
-    }
-    if (reference.startsWith('#')) {
-      return this.resolveContainedReference(reference, context, headers);
-    }
-    return this.resolveBundleReference(reference, context, headers);
-  }
+        
 
-  /**
-   * Private function to resolve absolute references
-   *
-   * @private
-   *
-   * @async
-   *
-   * @param {String} reference the FHIR reference
-   * @param {Object} [headers] - Optional custom headers to add to the request
-   *
-   * @return {Promise&lt;Object>} FHIR resource
-   */
-  async resolveAbsoluteReference(reference, headers) {
-    if (reference.startsWith(this.client.baseUrl)) {
-      return this.client.httpClient.get(reference, headers);
-    }
-    const { baseUrl, resourceType, id } = splitReference(reference);
-    const Client = require('./client'); // eslint-disable-line global-require
-    return (new Client({ baseUrl })).read({ resourceType, id, headers });
-  }
 
-  /**
-   * Private function to resolve contained references
-   *
-   * @private
-   *
-   * @param {String} reference the FHIR reference
-   * @param {Object} [context] FHIR resource
-   *
-   * @return {Object} FHIR resource
-   * @throws Will throw if a contained resource which matches the reference
-   *   can't be found
-   */
-  resolveContainedReference(reference, context) { // eslint-disable-line class-methods-use-this
-    if (context.contained) {
-      const referenceId = reference.slice(1);
-      const containedResource = context.contained.find(resource => resource.id === referenceId);
-      if (containedResource) {
-        return containedResource;
-      }
-    }
-    throw (new Error(`Unable to resolve contained reference: ${reference}`));
-  }
+<dl class="details">
 
-  /**
-   * Private function to resolve references in a bundle. If not contained in the
-   * bundle, the resources will be fetched from a FHIR server.
-   *
-   * @private
-   *
-   * @async
-   *
-   * @param {String} reference - the FHIR reference
-   * @param {Object} bundle - FHIR bundle
-   * @param {Object} [headers] - Optional custom headers to add to the request
-   *
-   * @return {Promise&lt;Object>} - FHIR resource
-   */
-  async resolveBundleReference(reference, bundle, headers) {
-    const referenceRegEx = new RegExp(`(^|/)${reference}$`);
-    const entry = bundle.entry.find(bundleEntry => referenceRegEx.test(bundleEntry.fullUrl));
+    
 
-    if (!entry) {
-      return this.resolve({ reference, headers });
-    }
-    return entry.resource;
-  }
-};
-</code></pre>
-        </article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="authFromCapability"><span class="type-signature"></span>authFromCapability<span class="signature">(capabilityStatement)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Get the SMART OAuth URIs from a Capability Statement
+http://docs.smarthealthit.org/authorization/conformance-statement/</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="smart.js.html">smart.js</a>, <a href="smart.js.html#line23">line 23</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>capabilityStatement</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>Object</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>a FHIR capabilityStatement</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>Object</code></span>
+
+
+    </dd>
+</dl>
+
+
+<div class="param-desc">
+    <p>contains the following SMART URIs: authorizeUrl, tokenUrl,
+  registerUrl, manageUrl</p>
+</div>
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>{
+  authorizeUrl,
+  tokenUrl,
+  registerUrl,
+  manageUrl,
+} = authFromCapability(capabilityStatement);</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="splitReference"><span class="type-signature"></span>splitReference<span class="signature">(reference)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Split a FHIR reference into its baseUrl (if present), type, and id</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line21">line 21</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>reference</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>String</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>the FHIR reference</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>Object</code></span>
+
+
+    </dd>
+</dl>
+
+
+<div class="param-desc">
+    <p>Contains baseUrl, resourceType, and id fields. baseUrl will be
+undefined for relative references</p>
+</div>
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>// With an absolute reference
+{ baseUrl, resourceType, id } = splitReference('http://www.example.com/fhir/Patient/1');
+console.log(`${baseUrl}/${resourceType}/${id}`);
+
+// With a relative reference
+{ resourceType, id } = splitReference('Patient/1');
+console.log('${resourceType}/${id}');</code></pre>
+
+</div>
+
+</div>
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
@@ -191,7 +477,7 @@ module.exports = class {
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Feb 08 2019 09:45:10 GMT-0500 (EST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Feb 14 2019 09:29:51 GMT-0500 (EST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

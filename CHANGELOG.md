@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.2.2 (Feb. 22, 2019)
+- Improve error handling in `search` method
+
 ### 1.2.1 (Feb. 14, 2019)
 - Add missing `request` dependency
 

@@ -426,10 +426,6 @@ describe('Client', function () {
         expect(systemHeaders).to.eq(customHeader);
       });
 
-      it('builds request with no arguments', async function () {
-        mockAndExpectNotFound('get', 'search');
-      });
-
       it('calls compartmentSearch when given a "compartment" param', async function () {
         this.fhirClient.compartmentSearch = async function () {
           return 'compartment';
@@ -462,6 +458,13 @@ describe('Client', function () {
         const level = await this.fhirClient.search({ searchParams: { name: 'abbott' } });
 
         expect(level).to.eq('system');
+      });
+
+      it('raises an error when both "resourceType" and "searchParams" are missing', function () {
+        const expectedError = 'search requires either searchParams or a resourceType';
+
+        expect(() => this.fhirClient.search()).to.throw(expectedError);
+        expect(() => this.fhirClient.search({ searchParams: {} })).to.throw(expectedError);
       });
     });
 
@@ -511,6 +514,29 @@ describe('Client', function () {
         const response = await this.fhirClient.resourceSearch({
           resourceType: 'Patient',
           searchParams: { _include: ['Observation', 'MedicationRequest'] },
+        });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
+      });
+
+      it('supports searching with no query parameters', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient')
+          .times(2)
+          .reply(200, () => readStreamFor('search-results.json'));
+
+        let response = await this.fhirClient.resourceSearch({
+          resourceType: 'Patient',
+        });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
+
+        response = await this.fhirClient.resourceSearch({
+          resourceType: 'Patient',
+          searchParams: {},
         });
 
         expect(response.resourceType).to.equal('Bundle');

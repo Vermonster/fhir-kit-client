@@ -426,10 +426,6 @@ describe('Client', function () {
         expect(systemHeaders).to.eq(customHeader);
       });
 
-      it('builds request with no arguments', async function () {
-        mockAndExpectNotFound('get', 'search');
-      });
-
       it('calls compartmentSearch when given a "compartment" param', async function () {
         this.fhirClient.compartmentSearch = async function () {
           return 'compartment';

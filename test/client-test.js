@@ -105,7 +105,7 @@ describe('Client', function () {
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
 
       const authMetadata = await this.fhirClient.smartAuthMetadata({
-        options: { headers: { abc: 'XYZ' } }
+        options: { headers: { abc: 'XYZ' } },
       });
 
       expect(authMetadata).to.deep.equal({});
@@ -153,7 +153,7 @@ describe('Client', function () {
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
 
       const capabilityStatement = await this.fhirClient.capabilityStatement({
-        options: { headers: { abc: 'XYZ' } }
+        options: { headers: { abc: 'XYZ' } },
       });
 
       // The metadata returns as expected after hitting the FHIR server.
@@ -205,7 +205,7 @@ describe('Client', function () {
       const response = await this.fhirClient.resolve({
         reference: absoluteReference,
         options: {
-          headers: { abc: 'XYZ' }
+          headers: { abc: 'XYZ' },
         },
       });
 
@@ -271,7 +271,7 @@ describe('Client', function () {
       await this.fhirClient.read({
         resourceType: 'Patient',
         id: 'test-access-token',
-        options: { headers: { def: 'UVW' } }
+        options: { headers: { def: 'UVW' } },
       });
     });
 
@@ -287,7 +287,7 @@ describe('Client', function () {
       await this.fhirClient.read({
         resourceType: 'Patient',
         id: 'test-access-token',
-        options: { headers: { abc: 'DEF' }}
+        options: { headers: { abc: 'DEF' } },
       });
     });
   });
@@ -308,7 +308,7 @@ describe('Client', function () {
         await this.fhirClient.read({
           resourceType: 'Patient',
           id: 'test-access-token',
-          options: { headers: { abc: 'XYZ' }},
+          options: { headers: { abc: 'XYZ' } },
         });
       });
 
@@ -378,7 +378,7 @@ describe('Client', function () {
           resourceType: 'Patient',
           id: 'eb3271e1-ae1b-4644-9332-41e32c829486',
           version: '1',
-          options: { headers: { abc: 'XYZ' }},
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('Patient');
@@ -396,7 +396,7 @@ describe('Client', function () {
           response = await this.fhirClient.vread({
             resourceType: 'Patient',
             id: 'abcdef',
-            version: '1'
+            version: '1',
           });
         } catch (error) {
           expect(error.response.status).to.equal(404);
@@ -416,7 +416,7 @@ describe('Client', function () {
           response = await this.fhirClient.vread({
             resourceType: 'Patient',
             id: 'eb3271e1-ae1b-4644-9332-41e32c829486',
-            version: '2'
+            version: '2',
           });
         } catch (error) {
           expect(error.response.status).to.equal(404);
@@ -478,7 +478,7 @@ describe('Client', function () {
 
         const level = await this.fhirClient.search({
           resourceType: 'Patient',
-          searchParams: { name: 'abbott' }
+          searchParams: { name: 'abbott' },
         });
 
         expect(level).to.eq('resource');
@@ -517,7 +517,7 @@ describe('Client', function () {
         const response = await this.fhirClient.resourceSearch({
           resourceType: 'Patient',
           searchParams: { name: 'abbott' },
-          options: { headers: { abc: 'XYZ' }},
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('Bundle');
@@ -592,7 +592,7 @@ describe('Client', function () {
 
         const response = await this.fhirClient.systemSearch({
           searchParams: { name: 'abcdef' },
-          options: { headers: { abc: 'XYZ' }},
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('Bundle');
@@ -650,7 +650,7 @@ describe('Client', function () {
         const response = await this.fhirClient.compartmentSearch({
           compartment: { resourceType: 'Patient', id: 385800201 },
           resourceType: 'Condition',
-          options: { headers: { abc: 'XYZ' }},
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('Bundle');
@@ -820,7 +820,7 @@ describe('Client', function () {
         const response = await this.fhirClient.create({
           resourceType: newPatient.resourceType,
           body: newPatient,
-          options: { headers: { abc: 'XYZ' }},
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('OperationOutcome');
@@ -890,7 +890,7 @@ describe('Client', function () {
         const response = await this.fhirClient.delete({
           resourceType: 'Patient',
           id: 152746,
-          options: { headers: { abc: 'XYZ' }},
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('OperationOutcome');
@@ -944,7 +944,7 @@ describe('Client', function () {
           resourceType: 'Patient',
           id: '152747',
           body,
-          options: { headers: { abc: 'XYZ' }},
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('OperationOutcome');
@@ -986,19 +986,20 @@ describe('Client', function () {
       });
 
       it('builds a request with custom headers', async function () {
+        const JSONPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
+
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .matchHeader('content-type', 'application/json-patch+json')
           .matchHeader('abc', 'XYZ')
-          .patch('/Patient/152747')
+          .patch('/Patient/152747', JSONPatch)
           .reply(200, () => readStreamFor('patient-patched.json'));
 
-        const jsonPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
         const response = await this.fhirClient.patch({
           resourceType: 'Patient',
           id: '152747',
-          JSONPatch: jsonPatch,
-          options: { headers: { abc: 'XYZ' }},
+          JSONPatch,
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('OperationOutcome');
@@ -1006,34 +1007,44 @@ describe('Client', function () {
       });
 
       it('returns a successful operation outcome', async function () {
+        const JSONPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
+
         // Content-Type is 'application/json-patch+json'
         // http://hl7.org/fhir/STU3/http.html#patch
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .matchHeader('content-type', 'application/json-patch+json')
-          .patch('/Patient/152747')
+          .patch('/Patient/152747', JSONPatch)
           .reply(200, () => readStreamFor('patient-patched.json'));
 
         // Format described in http://jsonpatch.com/
-        const jsonPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
-        const response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: jsonPatch });
+        const response = await this.fhirClient.patch({
+          resourceType: 'Patient',
+          id: '152747',
+          JSONPatch,
+        });
 
         expect(response.resourceType).to.equal('OperationOutcome');
         expect(response.issue[0].diagnostics).to.have.string('_history/3');
       });
 
       it('throws an error when given an invalid patch', async function () {
+        // Accepted values for gender: male, female, unknown
+        const invalidPatch = [{ op: 'replace', path: '/gender', value: 0 }];
+
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .matchHeader('content-type', 'application/json-patch+json')
-          .patch('/Patient/152747')
+          .patch('/Patient/152747', invalidPatch)
           .reply(500, () => readStreamFor('patient-not-patched.json'));
 
-        // Accepted values for gender: male, female, unknown
-        const invalidPatch = [{ op: 'replace', path: '/gender', value: 0 }];
         let response;
         try {
-          response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: invalidPatch });
+          response = await this.fhirClient.patch({
+            resourceType: 'Patient',
+            id: '152747',
+            JSONPatch: invalidPatch,
+          });
         } catch (error) {
           expect(error.response.status).to.equal(500);
           expect(error.response.data.resourceType).to.equal('OperationOutcome');
@@ -1057,7 +1068,7 @@ describe('Client', function () {
         const body = readFixture('batch-request.json');
         const response = await this.fhirClient.batch({
           body,
-          options: { headers: { abc: 'XYZ' }},
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('Bundle');
@@ -1121,7 +1132,7 @@ describe('Client', function () {
         const body = readFixture('transaction-request.json');
         const response = await this.fhirClient.transaction({
           body,
-          options: { headers: { abc: 'XYZ' }},
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('Bundle');
@@ -1185,7 +1196,7 @@ describe('Client', function () {
           options: { headers: customHeader },
         });
         const systemHeaders = await this.fhirClient.history({
-          options: { headers: customHeader }
+          options: { headers: customHeader },
         });
 
         expect(resourceHeaders).to.eq(customHeader);
@@ -1239,7 +1250,7 @@ describe('Client', function () {
         const response = await this.fhirClient.resourceHistory({
           resourceType: 'Patient',
           id: '152747',
-          options: { headers: { abc: 'XYZ' }},
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expectHistoryBundle(response, 20);
@@ -1271,7 +1282,7 @@ describe('Client', function () {
 
         const response = await this.fhirClient.typeHistory({
           resourceType: 'Patient',
-          options: { headers: { abc: 'XYZ' }},
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expectHistoryBundle(response, 15);
@@ -1298,7 +1309,7 @@ describe('Client', function () {
           .reply(200, () => readStreamFor('system-history.json'));
 
         const response = await this.fhirClient.systemHistory({
-          options: { headers: { abc: 'XYZ' }}
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expectHistoryBundle(response, 152750);

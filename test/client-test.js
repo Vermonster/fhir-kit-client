@@ -161,6 +161,22 @@ describe('Client', function () {
       expect(capabilityStatement.resourceType).to.equal('CapabilityStatement');
     });
 
+    it('works with the deprecated calling style', async function () {
+      const scope = nock(this.baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('abc', 'XYZ')
+        .get('/metadata')
+        .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
+
+      const capabilityStatement = await this.fhirClient.capabilityStatement({
+        headers: { abc: 'XYZ' },
+      });
+
+      // The metadata returns as expected after hitting the FHIR server.
+      expect(scope.activeMocks()).to.be.empty;
+      expect(capabilityStatement.resourceType).to.equal('CapabilityStatement');
+    });
+
     it('returns a FHIR resource from the FHIR server if metadata is not present', async function () {
       const scope = nock(this.baseUrl)
         .matchHeader('accept', 'application/json+fhir')
@@ -721,9 +737,35 @@ describe('Client', function () {
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-2.json'));
 
-          const searchResults = readFixture('search-results-page-1.json');
-          const response = await this.fhirClient.nextPage(searchResults, { abc: 'XYZ' });
+          const bundle = readFixture('search-results-page-1.json');
+          const options = { headers: { abc: 'XYZ' } };
+          const response = await this.fhirClient.nextPage({ bundle, options });
           const url = 'https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset';
+
+          expect(response.link[0].url).to.equal(url);
+        });
+
+        it('works with deprecated calling style', async function () {
+          nock(this.baseUrl)
+            .matchHeader('accept', 'application/json+fhir')
+            .matchHeader('abc', 'XYZ')
+            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
+            .reply(200, () => readStreamFor('search-results-page-2.json'));
+
+          let bundle = readFixture('search-results-page-1.json');
+          const options = { headers: { abc: 'XYZ' } };
+          let response = await this.fhirClient.nextPage(bundle, options.headers);
+          const url = 'https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset';
+
+          expect(response.link[0].url).to.equal(url);
+
+          nock(this.baseUrl)
+            .matchHeader('accept', 'application/json+fhir')
+            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
+            .reply(200, () => readStreamFor('search-results-page-2.json'));
+
+          bundle = readFixture('search-results-page-1.json');
+          response = await this.fhirClient.nextPage(bundle);
 
           expect(response.link[0].url).to.equal(url);
         });
@@ -734,8 +776,8 @@ describe('Client', function () {
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-2.json'));
 
-          const searchResults = readFixture('search-results-page-1.json');
-          const response = await this.fhirClient.nextPage(searchResults);
+          const bundle = readFixture('search-results-page-1.json');
+          const response = await this.fhirClient.nextPage({ bundle });
           const url = 'https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset';
 
           expect(response.link[0].url).to.equal(url);
@@ -756,8 +798,9 @@ describe('Client', function () {
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-1.json'));
 
-          const searchResults = readFixture('search-results-page-2.json');
-          const response = await this.fhirClient.prevPage(searchResults, { abc: 'XYZ' });
+          const bundle = readFixture('search-results-page-2.json');
+          const options = { headers: { abc: 'XYZ' } };
+          const response = await this.fhirClient.prevPage({ bundle, options });
           const url = 'https://example.com/Patient?_count=3&gender=female';
 
           expect(response.link[0].url).to.equal(url);
@@ -769,16 +812,16 @@ describe('Client', function () {
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-1.json'));
 
-          const searchResults = readFixture('search-results-page-2.json');
-          const response = await this.fhirClient.prevPage(searchResults);
+          const bundle = readFixture('search-results-page-2.json');
+          const response = await this.fhirClient.prevPage({ bundle });
           const url = 'https://example.com/Patient?_count=3&gender=female';
 
           expect(response.link[0].url).to.equal(url);
         });
 
         it('returns undefined if no previous page exists', function () {
-          const results = readFixture('search-results.json');
-          expect(this.fhirClient.prevPage(results)).to.equal(undefined);
+          const bundle = readFixture('search-results.json');
+          expect(this.fhirClient.prevPage({ bundle })).to.equal(undefined);
         });
 
         it('detects and responds to "prev" relations', async function () {
@@ -787,9 +830,9 @@ describe('Client', function () {
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-1.json'));
 
-          const searchResults = readFixture('search-results-page-2.json');
-          searchResults.link[2].relation = 'prev';
-          const response = await this.fhirClient.prevPage(searchResults);
+          const bundle = readFixture('search-results-page-2.json');
+          bundle.link[2].relation = 'prev';
+          const response = await this.fhirClient.prevPage({ bundle });
           const url = 'https://example.com/Patient?_count=3&gender=female';
 
           expect(response.link[0].url).to.equal(url);

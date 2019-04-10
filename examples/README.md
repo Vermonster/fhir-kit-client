@@ -12,7 +12,7 @@ application runs on a trusted server and can protect secret data, such
 as the CLIENT_SECRET variable.
 
 To use:
-1. `yarn install`
+1. `yarn install` (at the root of the repository)
 2. Run `yarn start` to serve the web app through port 3000.
 3. Change `<CLIENT_ID>` and `<CLIENT_SECRET>` as needed.
 4. To test with external servers, try tunneling to localhost:3000 with a

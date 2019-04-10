@@ -51,7 +51,7 @@ describe('utils', function () {
   });
 
   describe('validateID', function () {
-    const expectedError = 'Invalid FHIR ressource ID.';
+    const expectedError = 'Invalid FHIR resource ID.';
     context('with a valid id', function () {
       it('should not throws an error', function () {
         expect(() => validateID('1234')).to.not.throws();

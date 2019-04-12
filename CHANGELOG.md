@@ -1,5 +1,25 @@
 # Changelog
 
+### 1.2.3 (Apr. 12, 2019)
+- Refactor parameters to replace `headers` with `options`. Use of the `headers`
+  parameter is now DEPRECATED.
+  Old style (DEPRECATED):
+  ```
+  client.read({
+    resourceType: 'Patient',
+    id: '123',
+    headers: { CustomHeader: 'ABC' }
+  });
+  ```
+  New style:
+  ```
+  client.read({
+    resourceType: 'Patient',
+    id: '123',
+    options: { headers: { CustomHeader: 'ABC' } }
+  })
+  ```
+
 ### 1.2.2 (Feb. 22, 2019)
 - Improve error handling in `search` method
 

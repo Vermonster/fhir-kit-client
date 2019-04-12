@@ -1,8 +1,9 @@
 # Changelog
 
-### 1.2.3 (Apr. 12, 2019)
+### 1.2.3 (Apr. 15, 2019)
 - Refactor parameters to replace `headers` with `options`. Use of the `headers`
   parameter is now DEPRECATED.
+
   Old style (DEPRECATED):
   ```
   client.read({

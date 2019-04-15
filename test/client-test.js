@@ -104,7 +104,9 @@ describe('Client', function () {
         .get('/metadata')
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
 
-      const authMetadata = await this.fhirClient.smartAuthMetadata({ headers: { abc: 'XYZ' } });
+      const authMetadata = await this.fhirClient.smartAuthMetadata({
+        options: { headers: { abc: 'XYZ' } },
+      });
 
       expect(authMetadata).to.deep.equal({});
     });
@@ -150,7 +152,25 @@ describe('Client', function () {
         .get('/metadata')
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
 
-      const capabilityStatement = await this.fhirClient.capabilityStatement({ headers: { abc: 'XYZ' } });
+      const capabilityStatement = await this.fhirClient.capabilityStatement({
+        options: { headers: { abc: 'XYZ' } },
+      });
+
+      // The metadata returns as expected after hitting the FHIR server.
+      expect(scope.activeMocks()).to.be.empty;
+      expect(capabilityStatement.resourceType).to.equal('CapabilityStatement');
+    });
+
+    it('works with the deprecated calling style', async function () {
+      const scope = nock(this.baseUrl)
+        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('abc', 'XYZ')
+        .get('/metadata')
+        .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
+
+      const capabilityStatement = await this.fhirClient.capabilityStatement({
+        headers: { abc: 'XYZ' },
+      });
 
       // The metadata returns as expected after hitting the FHIR server.
       expect(scope.activeMocks()).to.be.empty;
@@ -200,7 +220,9 @@ describe('Client', function () {
 
       const response = await this.fhirClient.resolve({
         reference: absoluteReference,
-        headers: { abc: 'XYZ' },
+        options: {
+          headers: { abc: 'XYZ' },
+        },
       });
 
       expect(response.resourceType).to.equal(resourceType);
@@ -262,7 +284,11 @@ describe('Client', function () {
         .reply(200, () => readStreamFor('patient.json'));
 
       expect(this.fhirClient.customHeaders).to.deep.equal({ abc: 'XYZ' });
-      await this.fhirClient.read({ resourceType: 'Patient', id: 'test-access-token', headers: { def: 'UVW' } });
+      await this.fhirClient.read({
+        resourceType: 'Patient',
+        id: 'test-access-token',
+        options: { headers: { def: 'UVW' } },
+      });
     });
 
     it('can be overridden by custom request headers', async function () {
@@ -274,7 +300,11 @@ describe('Client', function () {
         .get('/Patient/test-access-token')
         .reply(200, () => readStreamFor('patient.json'));
 
-      await this.fhirClient.read({ resourceType: 'Patient', id: 'test-access-token', headers: { abc: 'DEF' } });
+      await this.fhirClient.read({
+        resourceType: 'Patient',
+        id: 'test-access-token',
+        options: { headers: { abc: 'DEF' } },
+      });
     });
   });
 
@@ -294,7 +324,7 @@ describe('Client', function () {
         await this.fhirClient.read({
           resourceType: 'Patient',
           id: 'test-access-token',
-          headers: { abc: 'XYZ' },
+          options: { headers: { abc: 'XYZ' } },
         });
       });
 
@@ -343,7 +373,11 @@ describe('Client', function () {
           .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/1')
           .reply(200, () => readStreamFor('patient.json'));
 
-        const response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '1' });
+        const response = await this.fhirClient.vread({
+          resourceType: 'Patient',
+          id: 'eb3271e1-ae1b-4644-9332-41e32c829486',
+          version: '1',
+        });
 
         expect(response.resourceType).to.equal('Patient');
         expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
@@ -356,7 +390,12 @@ describe('Client', function () {
           .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/1')
           .reply(200, () => readStreamFor('patient.json'));
 
-        const response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '1', headers: { abc: 'XYZ' } });
+        const response = await this.fhirClient.vread({
+          resourceType: 'Patient',
+          id: 'eb3271e1-ae1b-4644-9332-41e32c829486',
+          version: '1',
+          options: { headers: { abc: 'XYZ' } },
+        });
 
         expect(response.resourceType).to.equal('Patient');
         expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
@@ -370,7 +409,11 @@ describe('Client', function () {
 
         let response;
         try {
-          response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'abcdef', version: '1' });
+          response = await this.fhirClient.vread({
+            resourceType: 'Patient',
+            id: 'abcdef',
+            version: '1',
+          });
         } catch (error) {
           expect(error.response.status).to.equal(404);
           expect(error.response.data.resourceType).to.equal('OperationOutcome');
@@ -386,7 +429,11 @@ describe('Client', function () {
 
         let response;
         try {
-          response = await this.fhirClient.vread({ resourceType: 'Patient', id: 'eb3271e1-ae1b-4644-9332-41e32c829486', version: '2' });
+          response = await this.fhirClient.vread({
+            resourceType: 'Patient',
+            id: 'eb3271e1-ae1b-4644-9332-41e32c829486',
+            version: '2',
+          });
         } catch (error) {
           expect(error.response.status).to.equal(404);
           expect(error.response.data.resourceType).to.equal('OperationOutcome');
@@ -398,8 +445,8 @@ describe('Client', function () {
     describe('#search', function () {
       it('passes headers to each search method', async function () {
         const customHeader = { abc: 'XYZ' };
-        const searchMethod = async function ({ headers }) {
-          return headers;
+        const searchMethod = async function ({ options }) {
+          return options.headers;
         };
         this.fhirClient.compartmentSearch = searchMethod;
         this.fhirClient.resourceSearch = searchMethod;
@@ -409,16 +456,16 @@ describe('Client', function () {
           resourceType: 'Condition',
           compartment: { resourceType: 'Patient', id: 123 },
           searchParams: { category: 'problem' },
-          headers: customHeader,
+          options: { headers: customHeader },
         });
         const resourceHeaders = await this.fhirClient.search({
           resourceType: 'Patient',
           searchParams: { name: 'abbott' },
-          headers: customHeader,
+          options: { headers: customHeader },
         });
         const systemHeaders = await this.fhirClient.search({
           searchParams: { name: 'abbott' },
-          headers: customHeader,
+          options: { headers: customHeader },
         });
 
         expect(compartmentHeaders).to.eq(customHeader);
@@ -445,7 +492,10 @@ describe('Client', function () {
           return 'resource';
         };
 
-        const level = await this.fhirClient.search({ resourceType: 'Patient', searchParams: { name: 'abbott' } });
+        const level = await this.fhirClient.search({
+          resourceType: 'Patient',
+          searchParams: { name: 'abbott' },
+        });
 
         expect(level).to.eq('resource');
       });
@@ -483,7 +533,7 @@ describe('Client', function () {
         const response = await this.fhirClient.resourceSearch({
           resourceType: 'Patient',
           searchParams: { name: 'abbott' },
-          headers: { abc: 'XYZ' },
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('Bundle');
@@ -558,7 +608,7 @@ describe('Client', function () {
 
         const response = await this.fhirClient.systemSearch({
           searchParams: { name: 'abcdef' },
-          headers: { abc: 'XYZ' },
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('Bundle');
@@ -616,7 +666,7 @@ describe('Client', function () {
         const response = await this.fhirClient.compartmentSearch({
           compartment: { resourceType: 'Patient', id: 385800201 },
           resourceType: 'Condition',
-          headers: { abc: 'XYZ' },
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('Bundle');
@@ -680,27 +730,54 @@ describe('Client', function () {
 
     describe('pagination', function () {
       describe('#nextPage', function () {
-        it('builds a request with custsom headers', async function () {
+        it('builds a request with custom headers', async function () {
           nock(this.baseUrl)
             .matchHeader('accept', 'application/json+fhir')
             .matchHeader('abc', 'XYZ')
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-2.json'));
 
-          const searchResults = readFixture('search-results-page-1.json');
-          const response = await this.fhirClient.nextPage(searchResults, { abc: 'XYZ' });
+          const bundle = readFixture('search-results-page-1.json');
+          const options = { headers: { abc: 'XYZ' } };
+          const response = await this.fhirClient.nextPage({ bundle, options });
           const url = 'https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset';
 
           expect(response.link[0].url).to.equal(url);
         });
+
+        it('works with deprecated calling style', async function () {
+          nock(this.baseUrl)
+            .matchHeader('accept', 'application/json+fhir')
+            .matchHeader('abc', 'XYZ')
+            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
+            .reply(200, () => readStreamFor('search-results-page-2.json'));
+
+          let bundle = readFixture('search-results-page-1.json');
+          const options = { headers: { abc: 'XYZ' } };
+          let response = await this.fhirClient.nextPage(bundle, options.headers);
+          const url = 'https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset';
+
+          expect(response.link[0].url).to.equal(url);
+
+          nock(this.baseUrl)
+            .matchHeader('accept', 'application/json+fhir')
+            .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
+            .reply(200, () => readStreamFor('search-results-page-2.json'));
+
+          bundle = readFixture('search-results-page-1.json');
+          response = await this.fhirClient.nextPage(bundle);
+
+          expect(response.link[0].url).to.equal(url);
+        });
+
         it('returns httpClient get for the next link', async function () {
           nock(this.baseUrl)
             .matchHeader('accept', 'application/json+fhir')
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-2.json'));
 
-          const searchResults = readFixture('search-results-page-1.json');
-          const response = await this.fhirClient.nextPage(searchResults);
+          const bundle = readFixture('search-results-page-1.json');
+          const response = await this.fhirClient.nextPage({ bundle });
           const url = 'https://example.com/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset';
 
           expect(response.link[0].url).to.equal(url);
@@ -721,8 +798,9 @@ describe('Client', function () {
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-1.json'));
 
-          const searchResults = readFixture('search-results-page-2.json');
-          const response = await this.fhirClient.prevPage(searchResults, { abc: 'XYZ' });
+          const bundle = readFixture('search-results-page-2.json');
+          const options = { headers: { abc: 'XYZ' } };
+          const response = await this.fhirClient.prevPage({ bundle, options });
           const url = 'https://example.com/Patient?_count=3&gender=female';
 
           expect(response.link[0].url).to.equal(url);
@@ -734,16 +812,16 @@ describe('Client', function () {
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-1.json'));
 
-          const searchResults = readFixture('search-results-page-2.json');
-          const response = await this.fhirClient.prevPage(searchResults);
+          const bundle = readFixture('search-results-page-2.json');
+          const response = await this.fhirClient.prevPage({ bundle });
           const url = 'https://example.com/Patient?_count=3&gender=female';
 
           expect(response.link[0].url).to.equal(url);
         });
 
         it('returns undefined if no previous page exists', function () {
-          const results = readFixture('search-results.json');
-          expect(this.fhirClient.prevPage(results)).to.equal(undefined);
+          const bundle = readFixture('search-results.json');
+          expect(this.fhirClient.prevPage({ bundle })).to.equal(undefined);
         });
 
         it('detects and responds to "prev" relations', async function () {
@@ -752,9 +830,9 @@ describe('Client', function () {
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-1.json'));
 
-          const searchResults = readFixture('search-results-page-2.json');
-          searchResults.link[2].relation = 'prev';
-          const response = await this.fhirClient.prevPage(searchResults);
+          const bundle = readFixture('search-results-page-2.json');
+          bundle.link[2].relation = 'prev';
+          const response = await this.fhirClient.prevPage({ bundle });
           const url = 'https://example.com/Patient?_count=3&gender=female';
 
           expect(response.link[0].url).to.equal(url);
@@ -785,7 +863,7 @@ describe('Client', function () {
         const response = await this.fhirClient.create({
           resourceType: newPatient.resourceType,
           body: newPatient,
-          headers: { abc: 'XYZ' },
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('OperationOutcome');
@@ -855,7 +933,7 @@ describe('Client', function () {
         const response = await this.fhirClient.delete({
           resourceType: 'Patient',
           id: 152746,
-          headers: { abc: 'XYZ' },
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('OperationOutcome');
@@ -909,7 +987,7 @@ describe('Client', function () {
           resourceType: 'Patient',
           id: '152747',
           body,
-          headers: { abc: 'XYZ' },
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('OperationOutcome');
@@ -951,19 +1029,20 @@ describe('Client', function () {
       });
 
       it('builds a request with custom headers', async function () {
+        const JSONPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
+
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .matchHeader('content-type', 'application/json-patch+json')
           .matchHeader('abc', 'XYZ')
-          .patch('/Patient/152747')
+          .patch('/Patient/152747', JSONPatch)
           .reply(200, () => readStreamFor('patient-patched.json'));
 
-        const jsonPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
         const response = await this.fhirClient.patch({
           resourceType: 'Patient',
           id: '152747',
-          body: jsonPatch,
-          headers: { abc: 'XYZ' },
+          JSONPatch,
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expect(response.resourceType).to.equal('OperationOutcome');
@@ -971,34 +1050,44 @@ describe('Client', function () {
       });
 
       it('returns a successful operation outcome', async function () {
+        const JSONPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
+
         // Content-Type is 'application/json-patch+json'
         // http://hl7.org/fhir/STU3/http.html#patch
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .matchHeader('content-type', 'application/json-patch+json')
-          .patch('/Patient/152747')
+          .patch('/Patient/152747', JSONPatch)
           .reply(200, () => readStreamFor('patient-patched.json'));
 
         // Format described in http://jsonpatch.com/
-        const jsonPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
-        const response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: jsonPatch });
+        const response = await this.fhirClient.patch({
+          resourceType: 'Patient',
+          id: '152747',
+          JSONPatch,
+        });
 
         expect(response.resourceType).to.equal('OperationOutcome');
         expect(response.issue[0].diagnostics).to.have.string('_history/3');
       });
 
       it('throws an error when given an invalid patch', async function () {
+        // Accepted values for gender: male, female, unknown
+        const invalidPatch = [{ op: 'replace', path: '/gender', value: 0 }];
+
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .matchHeader('content-type', 'application/json-patch+json')
-          .patch('/Patient/152747')
+          .patch('/Patient/152747', invalidPatch)
           .reply(500, () => readStreamFor('patient-not-patched.json'));
 
-        // Accepted values for gender: male, female, unknown
-        const invalidPatch = [{ op: 'replace', path: '/gender', value: 0 }];
         let response;
         try {
-          response = await this.fhirClient.patch({ resourceType: 'Patient', id: '152747', body: invalidPatch });
+          response = await this.fhirClient.patch({
+            resourceType: 'Patient',
+            id: '152747',
+            JSONPatch: invalidPatch,
+          });
         } catch (error) {
           expect(error.response.status).to.equal(500);
           expect(error.response.data.resourceType).to.equal('OperationOutcome');
@@ -1020,7 +1109,10 @@ describe('Client', function () {
           .reply(200, () => readStreamFor('batch-results.json'));
 
         const body = readFixture('batch-request.json');
-        const response = await this.fhirClient.batch({ body, headers: { abc: 'XYZ' } });
+        const response = await this.fhirClient.batch({
+          body,
+          options: { headers: { abc: 'XYZ' } },
+        });
 
         expect(response.resourceType).to.equal('Bundle');
         expect(response.type).to.equal('batch-response');
@@ -1081,7 +1173,10 @@ describe('Client', function () {
           .reply(200, () => readStreamFor('transaction-results.json'));
 
         const body = readFixture('transaction-request.json');
-        const response = await this.fhirClient.transaction({ body, headers: { abc: 'XYZ' } });
+        const response = await this.fhirClient.transaction({
+          body,
+          options: { headers: { abc: 'XYZ' } },
+        });
 
         expect(response.resourceType).to.equal('Bundle');
         expect(response.type).to.equal('transaction-response');
@@ -1127,8 +1222,8 @@ describe('Client', function () {
     describe('#history', function () {
       it('passes headers to each history method', async function () {
         const customHeader = { abc: 'XYZ' };
-        const historyMethod = async function ({ headers }) {
-          return headers;
+        const historyMethod = async function ({ options }) {
+          return options.headers;
         };
         this.fhirClient.resourceHistory = historyMethod;
         this.fhirClient.typeHistory = historyMethod;
@@ -1137,13 +1232,15 @@ describe('Client', function () {
         const resourceHeaders = await this.fhirClient.history({
           resourceType: 'Patient',
           id: '152747',
-          headers: customHeader,
+          options: { headers: customHeader },
         });
         const typeHeaders = await this.fhirClient.history({
           resourceType: 'Patient',
-          headers: customHeader,
+          options: { headers: customHeader },
         });
-        const systemHeaders = await this.fhirClient.history({ headers: customHeader });
+        const systemHeaders = await this.fhirClient.history({
+          options: { headers: customHeader },
+        });
 
         expect(resourceHeaders).to.eq(customHeader);
         expect(typeHeaders).to.eq(customHeader);
@@ -1196,7 +1293,7 @@ describe('Client', function () {
         const response = await this.fhirClient.resourceHistory({
           resourceType: 'Patient',
           id: '152747',
-          headers: { abc: 'XYZ' },
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expectHistoryBundle(response, 20);
@@ -1228,7 +1325,7 @@ describe('Client', function () {
 
         const response = await this.fhirClient.typeHistory({
           resourceType: 'Patient',
-          headers: { abc: 'XYZ' },
+          options: { headers: { abc: 'XYZ' } },
         });
 
         expectHistoryBundle(response, 15);
@@ -1254,7 +1351,9 @@ describe('Client', function () {
           .get('/_history')
           .reply(200, () => readStreamFor('system-history.json'));
 
-        const response = await this.fhirClient.systemHistory({ headers: { abc: 'XYZ' } });
+        const response = await this.fhirClient.systemHistory({
+          options: { headers: { abc: 'XYZ' } },
+        });
 
         expectHistoryBundle(response, 152750);
       });

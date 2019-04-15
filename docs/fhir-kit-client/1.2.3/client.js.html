@@ -44,6 +44,7 @@ const { authFromCapability } = require('./smart');
 const HttpClient = require('./http-client');
 const ReferenceResolver = require('./reference-resolver');
 const Pagination = require('./pagination');
+const { deprecatePaginationArgs, deprecateHeaders } = require('./deprecations');
 
 /**
  * @module fhir-kit-client
@@ -154,13 +155,20 @@ class Client {
    * @param {Object} params - The request parameters.
    * @param {String} params.reference - FHIR reference
    * @param {Object} [params.context] - Optional bundle or FHIR resource
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resource
    */
-  resolve({ reference, context, headers } = {}) {
-    return this.resolver.resolve({ reference, context, headers });
+  resolve({ reference, context, headers, options = {} } = {}) {
+    return this.resolver.resolve({
+      reference,
+      context,
+      options: deprecateHeaders(options, headers),
+    });
   }
 
   /**
@@ -179,14 +187,19 @@ class Client {
    * console.log(response);
    *
    * @param {Object} [params] - The request parameters.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} contains the following SMART URIs: authorizeUrl,
    *   tokenUrl, registerUrl, manageUrl
    */
-  async smartAuthMetadata({ headers } = {}) {
-    const capabilityStatement = await this.capabilityStatement({ headers });
+  async smartAuthMetadata({ headers, options = {} } = {}) {
+    const capabilityStatement = await this.capabilityStatement({
+      options: deprecateHeaders(options, headers),
+    });
 
     return authFromCapability(capabilityStatement);
   }
@@ -206,14 +219,17 @@ class Client {
    * console.log(response);
    *
    * @param {Object} [params] - The request parameters.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} capability statement FHIR resource.
    */
-  capabilityStatement({ headers } = {}) {
+  capabilityStatement({ headers, options = {} } = {}) {
     if (!this.metadata) {
-      this.metadata = this.httpClient.get('metadata', headers);
+      this.metadata = this.httpClient.get('metadata', deprecateHeaders(options, headers));
     }
     return this.metadata;
   }
@@ -237,13 +253,16 @@ class Client {
    * @param {String} params.resourceType - The resource type (e.g. "Patient",
    *   "Observation").
    * @param {String} params.id - The FHIR id for the resource.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resource
    */
-  read({ resourceType, id, headers } = {}) {
-    return this.httpClient.get(`${resourceType}/${id}`, headers);
+  read({ resourceType, id, headers, options = {} } = {}) {
+    return this.httpClient.get(`${resourceType}/${id}`, deprecateHeaders(options, headers));
   }
 
   /**
@@ -271,13 +290,19 @@ class Client {
    *   "Observation").
    * @param {String} params.id - The FHIR id for the resource.
    * @param {String} params.version - The version id for the resource.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resource
    */
-  vread({ resourceType, id, version, headers } = {}) {
-    return this.httpClient.get(`${resourceType}/${id}/_history/${version}`, headers);
+  vread({ resourceType, id, version, headers, options = {} } = {}) {
+    return this.httpClient.get(
+      `${resourceType}/${id}/_history/${version}`,
+      deprecateHeaders(options, headers),
+    );
   }
 
   /**
@@ -308,13 +333,16 @@ class Client {
    * @param {Object} params - The request parameters.
    * @param {String} params.resourceType - The FHIR resource type.
    * @param {String} params.body - The new resource data to create.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resource
    */
-  create({ resourceType, body, headers } = {}) {
-    return this.httpClient.post(resourceType, body, headers);
+  create({ resourceType, body, headers, options = {} } = {}) {
+    return this.httpClient.post(resourceType, body, deprecateHeaders(options, headers));
   }
 
   /**
@@ -335,13 +363,16 @@ class Client {
    * @param {Object} params - The request parameters.
    * @param {String} params.resourceType - The resource type (e.g. "Patient", "Observation").
    * @param {String} params.id - The FHIR id for the resource.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} Operation Outcome FHIR resource
    */
-  delete({ resourceType, id, headers } = {}) {
-    return this.httpClient.delete(`${resourceType}/${id}`, headers);
+  delete({ resourceType, id, headers, options = {} } = {}) {
+    return this.httpClient.delete(`${resourceType}/${id}`, deprecateHeaders(options, headers));
   }
 
   /**
@@ -374,13 +405,20 @@ class Client {
    *   "Observation").
    * @param {String} params.id - The FHIR id for the resource.
    * @param {String} params.body - The resource to be updated.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resource
    */
-  update({ resourceType, id, body, headers } = {}) {
-    return this.httpClient.put(`${resourceType}/${id}`, body, headers);
+  update({ resourceType, id, body, headers, options = {} } = {}) {
+    return this.httpClient.put(
+      `${resourceType}/${id}`,
+      body,
+      deprecateHeaders(options, headers),
+    );
   }
 
   /**
@@ -399,14 +437,14 @@ class Client {
    * fhirClient.patch({
    *   resourceType: 'Patient',
    *   id: 12345,
-   *   JSONpatch: JSONPatch,
+   *   JSONPatch,
    * }).then((data) => { console.log(data); });
    *
    * // Using async
    * let response = await fhirClient.patch({
    *   resourceType: 'Patient',
    *   id: 12345,
-   *   JSONPatch: JSONPatch
+   *   JSONPatch
    * });
    * console.log(response);
    *
@@ -414,18 +452,26 @@ class Client {
    * @param {String} params.resourceType - The resource type (e.g. "Patient",
    *   "Observation").
    * @param {String} params.id - The FHIR id for the resource.
-   * @param {Array} params.JSONpatch - A JSON Patch document containing an array
+   * @param {Array} params.JSONPatch - A JSON Patch document containing an array
    *   of patch operations, formatted according to http://jsonpatch.com/.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resource
    */
-  patch({ resourceType, id, JSONPatch, headers = {} } = {}) {
+  patch({ resourceType, id, JSONPatch, headers, options = {} } = {}) {
     // Content-Type is 'application/json-patch+json'
     // Ref: http://hl7.org/fhir/STU3/http.html#patch
-    const requestHeaders = { ...headers, 'Content-Type': 'application/json-patch+json' };
-    return this.httpClient.patch(`${resourceType}/${id}`, JSONPatch, { headers: requestHeaders });
+    const customHeaders = deprecateHeaders(options, headers).headers || {};
+    const requestHeaders = { ...customHeaders, 'Content-Type': 'application/json-patch+json' };
+    return this.httpClient.patch(
+      `${resourceType}/${id}`,
+      JSONPatch,
+      { ...options, headers: requestHeaders },
+    );
   }
 
   /**
@@ -480,13 +526,16 @@ class Client {
    *
    * @param {Object} params - The request parameters.
    * @param {string} params.body - The request body with a type of 'batch'.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
-  batch({ body, headers } = {}) {
-    return this.httpClient.post('/', body, headers);
+  batch({ body, headers, options = {} } = {}) {
+    return this.httpClient.post('/', body, deprecateHeaders(options, headers));
   }
 
   /**
@@ -546,37 +595,54 @@ class Client {
    * @param {Object} params - The request parameters.
    * @param {String} params.body - The request body with a type of
    *   'transaction'.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
-  transaction({ body, headers } = {}) {
-    return this.httpClient.post('/', body, headers);
+  transaction({ body, headers, options = {} } = {}) {
+    return this.httpClient.post('/', body, deprecateHeaders(options, headers));
   }
 
   /**
    * Return the next page of results.
    *
-   * @param {object} results - Bundle result of a FHIR search
-   * @param {Object} [headers] - Optional custom headers to add to the request
+   * @param {Object} params - The request parameters. Passing the bundle as the
+   *   first parameter is DEPRECATED
+   * @param {object} params.bundle - Bundle result of a FHIR search
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
+   *   request
+   * @param {Object} [headers] - DEPRECATED Optional custom headers to add to
+   *   the request
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
-  nextPage(results, headers) {
-    return this.pagination.nextPage(results, headers);
+  nextPage(params, headers) {
+    const { bundle, options = {} } = deprecatePaginationArgs(params, headers);
+    return this.pagination.nextPage(bundle, options);
   }
 
   /**
    * Return the previous page of results.
    *
-   * @param {object} results - Bundle result of a FHIR search
-   * @param {Object} [headers] - Optional custom headers to add to the request
+   * @param {Object} params - The request parameters. Passing the bundle as the
+   *   first parameter is DEPRECATED
+   * @param {object} params.bundle - Bundle result of a FHIR search
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
+   *   request
+   * @param {Object} [headers] - DEPRECATED Optional custom headers to add to
+   *   the request
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
-  prevPage(results, headers) {
-    return this.pagination.prevPage(results, headers);
+  prevPage(params, headers) {
+    const { bundle, options = {} } = deprecatePaginationArgs(params, headers);
+    return this.pagination.prevPage(bundle, options);
   }
 
   /**
@@ -605,20 +671,35 @@ class Client {
    *   (e.g. "Patient", "Observation"), optional.
    * @param {Object} [params.compartment] - The search compartment, optional.
    * @param {Object} [params.searchParams] - The search parameters, optional.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    *
    * @throws {Error} if neither searchParams nor resourceType are supplied
    */
-  search({ resourceType, compartment, searchParams, headers } = {}) {
+  search({ resourceType, compartment, searchParams, headers, options = {} } = {}) {
     if (compartment &amp;&amp; resourceType) {
-      return this.compartmentSearch({ resourceType, compartment, searchParams, headers });
+      return this.compartmentSearch({
+        resourceType,
+        compartment,
+        searchParams,
+        options: deprecateHeaders(options, headers),
+      });
     } else if (resourceType) {
-      return this.resourceSearch({ resourceType, searchParams, headers });
+      return this.resourceSearch({
+        resourceType,
+        searchParams,
+        options: deprecateHeaders(options, headers),
+      });
     } else if (searchParams instanceof Object &amp;&amp; Object.keys(searchParams).length > 0) {
-      return this.systemSearch({ searchParams, headers });
+      return this.systemSearch({
+        searchParams,
+        options: deprecateHeaders(options, headers),
+      });
     }
 
     throw new Error('search requires either searchParams or a resourceType');
@@ -646,18 +727,21 @@ class Client {
    * @param {String} params.resourceType - The resource type (e.g. "Patient",
    *   "Observation").
    * @param {Object} params.searchParams - The search parameters.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
-  resourceSearch({ resourceType, searchParams, headers } = {}) {
+  resourceSearch({ resourceType, searchParams, headers, options = {} } = {}) {
     let searchPath = resourceType;
     if (searchParams instanceof Object &amp;&amp; Object.keys(searchParams).length > 0) {
       searchPath += `?${queryString.stringify(searchParams)}`;
     }
 
-    return this.httpClient.get(searchPath, headers);
+    return this.httpClient.get(searchPath, deprecateHeaders(options, headers));
   }
 
   /**
@@ -677,13 +761,19 @@ class Client {
    *
    * @param {Object} params - The request parameters.
    * @param {Object} params.searchParams - The search parameters.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
-  systemSearch({ searchParams, headers } = {}) {
-    return this.httpClient.get(`/_search?${queryString.stringify(searchParams)}`, headers);
+  systemSearch({ searchParams, headers, options = {} } = {}) {
+    return this.httpClient.get(
+      `/_search?${queryString.stringify(searchParams)}`,
+      deprecateHeaders(options, headers),
+    );
   }
 
   /**
@@ -712,12 +802,15 @@ class Client {
    *   "Observation").
    * @param {Object} params.compartment - The search compartment.
    * @param {Object} [params.searchParams] - The search parameters, optional.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
-  compartmentSearch({ resourceType, compartment, searchParams, headers } = {}) {
+  compartmentSearch({ resourceType, compartment, searchParams, headers, options = {} } = {}) {
     let compartmentType;
     let compartmentId;
     try {
@@ -730,7 +823,7 @@ class Client {
     const relativePath = `/${compartmentType}/${compartmentId}/${resourceType}`;
     const relativePathWithQuery = searchParams ? `${relativePath}?${queryString.stringify(searchParams)}` : relativePath;
 
-    return this.httpClient.get(relativePathWithQuery, headers);
+    return this.httpClient.get(relativePathWithQuery, deprecateHeaders(options, headers));
   }
 
   /**
@@ -751,19 +844,29 @@ class Client {
    * @param {string} [params.resourceType] - The resource type
    *   (e.g. "Patient", "Observation"), optional.
    * @param {string} [params.id] - The FHIR id for the resource, optional.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
-  history({ resourceType, id, headers } = {}) {
+  history({ resourceType, id, headers, options = {} } = {}) {
     if (id &amp;&amp; resourceType) {
-      return this.resourceHistory({ resourceType, id, headers });
+      return this.resourceHistory({
+        resourceType,
+        id,
+        options: deprecateHeaders(options, headers),
+      });
     } else if (resourceType) {
-      return this.typeHistory({ resourceType, headers });
+      return this.typeHistory({
+        resourceType,
+        options: deprecateHeaders(options, headers),
+      });
     }
 
-    return this.systemHistory({ headers });
+    return this.systemHistory({ options: deprecateHeaders(options, headers) });
   }
   /**
    * Retrieve the change history for a particular resource FHIR id.
@@ -782,13 +885,19 @@ class Client {
    * @param {string} params.resourceType - The resource type (e.g. "Patient",
    *   "Observation").
    * @param {string} params.id - The FHIR id for the resource.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
-  resourceHistory({ resourceType, id, headers } = {}) {
-    return this.httpClient.get(`${resourceType}/${id}/_history`, headers);
+  resourceHistory({ resourceType, id, headers, options = {} } = {}) {
+    return this.httpClient.get(
+      `${resourceType}/${id}/_history`,
+      deprecateHeaders(options, headers),
+    );
   }
 
   /**
@@ -807,13 +916,19 @@ class Client {
    * @param {Object} params - The request parameters.
    * @param {string} params.resourceType - The resource type (e.g. "Patient",
    *   "Observation").
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
-  typeHistory({ resourceType, headers } = {}) {
-    return this.httpClient.get(`${resourceType}/_history`, headers);
+  typeHistory({ resourceType, headers, options = {} } = {}) {
+    return this.httpClient.get(
+      `${resourceType}/_history`,
+      deprecateHeaders(options, headers),
+    );
   }
 
   /**
@@ -830,13 +945,16 @@ class Client {
    * console.log(response);
    *
    * @param {Object} [params] - The request parameters.
-   * @param {Object} [params.headers] - Optional custom headers to add to the
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional headers to add to the
    *   request
    *
    * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
    */
-  systemHistory({ headers } = {}) {
-    return this.httpClient.get('_history', headers);
+  systemHistory({ headers, options = {} } = {}) {
+    return this.httpClient.get('_history', deprecateHeaders(options, headers));
   }
 }
 
@@ -853,7 +971,7 @@ module.exports = Client;
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Feb 22 2019 14:22:24 GMT-0500 (EST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Apr 12 2019 10:22:16 GMT-0400 (EDT) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

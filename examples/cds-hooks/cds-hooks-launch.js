@@ -120,24 +120,70 @@ app.get('/smart-app', async (req, res) => {
 <head>
 <script type="text/javascript">
 
-const urlParams = new URLSearchParams(window.location.search);
-
+window.eventHandlersByMessageId = {};
 window.addEventListener("message", receiveMessage, false);
 
-function sendSmartMessage() {
-  const payload = document.getElementById('payload').value;
-
-  const message = {
-    messageId: "message-id",
-    messageType: "scratchpad.create",
-    payload: JSON.parse(payload)
-  };
-
-  (window.opener || window.parent).postMessage(message, (urlParams.get('smart_messaging_origin') || '*'));
+function receiveMessage(event) {
+  event &&
+    event.data &&
+    event.data.responseToMessageId &&
+    eventHandlersByMessageId[event.data.responseToMessageId] &&
+    eventHandlersByMessageId[event.data.responseToMessageId](event);
 }
 
-function receiveMessage(event) {
-	document.getElementById('response').value = JSON.stringify(event.data, null, 2);
+class SmartMessenger {
+  constructor(targetOrigin, targetWindow) {
+    this.targetOrigin = targetOrigin;
+    this.targetWindow = targetWindow;
+  }
+
+  // construct the message, then
+  // 1) add to the eventHandler stack
+  // 2) call postMessage
+  send(type, payload, eventHandler) {
+    const message = this.buildMessage(type, payload);
+
+    eventHandlersByMessageId[message.messageId] = eventHandler;
+    this.targetWindow.postMessage(message, targetOrigin);
+  }
+
+  buildMessage(type, payload) {
+    return {
+      messageId: this.guid(),
+      messageType: type,
+      payload: payload
+    };
+  }
+
+  s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+
+  guid() {
+    return this.s4() + this.s4() + '-' +
+      this.s4() + '-' + this.s4() + '-' +
+      this.s4() + '-' + this.s4() + this.s4() + this.s4();
+  }
+}
+
+
+
+const urlParams = new URLSearchParams(window.location.search);
+
+const targetOrigin = urlParams.get('smart_messaging_origin') || '*';
+const targetWindow = window.opener || window.parent;
+
+const messenger = new SmartMessenger(targetOrigin, targetWindow);
+
+function sendSmartMessage() {
+  const payload = JSON.parse(document.getElementById('payload').value || "{}");
+
+  messenger.send('scratchpad.create', payload, (event) => {
+    console.log(event);
+    document.getElementById('response').value = JSON.stringify(event.data, null, 2);
+  });
 }
 
 </script>

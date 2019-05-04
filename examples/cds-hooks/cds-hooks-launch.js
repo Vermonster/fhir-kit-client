@@ -114,6 +114,51 @@ async function authenticateClient(req, res, next) {
   return next();
 }
 
+app.get('/smart-app', async (req, res) => {
+  res.status(200).send(`
+<html>
+<head>
+<script type="text/javascript">
+
+const urlParams = new URLSearchParams(window.location.search);
+
+window.addEventListener("message", receiveMessage, false);
+
+function sendSmartMessage() {
+  const payload = document.getElementById('payload').value;
+
+  const message = {
+    messageId: "message-id",
+    messageType: "scratchpad.create",
+    payload: JSON.parse(payload)
+  };
+
+  (window.opener || window.parent).postMessage(message, (urlParams.get('smart_messaging_origin') || '*'));
+}
+
+function receiveMessage(event) {
+	document.getElementById('response').value = JSON.stringify(event.data, null, 2);
+}
+
+</script>
+</head>
+<body>
+    <p>Payload</p>
+    <p><textarea id="payload" cols="80" rows="10">
+{
+  "resourceType": "Basic"
+}
+</textarea></p>
+
+    <button onClick="sendSmartMessage()">Send Message</button>
+
+	<p><textarea id="response" cols="80" rows="10">
+</textarea></p>
+</body>
+</html>`);
+
+});
+
 app.get('/cds-services', async (req, res) =>
   res.status(200).json({
     services: [
@@ -160,8 +205,15 @@ app.post('/cds-services/patient-greeter', [authenticateEHR, authenticateClient],
           label: 'Patient greeting and med count service',
         },
         indicator: 'info',
-      },
-    ],
+        links: [
+          {
+            label: "SMART App",
+            url: "http://localhost:3000/smart-app",
+            type: "smart"
+          }
+        ]
+      }
+    ]
   });
 });
 

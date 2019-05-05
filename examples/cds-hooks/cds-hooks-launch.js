@@ -143,8 +143,8 @@ class SmartMessenger {
   send(type, payload, eventHandler) {
     const message = this.buildMessage(type, payload);
 
-    eventHandlersByMessageId[message.messageId] = eventHandler;
     this.targetWindow.postMessage(message, targetOrigin);
+    eventHandlersByMessageId[message.messageId] = eventHandler;
   }
 
   buildMessage(type, payload) {
@@ -189,20 +189,17 @@ function sendSmartMessage() {
 </script>
 </head>
 <body>
-    <p>Payload</p>
-    <p><textarea id="payload" cols="80" rows="10">
+  <p>Payload</p>
+  <p><textarea id="payload" cols="80" rows="10">
 {
   "resourceType": "Basic"
 }
 </textarea></p>
 
-    <button onClick="sendSmartMessage()">Send Message</button>
-
-	<p><textarea id="response" cols="80" rows="10">
-</textarea></p>
+  <button onClick="sendSmartMessage()">Send Message</button>
+  <p><textarea id="response" cols="80" rows="10"></textarea></p>
 </body>
 </html>`);
-
 });
 
 app.get('/cds-services', async (req, res) =>
@@ -253,13 +250,13 @@ app.post('/cds-services/patient-greeter', [authenticateEHR, authenticateClient],
         indicator: 'info',
         links: [
           {
-            label: "SMART App",
-            url: "http://localhost:3000/smart-app",
-            type: "smart"
-          }
-        ]
-      }
-    ]
+            label: 'SMART App',
+            url: 'http://localhost:3000/smart-app',
+            type: 'smart',
+          },
+        ],
+      },
+    ],
   });
 });
 

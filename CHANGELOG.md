@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.2.4 (May 9, 2019)
+- Use `request` errors to avoid throwing errors with no message ([#99](https://github.com/Vermonster/fhir-kit-client/issues/99))
+
 ### 1.2.3 (Apr. 15, 2019)
 - Refactor parameters to replace `headers` with `options`. Use of the `headers`
   parameter is now DEPRECATED.

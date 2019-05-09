@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>smart.js - Documentation</title>
+    <title>reference-resolver.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">smart.js</h1>
+    <h1 class="page-title">reference-resolver.js</h1>
     
 
     
@@ -39,62 +39,152 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const { URL } = require('universal-url');
-
-const smartOauthUrl = 'http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris';
-const { logError } = require('./logging');
+            <pre class="prettyprint source linenums"><code>const { splitReference } = require('./utils');
+const { deprecateHeaders } = require('./deprecations');
 
 /**
- * Get the SMART OAuth URIs from a Capability Statement
- * http://docs.smarthealthit.org/authorization/conformance-statement/
+ * Class used by Client to resolve FHIR References. Do not use this class
+ * directly, use Client#resolve instead.
  *
- * @example
- *
- * {
- *   authorizeUrl,
- *   tokenUrl,
- *   registerUrl,
- *   manageUrl,
- * } = authFromCapability(capabilityStatement);
- *
- * @param {Object} capabilityStatement - a FHIR capabilityStatement
- * @return {Object} contains the following SMART URIs: authorizeUrl, tokenUrl,
- *   registerUrl, manageUrl
+ * @private
  */
-function authFromCapability(capabilityStatement) {
-  const authMetadata = {};
-
-  try {
-    capabilityStatement.rest.forEach((restItem) => {
-      const uris = restItem.security.extension.find(x => x.url === smartOauthUrl);
-
-      uris.extension.forEach((ext) => {
-        switch (ext.url) {
-          case 'authorize':
-            authMetadata.authorizeUrl = new URL(ext.valueUri);
-            break;
-          case 'token':
-            authMetadata.tokenUrl = new URL(ext.valueUri);
-            break;
-          case 'register':
-            authMetadata.registerUrl = new URL(ext.valueUri);
-            break;
-          case 'manage':
-            authMetadata.manageUrl = new URL(ext.valueUri);
-            break;
-          default:
-        }
-      });
-    });
-    return authMetadata;
-  } catch (error) {
-    logError(error);
-    return authMetadata;
+module.exports = class {
+  /**
+   * Create a Reference Resolver.
+   *
+   * @param {Client} client FHIR Client
+   */
+  constructor(client) {
+    this.client = client;
   }
-}
 
-module.exports = {
-  authFromCapability,
+  /**
+   * Resolve a reference and return FHIR resource
+   *
+   * From: http://hl7.org/fhir/STU3/references.html, a reference can be: 1)
+   * absolute URL, 2) relative URL or 3) an internal fragement.  In the case of
+   * (2), there are rules on resolving references that are in a FHIR bundle.
+   *
+   * @async
+   *
+   * @example
+   *
+   * // Always does a new http request
+   * client.resolve({ reference: 'http://test.com/fhir/Patient/1' }).then((patient) => {
+   *   console.log(patient);
+   * });
+   *
+   * // Always does a new http request, using the client.baseUrl
+   * client.resolve({ reference: 'Patient/1' }).then((patient) => {
+   *   console.log(patient);
+   * });
+   *
+   * // Try to resolve a patient in the bundle, otherwise build request
+   * // at client.baseUrl
+   * client.resolve({ reference: 'Patient/1', context: bundle }).then((patient) => {
+   *   console.log(patient);
+   * });
+   *
+   * // Resolve a patient contained in someResource (see:
+   * // http://hl7.org/fhir/STU3/references.html#contained)
+   * client.resolve({ reference: '#patient-1', context: someResource }).then((patient) => {
+   *   console.log(patient);
+   * });
+   *
+   * @param {Object} params - The request parameters.
+   * @param {String} params.reference - FHIR reference
+   * @param {Object} [params.context] - Optional bundle or FHIR resource
+   * @param {Object} [params.headers] - DEPRECATED Optional custom headers to
+   *   add to the request
+   * @param {Object} [params.options] - Optional options object
+   * @param {Object} [params.options.headers] - Optional custom headers to add
+   *   to the request
+   *
+   * @return {Promise&lt;Object>} FHIR resource
+   */
+  async resolve({ reference, context, headers, options = {} } = {}) {
+    if (context === undefined) {
+      if (reference.startsWith('http')) {
+        return this.resolveAbsoluteReference(reference, deprecateHeaders(options, headers));
+      }
+      return this.client.httpClient.get(reference, deprecateHeaders(options, headers));
+    }
+    if (reference.startsWith('#')) {
+      return this.resolveContainedReference(reference, context);
+    }
+    return this.resolveBundleReference(reference, context, deprecateHeaders(options, headers));
+  }
+
+  /**
+   * Private function to resolve absolute references
+   *
+   * @private
+   *
+   * @async
+   *
+   * @param {String} reference - the FHIR reference
+   * @param {Object} [options] - Optional options object
+   * @param {Object} [options.headers] - Optional custom headers to add to the
+   *   request
+   *
+   * @return {Promise&lt;Object>} FHIR resource
+   */
+  async resolveAbsoluteReference(reference, options) {
+    if (reference.startsWith(this.client.baseUrl)) {
+      return this.client.httpClient.get(reference, options);
+    }
+    const { baseUrl, resourceType, id } = splitReference(reference);
+    const Client = require('./client'); // eslint-disable-line global-require
+    return (new Client({ baseUrl })).read({ resourceType, id, options });
+  }
+
+  /**
+   * Private function to resolve contained references
+   *
+   * @private
+   *
+   * @param {String} reference - the FHIR reference
+   * @param {Object} [context] - FHIR resource
+   *
+   * @return {Object} FHIR resource
+   * @throws Will throw if a contained resource which matches the reference
+   *   can't be found
+   */
+  resolveContainedReference(reference, context) { // eslint-disable-line class-methods-use-this
+    if (context.contained) {
+      const referenceId = reference.slice(1);
+      const containedResource = context.contained.find(resource => resource.id === referenceId);
+      if (containedResource) {
+        return containedResource;
+      }
+    }
+    throw (new Error(`Unable to resolve contained reference: ${reference}`));
+  }
+
+  /**
+   * Private function to resolve references in a bundle. If not contained in the
+   * bundle, the resources will be fetched from a FHIR server.
+   *
+   * @private
+   *
+   * @async
+   *
+   * @param {String} reference - the FHIR reference
+   * @param {Object} bundle - FHIR bundle
+   * @param {Object} [options] - Optional options object
+   * @param {Object} [options.headers] - Optional custom headers to add to the request
+   *
+   * @return {Promise&lt;Object>} - FHIR resource
+   */
+  async resolveBundleReference(reference, bundle, options) {
+    const referenceRegEx = new RegExp(`(^|/)${reference}$`);
+    const entry = bundle.entry.find(bundleEntry => referenceRegEx.test(bundleEntry.fullUrl));
+
+    if (!entry) {
+      return this.resolve({ reference, options });
+    }
+    return entry.resource;
+  }
 };
 </code></pre>
         </article>
@@ -108,7 +198,7 @@ module.exports = {
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Apr 12 2019 10:22:16 GMT-0400 (EDT) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu May 09 2019 13:03:55 GMT-0400 (EDT) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

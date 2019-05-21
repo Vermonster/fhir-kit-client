@@ -3,6 +3,16 @@
 This directory contains example apps demonstrating an application
 launch.
 
+To use these examples:
+1. `yarn install` in the project root
+2. `yarn install` in the example subdirectory you are interested in
+3. In the example code, you could modify `<CLIENT_ID>` and/or `<CLIENT_SECRET>`
+   as needed. FYI: The [SMART sandbox](https://launch.smarthealthit.org) will
+   accept any values for these.
+4. `yarn start` to serve the web app through port 3000.
+5. To test with external servers, try tunneling to localhost:3000 with a
+   service like [ngrok](http://ngrok.com/).
+
 ## [examples/confidential-smart-ehr](./confidential-smart-ehr)
 
 This example provides two routes, `/launch` and `/callback`, through
@@ -10,13 +20,6 @@ which an EHR may launch the SMART app within the EHR's provided launch
 context. This example demonstrates a confidential app, meaning that the
 application runs on a trusted server and can protect secret data, such
 as the CLIENT_SECRET variable.
-
-To use:
-1. `yarn install`
-2. Run `yarn start` to serve the web app through port 3000.
-3. Change `<CLIENT_ID>` and `<CLIENT_SECRET>` as needed.
-4. To test with external servers, try tunneling to localhost:3000 with a
-   service like [ngrok](http://ngrok.com/).
 
 An EHR can then visit the launch route with two parameters: iss and
 launch. The SMART app will make a request to the OAuth server's
@@ -45,7 +48,7 @@ The app's launch URL is required to be preregistered with the EHR. This
 required step helps to mitigate security risks. Because the public app
 is the less secure option with no ability to store confidential
 information, it is recommended that refresh tokens for public apps have
-a shorter lifetime.   
+a shorter lifetime.
 
 To use, refer to the first two paragraphs of the confidential-smart-ehr
 example above. The only difference for this public example is that it

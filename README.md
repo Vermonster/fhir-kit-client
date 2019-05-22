@@ -21,6 +21,7 @@ Node FHIR client library
 * Modern ES6 Classes
 * TDD with Mocha
 * URL polyfill (so it works in client-only apps without much trouble)
+* Support servers that enforce return=minimal on REST CREATE and UPDATE CRUD operations
 
 ## Examples
 

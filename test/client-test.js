@@ -96,6 +96,17 @@ describe('Client', function () {
     expect(this.fhirClient.pagination).to.be.an.instanceof(Pagination);
   });
 
+  it('throws correct error with request error', async function () {
+    nock(this.baseUrl)
+      .get('/Basic/1')
+      .replyWithError('cannot connect');
+    return this.fhirClient.read({
+      resourceType: 'Basic',
+      id: '1',
+    }).then(() => { throw new Error('should not have succeeded'); })
+      .catch((error) => { expect(error).to.have.property('message', 'Error: cannot connect'); });
+  });
+
   describe('#smartAuthMetadata', function () {
     it('builds a request with custom headers', async function () {
       nock(this.baseUrl)

@@ -332,11 +332,17 @@ describe('Client', function () {
           .get('/Patient/test-access-token')
           .reply(200, () => readStreamFor('patient.json'));
 
-        await this.fhirClient.read({
+        const response = await this.fhirClient.read({
           resourceType: 'Patient',
           id: 'test-access-token',
           options: { headers: { abc: 'XYZ' } },
         });
+
+        const httpResponse = Client.responseFor(response);
+        const { request: httpRequest } = httpResponse;
+        const { headers: httpHeaders } = httpRequest;
+
+        expect(httpHeaders.abc).to.be.equal('XYZ');
       });
 
       it('throws errors for a missing resource', async function () {

@@ -96,6 +96,17 @@ describe('Client', function () {
     expect(this.fhirClient.pagination).to.be.an.instanceof(Pagination);
   });
 
+  it('throws correct error with request error', async function () {
+    nock(this.baseUrl)
+      .get('/Basic/1')
+      .replyWithError('cannot connect');
+    return this.fhirClient.read({
+      resourceType: 'Basic',
+      id: '1',
+    }).then(() => { throw new Error('should not have succeeded'); })
+      .catch((error) => { expect(error).to.have.property('message', 'Error: cannot connect'); });
+  });
+
   describe('#smartAuthMetadata', function () {
     it('builds a request with custom headers', async function () {
       nock(this.baseUrl)
@@ -321,11 +332,17 @@ describe('Client', function () {
           .get('/Patient/test-access-token')
           .reply(200, () => readStreamFor('patient.json'));
 
-        await this.fhirClient.read({
+        const response = await this.fhirClient.read({
           resourceType: 'Patient',
           id: 'test-access-token',
           options: { headers: { abc: 'XYZ' } },
         });
+
+        const httpResponse = Client.responseFor(response);
+        const { request: httpRequest } = httpResponse;
+        const { headers: httpHeaders } = httpRequest;
+
+        expect(httpHeaders.abc).to.be.equal('XYZ');
       });
 
       it('throws errors for a missing resource', async function () {
@@ -555,6 +572,23 @@ describe('Client', function () {
         expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
       });
 
+      it('performs a POST search', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('content-type', 'application/x-www-form-urlencoded')
+          .post('/Patient/_search', 'name=abbott')
+          .reply(200, () => readStreamFor('search-results.json'));
+
+        const response = await this.fhirClient.resourceSearch({
+          resourceType: 'Patient',
+          searchParams: { name: 'abbott' },
+          options: { postSearch: true },
+        });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
+      });
+
       it('supports repeated query params', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -629,6 +663,22 @@ describe('Client', function () {
         expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
       });
 
+      it('performs a POST search', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('content-type', 'application/x-www-form-urlencoded')
+          .post('/_search', 'name=abcdef')
+          .reply(200, () => readStreamFor('system-search-results.json'));
+
+        const response = await this.fhirClient.systemSearch({
+          searchParams: { name: 'abcdef' },
+          options: { postSearch: true },
+        });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.id).to.equal('95a2de95-08c7-418e-b4d0-2dd6fc8cc37e');
+      });
+
       it('supports repeated query params', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
@@ -684,6 +734,25 @@ describe('Client', function () {
           compartment: { resourceType: 'Patient', id: 385800201 },
           resourceType: 'Condition',
           searchParams: { category: 'problem' },
+        });
+
+        expect(response.resourceType).to.equal('Bundle');
+        expect(response.type).to.equal('searchset');
+        expect(response.total).to.equal(6);
+      });
+
+      it('performs a POST search', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('content-type', 'application/x-www-form-urlencoded')
+          .post('/Patient/385800201/Condition/_search', 'category=problem')
+          .reply(200, () => readStreamFor('compartment-search-with-query-results.json'));
+
+        const response = await this.fhirClient.compartmentSearch({
+          compartment: { resourceType: 'Patient', id: 385800201 },
+          resourceType: 'Condition',
+          searchParams: { category: 'problem' },
+          options: { postSearch: true },
         });
 
         expect(response.resourceType).to.equal('Bundle');

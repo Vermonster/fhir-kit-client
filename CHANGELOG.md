@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.3.0 (June 12, 2019)
+- Add requestOptions (can be used to set cert/key/ca, etc) (thanks @sulkaharo)
+- Expose the raw http response object (thanks @sulkaharo)
+- Add support for POST searches
+- Fix null pointer exception (thanks @yinzara )
+
 ### 1.2.4 (May 9, 2019)
 - Use `request` errors to avoid throwing errors with no message ([#99](https://github.com/Vermonster/fhir-kit-client/issues/99))
 

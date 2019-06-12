@@ -21,7 +21,7 @@ Node FHIR client library
 * Modern ES6 Classes
 * TDD with Mocha
 * URL polyfill (so it works in client-only apps without much trouble)
-* Support TLS key/certificate pair for REST authentication
+* Support optional parameters for the request, such as TLS key and cert
 
 ## Examples
 

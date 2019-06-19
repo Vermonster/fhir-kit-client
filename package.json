@@ -45,7 +45,7 @@
     "eslint-plugin-import": "^2.10.0",
     "jsdoc": "^3.5.5",
     "minami": "^1.2.3",
-    "mocha": "^5.0.5",
+    "mocha": "^6.1.4",
     "mocha-lcov-reporter": "^1.3.0",
     "nock": "^9.2.3",
     "nyc": "^11.6.0"

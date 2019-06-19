@@ -1,7 +1,7 @@
 /* eslint-disable func-names, no-unused-expressions */
-const { expect } = require('chai');
+import { expect } from 'chai';
 
-const { splitReference } = require('../lib/utils');
+import { splitReference } from '../lib/utils';
 
 describe('utils', function () {
   describe('splitReference', function () {

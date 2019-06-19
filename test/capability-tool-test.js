@@ -1,10 +1,9 @@
 /* eslint-disable func-names, no-unused-expressions */
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
 
-const { expect } = require('chai');
-
-const CapabilityTool = require('../lib/capability-tool');
+import path from 'path';
+import { expect } from 'chai';
+import CapabilityTool from '../lib/capability-tool';
 
 function readFixture(filename) {
   return JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/${filename}`, 'utf8')));

@@ -1,14 +1,13 @@
 /* eslint-disable func-names, no-unused-expressions */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
 
-const { expect } = require('chai');
-const nock = require('nock');
-
-const { splitReference } = require('../lib/utils');
-const Client = require('../lib/client');
-const ReferenceResolver = require('../lib/reference-resolver');
+import path from 'path';
+import { expect } from 'chai';
+import nock from 'nock';
+import { splitReference } from '../lib/utils';
+import Client from '../lib/client';
+import ReferenceResolver from '../lib/reference-resolver';
 
 function readStreamFor(fixture) {
   return fs.createReadStream(path.normalize(`${__dirname}/fixtures/${fixture}`, 'utf8'));

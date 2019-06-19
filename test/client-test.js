@@ -1,13 +1,12 @@
 /* eslint-disable func-names, no-unused-expressions */
-const fs = require('fs');
-const path = require('path');
-const { URL } = require('url');
+import fs from 'fs';
 
-const { expect } = require('chai');
-const nock = require('nock');
-
-const Client = require('../lib/client');
-const Pagination = require('../lib/pagination');
+import path from 'path';
+import { URL } from 'url';
+import { expect } from 'chai';
+import nock from 'nock';
+import Client from '../lib/client';
+import Pagination from '../lib/pagination';
 
 /**
  * Read fixture data

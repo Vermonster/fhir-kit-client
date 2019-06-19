@@ -51,6 +51,7 @@
     "nyc": "^11.6.0"
   },
   "dependencies": {
+    "5to6-codemod": "^1.8.0",
     "debug": "^3.1.0",
     "es6-promise": "^4.2.4",
     "query-string": "^6.2.0",

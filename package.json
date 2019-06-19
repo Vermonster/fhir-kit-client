@@ -43,6 +43,7 @@
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-filenames": "^1.2.0",
     "eslint-plugin-import": "^2.10.0",
+    "esm": "^3.2.25",
     "jsdoc": "^3.5.5",
     "minami": "^1.2.3",
     "mocha": "^6.1.4",

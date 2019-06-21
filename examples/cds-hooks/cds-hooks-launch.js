@@ -1,15 +1,14 @@
 /* eslint import/no-extraneous-dependencies: ['error', {'devDependencies': true}] */
 /* eslint no-console: 0, import/no-unresolved: 0 */
-import express from 'express';
-
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import jwt from 'jsonwebtoken';
-import jwkToPem from 'jwk-to-pem';
-import Client from '../../lib/client';
-import CapabilityTool from '../../lib/capability-tool';
-import axios from 'axios';
-import fs from 'fs';
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
+const jwkToPem = require('jwk-to-pem');
+const Client = require('../../lib/client');
+const CapabilityTool = require('../../lib/capability-tool');
+const axios = require('axios');
+const fs = require('fs');
 
 const app = express();
 

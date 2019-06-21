@@ -1,13 +1,11 @@
 /* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
 /* eslint no-console: 0, import/no-unresolved: 0 */
-import express from 'express';
-
-import session from 'express-session';
-import simpleOauthModule from 'simple-oauth2';
-import Client from '../../lib/client';
+const express = require('express');
+const session = require('express-session');
+const simpleOauthModule = require('simple-oauth2');
+const Client = require('../../lib/client');
 
 const CLIENT_ID = '<CLIENT_ID>';
-const CLIENT_SECRET = '<CLIENT_SECRET>';
 
 const app = express();
 
@@ -18,6 +16,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
 }));
+
 
 /**
  * This is an example of a SMART app launching from within an EHR.
@@ -49,7 +48,6 @@ app.get('/launch', async (req, res) => {
   const oauth2 = simpleOauthModule.create({
     client: {
       id: CLIENT_ID,
-      secret: CLIENT_SECRET,
     },
     auth: {
       tokenHost: `${tokenUrl.protocol}//${tokenUrl.host}`,
@@ -67,7 +65,7 @@ app.get('/launch', async (req, res) => {
     redirect_uri: 'http://localhost:3000/callback',
     launch,
     aud: iss,
-    scope: 'launch openid profile user/Patient.read',
+    scope: 'launch openid profile user/Patient.read patient/*.*',
     state: '3(#0/!~',
   });
 
@@ -82,11 +80,10 @@ app.get('/callback', async (req, res) => {
   const fhirClient = new Client({ baseUrl: iss });
   const { authorizeUrl, tokenUrl } = await fhirClient.smartAuthMetadata();
 
-  // Create a new oAuth2 object using the Client capability statement:
+  // Create a new OAuth2 object using the Client capability statement:
   const oauth2 = simpleOauthModule.create({
     client: {
       id: CLIENT_ID,
-      secret: CLIENT_SECRET,
     },
     auth: {
       tokenHost: `${tokenUrl.protocol}//${tokenUrl.host}`,

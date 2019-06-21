@@ -1,10 +1,9 @@
 /* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
 /* eslint no-console: 0, import/no-unresolved: 0 */
-import express from 'express';
-
-import session from 'express-session';
-import simpleOauthModule from 'simple-oauth2';
-import Client from '../../lib/client';
+const express = require('express');
+const session = require('express-session');
+const simpleOauthModule = require('simple-oauth2');
+const Client = require('../../lib/client');
 
 const CLIENT_ID = '<CLIENT_ID>';
 const CLIENT_SECRET = '<CLIENT_SECRET>';

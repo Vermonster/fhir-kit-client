@@ -2,7 +2,25 @@
   "env": {
     "mocha": true
   },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".js",
+          ".mjs"
+        ]
+      }
+    }
+  },
   "rules": {
-    "prefer-arrow-callback": 0
+    "prefer-arrow-callback": 0,
+    "import/extensions": [
+      "error",
+      "always",
+      {
+        "js": "never",
+        "mjs": "never"
+      }
+    ]
   }
 }

@@ -22,8 +22,8 @@
     "test": "mocha test --require esm --reporter spec",
     "test:watch": "chokidar --initial './lib' './test' './examples' -c 'yarn test'",
     "watch": "yarn test:watch & yarn lint:watch",
-    "coveralls": "nyc --require esm --extension .mjs --reporter text-lcov npm test | coveralls",
-    "coveralls:report": "nyc --require esm --extension .mjs --reporter text-summary npm test"
+    "coveralls": "nyc --cache false --require esm --extension .mjs --reporter text-lcov npm test | coveralls",
+    "coveralls:report": "nyc --cache false --require esm --extension .mjs --reporter text-summary npm test"
   },
   "author": "Vermonster",
   "license": "MIT",

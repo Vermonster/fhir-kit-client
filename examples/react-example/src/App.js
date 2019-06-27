@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import './App.css';
 import Client from 'fhir-kit-client';
+import JSONPretty from 'react-json-pretty';
+import 'react-json-pretty/themes/monikai.css';
 
 class App extends Component {
 
@@ -8,7 +9,6 @@ class App extends Component {
     patientData: null
   }
 
-  //const patient = await fhirClient.read({ resourceType: 'Patient', id: token.patient });
   async componentDidMount() {
     
     const baseUrl = "https://r4.smarthealthit.org";
@@ -24,15 +24,13 @@ class App extends Component {
   render() {
     console.log(this.state.patientData);
     return (
-      <div className="App">
-        <header className="App-header">
-          <p>Below, the app fetches a patient's data on <code>componentDidMount()</code></p>
-          {
-            this.state.patientData ?
-            <div>{ JSON.stringify(this.state.patientData) }</div> :
-            <div>No patient data</div>
-          }
-        </header>
+      <div>
+        <p style={{ textAlign: "center" }}>Below, the app fetches a patient's data on <code>componentDidMount()</code></p>
+        {
+          this.state.patientData ?
+          <JSONPretty data={ JSON.stringify(this.state.patientData)}></JSONPretty> :
+          <div>No patient data</div>
+        }
       </div>
     );
   }

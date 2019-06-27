@@ -5,8 +5,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const jwkToPem = require('jwk-to-pem');
-const Client = require('../../lib/client');
-const CapabilityTool = require('../../lib/capability-tool');
+const Client = require('../../');
+const CapabilityTool = require('../../lib/capability-tool.cjs');
 const axios = require('axios');
 const fs = require('fs');
 

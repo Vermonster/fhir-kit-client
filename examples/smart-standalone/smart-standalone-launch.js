@@ -3,7 +3,7 @@
 const express = require('express');
 const session = require('express-session');
 const simpleOauthModule = require('simple-oauth2');
-const Client = require('../../lib/client');
+const Client = require('../../');
 
 const CLIENT_ID = '<CLIENT_ID>';
 const CLIENT_SECRET = '<CLIENT_SECRET>';

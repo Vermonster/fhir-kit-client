@@ -12,8 +12,10 @@
     "node": ">=8.10.0",
     "yarn": "1.10.1"
   },
-  "main": "lib/client.js",
-  "module": "lib/client.mjs",
+  "main": "lib/client.cjs",
+  "module": "lib/client.js",
+  "react-native": "lib/client",
+  "type": "module",
   "scripts": {
     "docs": "rm -rf ./docs && jsdoc --configure .jsdoc.json",
     "lint": "eslint .",
@@ -22,8 +24,8 @@
     "test": "mocha test --require esm --reporter spec",
     "test:watch": "chokidar --initial './lib' './test' './examples' -c 'yarn test'",
     "watch": "yarn test:watch & yarn lint:watch",
-    "coveralls": "nyc --cache false --require esm --extension .mjs --reporter text-lcov npm test | coveralls",
-    "coveralls:report": "nyc --cache false --require esm --extension .mjs --reporter text-summary npm test"
+    "coveralls": "nyc --cache false --require esm --reporter text-lcov npm test | coveralls",
+    "coveralls:report": "nyc --cache false --require esm --reporter text-summary npm test"
   },
   "author": "Vermonster",
   "license": "MIT",

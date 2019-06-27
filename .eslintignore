@@ -1,3 +1,4 @@
 docs/
+examples/react-example/
 node_modules
 coverage/**

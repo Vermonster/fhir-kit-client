@@ -46,11 +46,10 @@
     "nyc": "^14.0.0"
   },
   "dependencies": {
+    "cross-fetch": "^3.0.4",
     "debug": "^3.1.0",
     "es6-promise": "^4.2.4",
     "query-string": "^6.2.0",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.5",
     "universal-url": "^1.0.1"
   },
   "nyc": {

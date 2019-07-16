@@ -4,6 +4,7 @@ const path = require('path');
 const { URL } = require('url');
 
 const { expect } = require('chai');
+
 const nock = require('nock');
 
 const Client = require('../lib/client');
@@ -104,7 +105,7 @@ describe('Client', function () {
       resourceType: 'Basic',
       id: '1',
     }).then(() => { throw new Error('should not have succeeded'); })
-      .catch((error) => { expect(error).to.have.property('message', 'Error: cannot connect'); });
+      .catch((error) => { expect(error).to.have.property('message').and.match(/cannot connect/); });
   });
 
   describe('#smartAuthMetadata', function () {
@@ -342,7 +343,8 @@ describe('Client', function () {
         const { request: httpRequest } = httpResponse;
         const { headers: httpHeaders } = httpRequest;
 
-        expect(httpHeaders.abc).to.be.equal('XYZ');
+        expect(httpHeaders.has('abc')).to.be.true;
+        expect(httpHeaders.get('abc')).to.be.equal('XYZ');
       });
 
       it('throws errors for a missing resource', async function () {

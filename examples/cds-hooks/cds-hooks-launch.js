@@ -5,10 +5,10 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const jwkToPem = require('jwk-to-pem');
-const Client = require('../../lib/client');
-const CapabilityTool = require('../../lib/capability-tool');
 const axios = require('axios');
 const fs = require('fs');
+const Client = require('../../lib/client');
+const CapabilityTool = require('../../lib/capability-tool');
 
 const app = express();
 
@@ -114,20 +114,19 @@ async function authenticateClient(req, res, next) {
   return next();
 }
 
-app.get('/cds-services', async (req, res) =>
-  res.status(200).json({
-    services: [
-      {
-        hook: 'patient-view',
-        id: 'patient-greeter',
-        title: 'Patient Greeter with Med Count',
-        description: 'Example of CDS service greeting patient based on prefetch and counting meds with FHIR Kit client.',
-        prefetch: {
-          patientToGreet: 'Patient/{{context.patientId}}',
-        },
+app.get('/cds-services', async (req, res) => res.status(200).json({
+  services: [
+    {
+      hook: 'patient-view',
+      id: 'patient-greeter',
+      title: 'Patient Greeter with Med Count',
+      description: 'Example of CDS service greeting patient based on prefetch and counting meds with FHIR Kit client.',
+      prefetch: {
+        patientToGreet: 'Patient/{{context.patientId}}',
       },
-    ],
-  }));
+    },
+  ],
+}));
 
 app.post('/cds-services/patient-greeter', [authenticateEHR, authenticateClient], async (req, res) => {
   let patientGreeting = `Hello ${req.body.prefetch.patientToGreet.name[0].given[0]}! `;

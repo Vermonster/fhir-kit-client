@@ -11,14 +11,12 @@
   "main": "lib/client.js",
   "engines": {
     "node": ">=8.10.0",
-    "yarn": ">= 1.14.0"
+    "yarn": ">=1.14.0"
   },
   "scripts": {
     "docs": "rm -rf ./docs && jsdoc --configure .jsdoc.json",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
     "test": "mocha test --reporter spec",
-    "watch": "yarn test:watch & yarn lint:watch",
     "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "coveralls:report": "nyc --reporter=lcov --reporter=text-lcov npm test"
   },

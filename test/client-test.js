@@ -59,7 +59,6 @@ const mockAndExpectNotFound = async function (httpVerb, apiVerb) {
 
   const client = new Client({ baseUrl: 'http://example.com' });
   let response;
-
   try {
     response = await client[apiVerb]();
   } catch (error) {

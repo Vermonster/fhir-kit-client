@@ -164,6 +164,7 @@ app.post('/cds-services/patient-greeter', [authenticateEHR, authenticateClient],
   });
 });
 
-app.listen(3000, () => {
+const server = app.listen(3000, 'localhost', () => {
   console.log('Express server started on port 3000');
+  console.log(`CDS Discovery endpoint is at http://${server.address().address}:3000/cds-services`);
 });

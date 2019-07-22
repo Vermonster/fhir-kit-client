@@ -986,6 +986,37 @@ describe('Client', function () {
         }
         expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
       });
+
+      // https://github.com/Vermonster/fhir-kit-client/issues/91
+      // should the readstream be a minimal response example?
+      it('xxxxxreturns successfully without body when status is 200/201 and response is empty (Prefer: "return=minimal")', async function () {
+        const newPatient = {
+          resourceType: 'Patient',
+          active: true,
+          name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+          gender: 'female',
+          birthDate: '1948-04-14',
+        };
+
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .post('/Patient', newPatient)
+          .reply(201);
+
+        const response = await this.fhirClient.create({
+          resourceType: newPatient.resourceType,
+          body: newPatient,
+          options: {
+            headers: {
+              accept: 'application/json+fhir',
+            },
+          },
+        });
+
+        const httpResponse = Client.responseFor(response);
+        expect(response).to.be.empty;
+        expect(httpResponse.status).to.equal(201);
+      });
     });
 
     describe('#delete', function () {

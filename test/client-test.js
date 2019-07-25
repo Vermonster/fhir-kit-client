@@ -62,6 +62,7 @@ const mockAndExpectNotFound = async function (httpVerb, apiVerb) {
   try {
     response = await client[apiVerb]();
   } catch (error) {
+    console.log(`error: ${error}`);
     expect(error.response.status).to.equal(404);
   }
 
@@ -989,7 +990,7 @@ describe('Client', function () {
 
       // https://github.com/Vermonster/fhir-kit-client/issues/91
       // should the readstream be a minimal response example?
-      it('xxxxxreturns successfully without body when status is 200/201 and response is empty (Prefer: "return=minimal")', async function () {
+      it('returns successfully without body when status is 200/201 and response is empty (Prefer: "return=minimal")', async function () {
         const newPatient = {
           resourceType: 'Patient',
           active: true,
@@ -1024,7 +1025,7 @@ describe('Client', function () {
         mockAndExpectNotFound('delete', 'delete');
       });
 
-      it('builds a request with custom headers', async function () {
+      it('xxxxbuilds a request with custom headers', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .matchHeader('abc', 'XYZ')

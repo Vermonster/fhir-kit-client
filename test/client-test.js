@@ -62,7 +62,6 @@ const mockAndExpectNotFound = async function (httpVerb, apiVerb) {
   try {
     response = await client[apiVerb]();
   } catch (error) {
-    console.log(`error: ${error}`);
     expect(error.response.status).to.equal(404);
   }
 
@@ -339,8 +338,7 @@ describe('Client', function () {
           options: { headers: { abc: 'XYZ' } },
         });
 
-        const httpResponse = Client.responseFor(response);
-        const { request: httpRequest } = httpResponse;
+        const httpRequest = Client.requestFor(response);
         const { headers: httpHeaders } = httpRequest;
 
         expect(httpHeaders.has('abc')).to.be.true;
@@ -1025,7 +1023,7 @@ describe('Client', function () {
         mockAndExpectNotFound('delete', 'delete');
       });
 
-      it('xxxxbuilds a request with custom headers', async function () {
+      it('builds a request with custom headers', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
           .matchHeader('abc', 'XYZ')

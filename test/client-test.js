@@ -114,7 +114,7 @@ describe('Client', function () {
 
     const client = new Client(configWithOptions);
     const readResponse = await client.read({ resourceType: 'Basic', id: '1' });
-    const request = Client.requestFor(readResponse);
+    const { request } = Client.httpFor(readResponse);
     const { agent } = request;
     const { options: agentOptions } = agent;
 
@@ -364,11 +364,11 @@ describe('Client', function () {
           options: { headers: { abc: 'XYZ' } },
         });
 
-        const httpRequest = Client.requestFor(response);
-        const { headers: httpHeaders } = httpRequest;
+        const { request } = Client.httpFor(response);
+        const { headers } = request;
 
-        expect(httpHeaders.has('abc')).to.be.true;
-        expect(httpHeaders.get('abc')).to.be.equal('XYZ');
+        expect(headers.has('abc')).to.be.true;
+        expect(headers.get('abc')).to.be.equal('XYZ');
       });
 
       it('throws errors for a missing resource', async function () {
@@ -1038,7 +1038,7 @@ describe('Client', function () {
           },
         });
 
-        const httpResponse = Client.responseFor(response);
+        const { response: httpResponse } = Client.httpFor(response);
         expect(response).to.be.empty;
         expect(httpResponse.status).to.equal(201);
       });

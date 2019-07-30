@@ -104,8 +104,8 @@ describe('Client', function () {
       baseUrl: 'https://example.com',
       requestOptions: {
         key: privateKey,
-        cert: certificate
-      }
+        cert: certificate,
+      },
     };
 
     nock('https://example.com')
@@ -113,7 +113,7 @@ describe('Client', function () {
       .reply(200);
 
     const client = new Client(configWithOptions);
-    const readResponse = await client.read({resourceType: 'Basic', id: '1'});
+    const readResponse = await client.read({ resourceType: 'Basic', id: '1' });
     const request = Client.requestFor(readResponse);
     const { agent } = request;
     const { options: agentOptions } = agent;

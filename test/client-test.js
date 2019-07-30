@@ -96,6 +96,32 @@ describe('Client', function () {
     expect(this.fhirClient.pagination).to.be.an.instanceof(Pagination);
   });
 
+  it('initializes with cert and key agent options', async function () {
+    const privateKey = fs.createReadStream(path.normalize(`${__dirname}/fixtures/server.key`, 'utf8'));
+    const certificate = fs.createReadStream(path.normalize(`${__dirname}/fixtures/server.crt`, 'utf8'));
+
+    const configWithOptions = {
+      baseUrl: 'https://example.com',
+      requestOptions: {
+        key: privateKey,
+        cert: certificate
+      }
+    };
+
+    nock('https://example.com')
+      .get('/Basic/1')
+      .reply(200);
+
+    const client = new Client(configWithOptions);
+    const readResponse = await client.read({resourceType: 'Basic', id: '1'});
+    const request = Client.requestFor(readResponse);
+    const { agent } = request;
+    const { options: agentOptions } = agent;
+
+    expect(agentOptions.key).to.not.be.undefined;
+    expect(agentOptions.cert).to.not.be.undefined;
+  });
+
   it('throws correct error with request error', async function () {
     nock(this.baseUrl)
       .get('/Basic/1')

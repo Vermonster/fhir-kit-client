@@ -1,5 +1,7 @@
 # Launch Examples
 
+NOTE: For more examples, see this repository: https://github.com/Vermonster/fhir-kit-client-examples
+
 This directory contains example apps demonstrating an application
 launch.
 

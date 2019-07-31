@@ -4,6 +4,7 @@ const path = require('path');
 const { URL } = require('url');
 
 const { expect } = require('chai');
+
 const nock = require('nock');
 
 const Client = require('../lib/client');
@@ -58,7 +59,6 @@ const mockAndExpectNotFound = async function (httpVerb, apiVerb) {
 
   const client = new Client({ baseUrl: 'http://example.com' });
   let response;
-
   try {
     response = await client[apiVerb]();
   } catch (error) {
@@ -96,6 +96,32 @@ describe('Client', function () {
     expect(this.fhirClient.pagination).to.be.an.instanceof(Pagination);
   });
 
+  it('initializes with cert and key agent options', async function () {
+    const privateKey = fs.createReadStream(path.normalize(`${__dirname}/fixtures/server.key`, 'utf8'));
+    const certificate = fs.createReadStream(path.normalize(`${__dirname}/fixtures/server.crt`, 'utf8'));
+
+    const configWithOptions = {
+      baseUrl: 'https://example.com',
+      requestOptions: {
+        key: privateKey,
+        cert: certificate,
+      },
+    };
+
+    nock('https://example.com')
+      .get('/Basic/1')
+      .reply(200);
+
+    const client = new Client(configWithOptions);
+    const readResponse = await client.read({ resourceType: 'Basic', id: '1' });
+    const { request } = Client.httpFor(readResponse);
+    const { agent } = request;
+    const { options: agentOptions } = agent;
+
+    expect(agentOptions.key).to.not.be.undefined;
+    expect(agentOptions.cert).to.not.be.undefined;
+  });
+
   it('throws correct error with request error', async function () {
     nock(this.baseUrl)
       .get('/Basic/1')
@@ -104,7 +130,7 @@ describe('Client', function () {
       resourceType: 'Basic',
       id: '1',
     }).then(() => { throw new Error('should not have succeeded'); })
-      .catch((error) => { expect(error).to.have.property('message', 'Error: cannot connect'); });
+      .catch((error) => { expect(error).to.have.property('message').and.match(/cannot connect/); });
   });
 
   describe('#smartAuthMetadata', function () {
@@ -338,11 +364,11 @@ describe('Client', function () {
           options: { headers: { abc: 'XYZ' } },
         });
 
-        const httpResponse = Client.responseFor(response);
-        const { request: httpRequest } = httpResponse;
-        const { headers: httpHeaders } = httpRequest;
+        const { request } = Client.httpFor(response);
+        const { headers } = request;
 
-        expect(httpHeaders.abc).to.be.equal('XYZ');
+        expect(headers.has('abc')).to.be.true;
+        expect(headers.get('abc')).to.be.equal('XYZ');
       });
 
       it('throws errors for a missing resource', async function () {
@@ -984,6 +1010,37 @@ describe('Client', function () {
           expect(error.response.data.resourceType).to.equal('OperationOutcome');
         }
         expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
+      });
+
+      // https://github.com/Vermonster/fhir-kit-client/issues/91
+      // should the readstream be a minimal response example?
+      it('returns successfully without body when status is 200/201 and response is empty (Prefer: "return=minimal")', async function () {
+        const newPatient = {
+          resourceType: 'Patient',
+          active: true,
+          name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+          gender: 'female',
+          birthDate: '1948-04-14',
+        };
+
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .post('/Patient', newPatient)
+          .reply(201);
+
+        const response = await this.fhirClient.create({
+          resourceType: newPatient.resourceType,
+          body: newPatient,
+          options: {
+            headers: {
+              accept: 'application/json+fhir',
+            },
+          },
+        });
+
+        const { response: httpResponse } = Client.httpFor(response);
+        expect(response).to.be.empty;
+        expect(httpResponse.status).to.equal(201);
       });
     });
 

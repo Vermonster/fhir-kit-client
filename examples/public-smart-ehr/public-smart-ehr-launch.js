@@ -120,6 +120,7 @@ app.get('/callback', async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
+const server = app.listen(3000, 'localhost', () => {
   console.log('Express server started on port 3000');
+  console.log(`SMART Launch endpoint is at http://${server.address().address}:3000/launch`);
 });

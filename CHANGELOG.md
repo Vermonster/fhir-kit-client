@@ -1,5 +1,18 @@
 # Changelog
 
+### 1.4.0
+- Replace request with cross-fetch for better client support
+- Update npm packages
+- Update server example output
+- Refactor HttpClient
+- Add test for minimial response
+- Add test for setting TLS options (key, cert)
+- Fix code coverage tool
+- Better KeepAlive support
+- NOTE: Breaking Change: replaced `Client.requestFor()` function for accessing
+  raw HTTP objects with `Client.httpFor()` which returns an object containing
+  both the request and the response.
+
 ### 1.3.0 (June 12, 2019)
 - Add requestOptions (can be used to set cert/key/ca, etc) (thanks @sulkaharo)
 - Expose the raw http response object (thanks @sulkaharo)

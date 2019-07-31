@@ -127,4 +127,7 @@ app.get('/callback', async (req, res) => {
 
 app.listen(3000, () => {
   console.log('Express server started on port 3000');
+  console.log('To launch standalone, obtain the FHIR server URL');
+  console.log('and open the following URL in your web browser:\n');
+  console.log('http://localhost:3000/launch?iss=<FHIR_SERVER_URL>&scope=openid%20profile%20offline_access%20user%2F*.*%20patient%2F*.*%20launch%2Fencounter%20launch%2Fpatient');
 });

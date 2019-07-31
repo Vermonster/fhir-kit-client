@@ -119,6 +119,11 @@ see the [examples directory](./examples/) and [examples README](./examples/READM
 provides a [create-react-app](https://github.com/facebook/create-react-app)
 template that can be used to create a sample React app using FHIRKit Client.
 
+## Even more Examples (client-side ones)
+
+See https://github.com/Vermonster/fhir-kit-client-examples for examples in React, 
+Angular, and React Native.
+
 ## Logging
 
 The [debug library](https://www.npmjs.com/package/debug) can provide logging

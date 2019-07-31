@@ -50,6 +50,7 @@
     "cross-fetch": "^3.0.4",
     "debug": "^3.1.0",
     "es6-promise": "^4.2.4",
+    "flatted": "^2.0.1",
     "query-string": "^6.2.0",
     "universal-url": "^1.0.1"
   },

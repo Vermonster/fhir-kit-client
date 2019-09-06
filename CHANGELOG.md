@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.4.2
+- Update README
+
 ### 1.4.1
 - Update dependencies to address audit
 

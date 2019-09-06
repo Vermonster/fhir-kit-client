@@ -106,7 +106,7 @@ For more examples see the JS Docs and Launch Examples below.
 
 ## Documentation
 
-[JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/1.4.0/index.html)
+[JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/1.4.1/index.html)
 
 ## Launch Examples (SMART, CDS Hooks)
 
@@ -121,7 +121,7 @@ template that can be used to create a sample React app using FHIRKit Client.
 
 ## Even more Examples (client-side ones)
 
-See https://github.com/Vermonster/fhir-kit-client-examples for examples in React, 
+See https://github.com/Vermonster/fhir-kit-client-examples for examples in React,
 Angular, and React Native.
 
 ## Logging

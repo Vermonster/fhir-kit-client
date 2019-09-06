@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.4.1
+- Update dependencies to address audit
+
 ### 1.4.0
 - Replace request with cross-fetch for better client support
 - Update npm packages

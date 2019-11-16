@@ -10,7 +10,7 @@
   ],
   "main": "lib/client.js",
   "engines": {
-    "node": ">=8.10.0",
+    "node": ">=8.16.0",
     "yarn": ">=1.14.0"
   },
   "scripts": {

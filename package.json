@@ -1,6 +1,6 @@
 {
-  "name": "fhir-kit-client",
-  "version": "1.4.2",
+  "name": "@telluiot/fhir-kit-client",
+  "version": "2.0.0-beta",
   "description": "FHIR Client",
   "keywords": [
     "FHIR",
@@ -10,9 +10,9 @@
   ],
   "main": "lib/client.js",
   "engines": {
-    "node": ">=8.16.0",
-    "yarn": ">=1.14.0"
+    "node": ">=12.0.0"
   },
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "scripts": {
     "docs": "rm -rf ./docs && jsdoc --configure .jsdoc.json",
     "lint": "eslint .",
@@ -29,7 +29,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Vermonster/fhir-kit-client.git"
+    "url": "https://github.com/TelluIoT/fhir-kit-client.git"
   },
   "devDependencies": {
     "agentkeepalive": "^4.1.0",

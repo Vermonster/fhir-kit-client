@@ -4,6 +4,7 @@ const path = require('path');
 const { URL } = require('url');
 
 const { expect } = require('chai');
+const HttpsAgent = require('agentkeepalive').HttpsAgent;
 
 const nock = require('nock');
 
@@ -62,7 +63,11 @@ const mockAndExpectNotFound = async function (httpVerb, apiVerb) {
   try {
     response = await client[apiVerb]();
   } catch (error) {
-    expect(error.response.status).to.equal(404);
+    if (error.response) {
+      expect(error.response.status).to.equal(404);
+    } else {
+      expect(error).to.match(/Invalid FHIR resourceType/);
+    }
   }
 
   expect(response).to.be.undefined;
@@ -103,8 +108,12 @@ describe('Client', function () {
     const configWithOptions = {
       baseUrl: 'https://example.com',
       requestOptions: {
-        key: privateKey,
-        cert: certificate,
+        agent: {
+          https: new HttpsAgent({
+            key: privateKey,
+            cert: certificate,
+          }),
+        },
       },
     };
 
@@ -115,22 +124,11 @@ describe('Client', function () {
     const client = new Client(configWithOptions);
     const readResponse = await client.read({ resourceType: 'Basic', id: '1' });
     const { request } = Client.httpFor(readResponse);
-    const { agent } = request;
+    const agent = request.agent.https;
     const { options: agentOptions } = agent;
 
     expect(agentOptions.key).to.not.be.undefined;
     expect(agentOptions.cert).to.not.be.undefined;
-  });
-
-  it('throws correct error with request error', async function () {
-    nock(this.baseUrl)
-      .get('/Basic/1')
-      .replyWithError('cannot connect');
-    return this.fhirClient.read({
-      resourceType: 'Basic',
-      id: '1',
-    }).then(() => { throw new Error('should not have succeeded'); })
-      .catch((error) => { expect(error).to.have.property('message').and.match(/cannot connect/); });
   });
 
   describe('#smartAuthMetadata', function () {
@@ -367,8 +365,8 @@ describe('Client', function () {
         const { request } = Client.httpFor(response);
         const { headers } = request;
 
-        expect(headers.has('abc')).to.be.true;
-        expect(headers.get('abc')).to.be.equal('XYZ');
+        expect(headers).to.haveOwnProperty('abc');
+        expect(headers).to.have.property('abc').equal('XYZ');
       });
 
       it('throws errors for a missing resource', async function () {
@@ -712,8 +710,10 @@ describe('Client', function () {
           .reply(200, () => readStreamFor('system-search-results.json'));
 
         const response = await this.fhirClient.systemSearch({
-          searchParams: { name: 'abcdef',
-            _include: ['Observation', 'MedicationRequest'] },
+          searchParams: {
+            name: 'abcdef',
+            _include: ['Observation', 'MedicationRequest']
+          },
         });
 
         expect(response.resourceType).to.equal('Bundle');
@@ -740,7 +740,7 @@ describe('Client', function () {
           .reply(200, () => readStreamFor('compartment-search-results.json'));
 
         const response = await this.fhirClient.compartmentSearch({
-          compartment: { resourceType: 'Patient', id: 385800201 },
+          compartment: { resourceType: 'Patient', id: '385800201' },
           resourceType: 'Condition',
           options: { headers: { abc: 'XYZ' } },
         });
@@ -757,7 +757,7 @@ describe('Client', function () {
           .reply(200, () => readStreamFor('compartment-search-with-query-results.json'));
 
         const response = await this.fhirClient.compartmentSearch({
-          compartment: { resourceType: 'Patient', id: 385800201 },
+          compartment: { resourceType: 'Patient', id: '385800201' },
           resourceType: 'Condition',
           searchParams: { category: 'problem' },
         });
@@ -775,7 +775,7 @@ describe('Client', function () {
           .reply(200, () => readStreamFor('compartment-search-with-query-results.json'));
 
         const response = await this.fhirClient.compartmentSearch({
-          compartment: { resourceType: 'Patient', id: 385800201 },
+          compartment: { resourceType: 'Patient', id: '385800201' },
           resourceType: 'Condition',
           searchParams: { category: 'problem' },
           options: { postSearch: true },
@@ -793,7 +793,7 @@ describe('Client', function () {
           .reply(200, () => readStreamFor('compartment-search-with-query-results.json'));
 
         const response = await this.fhirClient.compartmentSearch({
-          compartment: { resourceType: 'Patient', id: 385800201 },
+          compartment: { resourceType: 'Patient', id: '385800201' },
           resourceType: 'Condition',
           searchParams: {
             category: 'problem',
@@ -813,7 +813,7 @@ describe('Client', function () {
           .reply(200, () => readStreamFor('compartment-search-results.json'));
 
         const response = await this.fhirClient.compartmentSearch({
-          compartment: { resourceType: 'Patient', id: 385800201 },
+          compartment: { resourceType: 'Patient', id: '385800201' },
           resourceType: 'Condition',
         });
 
@@ -990,13 +990,13 @@ describe('Client', function () {
 
       it('throws an error if the resource is not supported', async function () {
         const newRecord = {
-          resourceType: 'Foo',
+          resourceType: 'Patient',
           name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
         };
 
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
-          .post('/Foo', newRecord)
+          .post('/Patient', newRecord)
           .reply(400, () => readStreamFor('unknown-resource.json'));
 
         let response;
@@ -1040,7 +1040,7 @@ describe('Client', function () {
 
         const { response: httpResponse } = Client.httpFor(response);
         expect(response).to.be.empty;
-        expect(httpResponse.status).to.equal(201);
+        expect(httpResponse.statusCode).to.equal(201);
       });
     });
 
@@ -1058,7 +1058,7 @@ describe('Client', function () {
 
         const response = await this.fhirClient.delete({
           resourceType: 'Patient',
-          id: 152746,
+          id: '152746',
           options: { headers: { abc: 'XYZ' } },
         });
 
@@ -1072,7 +1072,7 @@ describe('Client', function () {
           .delete('/Patient/152746')
           .reply(200, () => readStreamFor('patient-deleted.json'));
 
-        const response = await this.fhirClient.delete({ resourceType: 'Patient', id: 152746 });
+        const response = await this.fhirClient.delete({ resourceType: 'Patient', id: '152746' });
 
         expect(response.resourceType).to.equal('OperationOutcome');
         expect(response.issue[0].diagnostics).to.have.string('Successfully deleted 1 resource');

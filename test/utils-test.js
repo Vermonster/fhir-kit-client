@@ -1,7 +1,7 @@
 /* eslint-disable func-names, no-unused-expressions */
 const { expect } = require('chai');
 
-const { splitReference, validateID } = require('../lib/utils');
+const { splitReference, validateParameters } = require('../lib/utils');
 
 describe('utils', function () {
   describe('splitReference', function () {
@@ -50,27 +50,117 @@ describe('utils', function () {
     });
   });
 
-  describe('validateID', function () {
-    const expectedError = 'Invalid FHIR resource ID.';
-    context('with a valid id', function () {
-      it('should not throws an error', function () {
-        expect(() => validateID('1234')).to.not.throws();
+  describe('validateParameters', function () {
+    describe('resourceType', function () {
+      const expectedError = 'Invalid FHIR resourceType.';
+      context('with a valid id', function () {
+        it('should not throws an error', function () {
+          expect(() => validateParameters({
+            resourceType: 'Patient',
+          })).to.not.throws();
+        });
+      });
+      context('with an invalid resourec type', function () {
+        it('should throws an error', function () {
+          expect(() => validateParameters({
+            resourceType: '../../Canard',
+          })).to.throw(expectedError);
+        });
       });
     });
-    context('with a too long id', function () {
-      it('should throws an error', function () {
-        expect(() => validateID('1111111111111111111111111111111111111111111111111' +
-        '1111111111111111111111111111111111111111111111111')).to.throw(expectedError);
+    describe('ID', function () {
+      const expectedError = 'Invalid FHIR ID.';
+      context('with a valid id', function () {
+        it('should not throws an error', function () {
+          expect(() => validateParameters({
+            resourceType: 'Patient',
+            id: '1234',
+          })).to.not.throws();
+        });
+      });
+      context('with a too long id', function () {
+        it('should throws an error', function () {
+          expect(() => validateParameters({
+            resourceType: 'Patient',
+            id: '1111111111111111111111111111111111111111111111111' +
+              '1111111111111111111111111111111111111111111111111',
+          })).to.throw(expectedError);
+        });
+      });
+      context('with a too short id', function () {
+        it('should throws an error', function () {
+          expect(() => validateParameters({
+            resourceType: 'Patient',
+            id: '',
+          })).to.throw(expectedError);
+        });
+      });
+      context('with invalid characters', function () {
+        it('should throws an error', function () {
+          expect(() => validateParameters({
+            resourceType: 'Patient',
+            id: '1234/_history/456',
+          })).to.throw(expectedError);
+        });
+      });
+      context('missing but required', function () {
+        it('should throws an error', function () {
+          expect(() => validateParameters({
+            resourceType: 'Patient',
+            id: undefined,
+            requireId: true,
+          })).to.throw(expectedError);
+        });
       });
     });
-    context('with a too short id', function () {
-      it('should throws an error', function () {
-        expect(() => validateID('')).to.throw(expectedError);
+    describe('Version', function () {
+      const expectedError = 'Invalid FHIR version.';
+      context('with a valid version', function () {
+        it('should not throws an error', function () {
+          expect(() => validateParameters({
+            resourceType: 'Patient',
+            id: '1234',
+            version: '1234',
+          })).to.not.throws();
+        });
       });
-    });
-    context('with invalid characters', function () {
-      it('should throws an error', function () {
-        expect(() => validateID('1234/_history/456')).to.throw(expectedError);
+      context('with a too long version', function () {
+        it('should throws an error', function () {
+          expect(() => validateParameters({
+            resourceType: 'Patient',
+            id: '1234',
+            version: '1111111111111111111111111111111111111111111111111' +
+              '1111111111111111111111111111111111111111111111111',
+          })).to.throw(expectedError);
+        });
+      });
+      context('with a too short version', function () {
+        it('should throws an error', function () {
+          expect(() => validateParameters({
+            resourceType: 'Patient',
+            id: '1234',
+            version: '',
+          })).to.throw(expectedError);
+        });
+      });
+      context('with invalid characters', function () {
+        it('should throws an error', function () {
+          expect(() => validateParameters({
+            resourceType: 'Patient',
+            id: '1234',
+            version: '1234/_history/456',
+          })).to.throw(expectedError);
+        });
+      });
+      context('missing but required', function () {
+        it('should throws an error', function () {
+          expect(() => validateParameters({
+            resourceType: 'Patient',
+            id: '1234',
+            version: undefined,
+            requireVersion: true,
+          })).to.throw(expectedError);
+        });
       });
     });
   });

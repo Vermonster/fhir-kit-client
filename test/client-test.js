@@ -4,7 +4,7 @@ const path = require('path');
 const { URL } = require('url');
 
 const { expect } = require('chai');
-const HttpsAgent = require('agentkeepalive').HttpsAgent;
+const { HttpsAgent } = require('agentkeepalive');
 
 const nock = require('nock');
 
@@ -712,7 +712,7 @@ describe('Client', function () {
         const response = await this.fhirClient.systemSearch({
           searchParams: {
             name: 'abcdef',
-            _include: ['Observation', 'MedicationRequest']
+            _include: ['Observation', 'MedicationRequest'],
           },
         });
 

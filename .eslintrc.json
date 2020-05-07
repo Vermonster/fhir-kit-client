@@ -12,6 +12,7 @@
     "filenames/match-exported": [2, "kebab"],
     "object-curly-newline": [2, { "consistent": true }],
     "valid-jsdoc": 2,
-    "unicorn/prevent-abbreviations": "off"
+    "unicorn/prevent-abbreviations": "off",
+    "unicorn/no-null": "warn"
   }
 }

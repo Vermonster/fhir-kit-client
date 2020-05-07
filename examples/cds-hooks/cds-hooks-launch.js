@@ -55,32 +55,32 @@ app.use(bodyParser.json());
 async function authenticateEHR(req, res, next) {
   const token = req.headers.authorization.replace('Bearer ', '');
   const decodedJwt = jwt.decode(token, { complete: true });
-  const asymmetricAlgs = ['ES256', 'ES384', 'ES384', 'RS256', 'RS384', 'RS512'];
+  const asymmetricAlgs = new Set(['ES256', 'ES384', 'ES384', 'RS256', 'RS384', 'RS512']);
   const { alg, jku, kid } = decodedJwt.header;
   const { iss, sub } = decodedJwt.payload;
 
   let pem;
   let verified;
 
-  const isWhitelisted = whitelistedEHRs.find(ehr => ehr.iss === iss && ehr.sub === sub);
+  const isWhitelisted = whitelistedEHRs.find((ehr) => ehr.iss === iss && ehr.sub === sub);
 
   if (!isWhitelisted) { return res.status(401).json('Authentication failed'); }
 
   console.log(`token: ${token}`);
   console.log(`decodedJwt: ${JSON.stringify(decodedJwt)}`);
 
-  if (asymmetricAlgs.includes(alg)) {
+  if (asymmetricAlgs.has(alg)) {
     if (typeof pemPath !== 'undefined') {
       // Use existing public key
       try {
         pem = fs.readFileSync(pemPath);
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        console.log(error);
       }
     } else if (typeof jku !== 'undefined') {
       // Generate public key with an jwks.json endpoint
       const jwks = await axios.get(jku);
-      const targetJwk = jwks.data.keys.find(key => key.kid === kid);
+      const targetJwk = jwks.data.keys.find((key) => key.kid === kid);
 
       pem = jwkToPem(targetJwk);
     }
@@ -108,7 +108,7 @@ async function authenticateClient(req, res, next) {
     return next();
   }
 
-  console.log('The token is : ', fhirAuthorization.access_token);
+  console.log('The token is :', fhirAuthorization.access_token);
   req.fhirClient.bearerToken = fhirAuthorization.access_token;
 
   return next();

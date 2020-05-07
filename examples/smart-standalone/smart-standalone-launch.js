@@ -112,7 +112,7 @@ app.get('/callback', async (req, res) => {
 
     const { token } = oauth2.accessToken.create(result);
 
-    console.log('The token is : ', token);
+    console.log('The token is :', token);
 
     fhirClient.bearerToken = token.access_token;
 

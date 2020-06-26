@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.5.0
+- Drop support for node 8
+- Remove universal-url
+- Update dependencies
+
 ### 1.4.2
 - Update README
 

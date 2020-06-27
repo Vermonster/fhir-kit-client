@@ -8,8 +8,9 @@ Node FHIR client library
 
 ## Features
 
-* Support for R4 (4.0.0, 3.5.0, 3.3.0, 3.2.0), STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)
+* Support for R4 (4.0.1, 4.0.0, 3.5.0, 3.3.0, 3.2.0), STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)
 * Support for all FHIR REST actions
+* Support for FHIR operations
 * Pagination support for search results
 * Batch and transaction support
 * Support for absolute, in-bundle, and contained references

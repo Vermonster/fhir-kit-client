@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.5.1
+- Add support for operations
+
 ### 1.5.0
 - Drop support for node 8
 - Remove universal-url

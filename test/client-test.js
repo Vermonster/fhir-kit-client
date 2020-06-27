@@ -485,6 +485,60 @@ describe('Client', function () {
       });
     });
 
+    describe('#operation', function () {
+      it('runs system-level POST operation', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .post('/$everything')
+          .reply(200);
+
+        await this.fhirClient.operation({ name: 'everything' });
+      });
+
+      it('runs system-level GET operation', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/$everything')
+          .reply(200);
+
+        await this.fhirClient.operation({ name: 'everything', method: 'get' });
+      });
+
+      it('runs type-level operation', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/ConceptMap/$translate?code=preliminary&source=http%3A%2F%2Fhl7.org%2Ffhir%2FValueSet%2Fcomposition-status&system=http%3A%2F%2Fhl7.org%2Ffhir%2Fcomposition-status&target=http%3A%2F%2Fhl7.org%2Ffhir%2FValueSet%2Fv3-ActStatus')
+          .reply(200);
+
+        const input = {
+          code: 'preliminary',
+          source: 'http://hl7.org/fhir/ValueSet/composition-status',
+          system: 'http://hl7.org/fhir/composition-status',
+          target: 'http://hl7.org/fhir/ValueSet/v3-ActStatus',
+        };
+
+        await this.fhirClient.operation({
+          resourceType: 'ConceptMap',
+          name: 'translate',
+          method: 'get',
+          input,
+        });
+      });
+
+      it('runs instance-level operation', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .post('/PlanDefinition/123/$apply')
+          .reply(200);
+
+        await this.fhirClient.operation({
+          resourceType: 'PlanDefinition',
+          id: '123',
+          name: 'apply',
+        });
+      });
+    });
+
     describe('#search', function () {
       it('passes headers to each search method', async function () {
         const customHeader = { abc: 'XYZ' };

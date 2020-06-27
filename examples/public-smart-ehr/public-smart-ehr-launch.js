@@ -17,7 +17,6 @@ app.use(session({
   saveUninitialized: true,
 }));
 
-
 /**
  * This is an example of a SMART app launching from within an EHR.
  *

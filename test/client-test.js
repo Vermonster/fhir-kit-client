@@ -491,7 +491,8 @@ describe('Client', function () {
           .matchHeader('accept', 'application/json+fhir')
           .post('/$everything')
           .reply(200);
-        const result = await this.fhirClient.operation({ name: 'everything' });
+
+        await this.fhirClient.operation({ name: 'everything' });
       });
 
       it('runs system-level GET operation', async function () {
@@ -499,7 +500,8 @@ describe('Client', function () {
           .matchHeader('accept', 'application/json+fhir')
           .get('/$everything')
           .reply(200);
-        const result = await this.fhirClient.operation({ name: 'everything', method: 'get' });
+
+        await this.fhirClient.operation({ name: 'everything', method: 'get' });
       });
 
       it('runs type-level operation', async function () {
@@ -512,14 +514,14 @@ describe('Client', function () {
           code: 'preliminary',
           source: 'http://hl7.org/fhir/ValueSet/composition-status',
           system: 'http://hl7.org/fhir/composition-status',
-          target: 'http://hl7.org/fhir/ValueSet/v3-ActStatus'
+          target: 'http://hl7.org/fhir/ValueSet/v3-ActStatus',
         };
 
-        const result = await this.fhirClient.operation({
+        await this.fhirClient.operation({
           resourceType: 'ConceptMap',
           name: 'translate',
           method: 'get',
-          input
+          input,
         });
       });
 
@@ -529,10 +531,10 @@ describe('Client', function () {
           .post('/PlanDefinition/123/$apply')
           .reply(200);
 
-        const result = await this.fhirClient.operation({
+        await this.fhirClient.operation({
           resourceType: 'PlanDefinition',
           id: '123',
-          name: 'apply'
+          name: 'apply',
         });
       });
     });

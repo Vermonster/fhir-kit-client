@@ -18,7 +18,6 @@ app.use(session({
   saveUninitialized: true,
 }));
 
-
 /**
  * This is an example of a SMART app launching absent of an EHR context.
  *

@@ -62,7 +62,7 @@ async function authenticateEHR(req, res, next) {
   let pem;
   let verified;
 
-  const isWhitelisted = whitelistedEHRs.find(ehr => ehr.iss === iss && ehr.sub === sub);
+  const isWhitelisted = whitelistedEHRs.find((ehr) => ehr.iss === iss && ehr.sub === sub);
 
   if (!isWhitelisted) { return res.status(401).json('Authentication failed'); }
 
@@ -80,7 +80,7 @@ async function authenticateEHR(req, res, next) {
     } else if (typeof jku !== 'undefined') {
       // Generate public key with an jwks.json endpoint
       const jwks = await axios.get(jku);
-      const targetJwk = jwks.data.keys.find(key => key.kid === kid);
+      const targetJwk = jwks.data.keys.find((key) => key.kid === kid);
 
       pem = jwkToPem(targetJwk);
     }

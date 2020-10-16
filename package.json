@@ -50,7 +50,7 @@
     "debug": "^4.1.1",
     "es6-promise": "^4.2.4",
     "flatted": "^2.0.1",
-    "got": "^11.1.2",
+    "got": "^11.7.0",
     "query-string": "^6.2.0",
     "universal-url": "^2.0.0"
   },

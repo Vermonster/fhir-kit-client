@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.5.2
+- Add content-type default header if missing (fixes #129)
+- Update dependencies
+
 ### 1.5.1
 - Add support for operations
 

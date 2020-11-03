@@ -107,7 +107,7 @@ For more examples see the JS Docs and Launch Examples below.
 
 ## Documentation
 
-[JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/1.5.1/index.html)
+[JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/1.5.2/index.html)
 
 ## Launch Examples (SMART, CDS Hooks)
 

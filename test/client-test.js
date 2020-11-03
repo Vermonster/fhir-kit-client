@@ -1005,6 +1005,7 @@ describe('Client', function () {
 
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('content-type', 'application/json+fhir')
           .matchHeader('abc', 'XYZ')
           .post('/Patient', newPatient)
           .reply(201, () => readStreamFor('patient-created.json'));
@@ -1030,6 +1031,7 @@ describe('Client', function () {
 
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('content-type', 'application/json+fhir')
           .post('/Patient', newPatient)
           .reply(201, () => readStreamFor('patient-created.json'));
 
@@ -1050,6 +1052,7 @@ describe('Client', function () {
 
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('content-type', 'application/json+fhir')
           .post('/Foo', newRecord)
           .reply(400, () => readStreamFor('unknown-resource.json'));
 
@@ -1079,6 +1082,7 @@ describe('Client', function () {
 
         nock(this.baseUrl)
           .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('content-type', 'application/json+fhir')
           .post('/Patient', newPatient)
           .reply(201);
 

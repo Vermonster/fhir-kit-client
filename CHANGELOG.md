@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.5.3
+- Remove require url, as we are on node 10+ now
+
 ### 1.5.2
 - Add content-type default header if missing (fixes #129)
 - Update dependencies

@@ -17,5 +17,5 @@ function readFixture(filename) {
 }
 
 module.exports = {
- readStreamFor, readFixture
+  readStreamFor, readFixture,
 };

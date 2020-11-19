@@ -12,7 +12,6 @@ const { readStreamFor, readFixture } = require('./test-utils');
 const Client = require('../lib/client');
 const Pagination = require('../lib/pagination');
 
-
 /**
  * Mock out and assert behavior for client verbs without passing params
  *

@@ -5,9 +5,8 @@ const { readFixture } = require('./test-utils');
 
 const {
   authFromCapability,
-  authFromWellKnown
+  authFromWellKnown,
 } = require('../lib/smart');
-
 
 describe('smart', function () {
   describe('#authFromWellKnown', function () {
@@ -16,8 +15,6 @@ describe('smart', function () {
       const {
         authorizeUrl,
         tokenUrl,
-        registerUrl,
-        manageUrl,
       } = authFromWellKnown(wellKnown);
 
       expect(authorizeUrl).to.deep.equal(new URL('https://launch.smarthealthit.org/v/r4/auth/authorize'));
@@ -29,8 +26,6 @@ describe('smart', function () {
       const {
         authorizeUrl,
         tokenUrl,
-        registerUrl,
-        manageUrl,
       } = authFromWellKnown(wellKnown);
 
       expect(authorizeUrl).to.be.undefined;

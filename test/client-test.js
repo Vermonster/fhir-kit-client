@@ -7,23 +7,11 @@ const { expect } = require('chai');
 
 const nock = require('nock');
 
+const { readStreamFor, readFixture } = require('./test-utils');
+
 const Client = require('../lib/client');
 const Pagination = require('../lib/pagination');
 
-/**
- * Read fixture data
- *
- * @param {String} fixture - The fixture file
- *
- * @returns {String} - The data from a fixture
- */
-function readStreamFor(fixture) {
-  return fs.createReadStream(path.normalize(`${__dirname}/fixtures/${fixture}`, 'utf8'));
-}
-
-function readFixture(filename) {
-  return JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/${filename}`, 'utf8')));
-}
 
 /**
  * Mock out and assert behavior for client verbs without passing params

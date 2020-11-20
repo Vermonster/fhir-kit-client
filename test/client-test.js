@@ -121,7 +121,7 @@ describe('Client', function () {
   });
 
   describe('#smartAuthMetadata', function () {
-    it('sa builds a request with custom headers', async function () {
+    it('builds a request with custom headers', async function () {
       nock(this.baseUrl)
         .matchHeader('accept', /application\/json.*/)
         .matchHeader('abc', 'XYZ')

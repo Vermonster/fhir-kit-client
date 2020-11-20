@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.6.0
+- Add support for .well-known (fetching SMART URIs)
+
 ### 1.5.3
 - Remove require url, as we are on node 10+ now
 

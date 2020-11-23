@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.6.1
+- Fix a bug with headers when calling smart auth
+
 ### 1.6.0
 - Add support for .well-known (fetching SMART URIs)
 

@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.6.2
+- Add new client.request method to create request directly
+- Fix a bug where console.dir was not working with react native. NOTE: We will
+  finally remove deprecation warnings and migrate to the new API in 1.7.0.
+- Update a dep in the examples
+
 ### 1.6.1
 - Fix a bug with headers when calling smart auth
 

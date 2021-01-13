@@ -333,6 +333,62 @@ describe('Client', function () {
   });
 
   describe('API verbs', function () {
+    describe('#request', function () {
+      it('HEAD request', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .head('/Patient/123')
+          .reply(200);
+
+        await this.fhirClient.request('Patient/123', { method: 'HEAD' });
+      });
+
+      it('GET request', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .get('/Patient/123')
+          .reply(200, () => readStreamFor('patient.json'));
+
+        const response = await this.fhirClient.request('Patient/123');
+        expect(response.resourceType).to.equal('Patient');
+        expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
+      });
+
+      it('GET request with header', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json')
+          .matchHeader('x-header-a', 'foo')
+          .get('/Patient/123')
+          .reply(200);
+
+        await this.fhirClient.request('Patient/123',
+          { options:
+            { headers:
+              { accept: 'application/json',
+                'x-header-a': 'foo' } } });
+      });
+
+      it('DELETE request', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .delete('/Patient/123')
+          .reply(200);
+
+        await this.fhirClient.request('Patient/123', { method: 'DELETE' });
+      });
+
+      it('POST request', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json+fhir')
+          .post('/Patient', { resourceType: 'patient' })
+          .reply(200);
+
+        await this.fhirClient.request('Patient',
+          { method: 'POST',
+            body: { resourceType: 'patient' } });
+      });
+    });
+
     describe('#read', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('get', 'read');

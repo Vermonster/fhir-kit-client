@@ -40,6 +40,13 @@ fhirClient.smartAuthMetadata().then((response) => {
   });
 
 
+// Direct request
+fhirClient.request('Patient/123')
+  .then(respose => console.log(response));
+
+fhirClient.request('Patient/123', { method: 'DELETE' })
+  .then(respose => console.log(response));
+
 // Read a patient
 fhirClient
   .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
@@ -107,7 +114,7 @@ For more examples see the JS Docs and Launch Examples below.
 
 ## Documentation
 
-[JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/1.6.1/index.html)
+[JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/1.6.2/index.html)
 
 ## Launch Examples (SMART, CDS Hooks)
 

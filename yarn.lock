@@ -1098,11 +1098,6 @@ flatted@^2.0.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.1.tgz#69e57caa8f0eacbc281d2e2cb458d46fdb449e08"
   integrity sha512-a1hQMktqW9Nmqr5aktAux3JMNqaucxGcjtjWnZLHX7yyPCmlSV3M54nGYbqT8K+0GhF3NBgmJCc3ma+WOgX8Jg==
 
-flatted@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.0.2.tgz#b07f9c6f349f6b7fd0d49d70704c11d8f850bb9a"
-  integrity sha512-CsGzkXnjwEGEetj4HLWbjePVyal4AzgfjrP3FaLqPg30uZ8LyNKrTU4gciZc9g0xWArqbmObTjSLQ1QOF6u2Wg==
-
 foreground-child@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/foreground-child/-/foreground-child-2.0.0.tgz#71b32800c9f15aa8f2f83f4a6bd9bff35d861a53"

@@ -123,7 +123,7 @@ describe('Client', function () {
   describe('#smartAuthMetadata', function () {
     it('builds a request with custom headers', async function () {
       nock(this.baseUrl)
-        .matchHeader('accept', /application\/json.*/)
+        .matchHeader('accept', /.*application\/json/)
         .matchHeader('abc', 'XYZ')
         .get('/metadata')
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
@@ -138,7 +138,7 @@ describe('Client', function () {
     context('SMART URIs are not present', function () {
       it('returns an empty object', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', /application\/json.*/)
+          .matchHeader('accept', /.*application\/json/)
           .get('/metadata')
           .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
 
@@ -151,7 +151,7 @@ describe('Client', function () {
     context('SMART URIs are present', function () {
       it('returns SMART OAuth URIs', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', /application\/json.*/)
+          .matchHeader('accept', /.*application\/json/)
           .matchHeader('Authorization', '')
           .get('/metadata')
           .reply(200, () => readStreamFor('valid-capability-statement.json'));
@@ -171,7 +171,7 @@ describe('Client', function () {
   describe('#capabilityStatement', function () {
     it('builds a request with custom headers', async function () {
       const scope = nock(this.baseUrl)
-        .matchHeader('accept', /application\/json.*/)
+        .matchHeader('accept', /.*application\/json/)
         .matchHeader('abc', 'XYZ')
         .get('/metadata')
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
@@ -187,7 +187,7 @@ describe('Client', function () {
 
     it('works with the deprecated calling style', async function () {
       const scope = nock(this.baseUrl)
-        .matchHeader('accept', /application\/json.*/)
+        .matchHeader('accept', /.*application\/json/)
         .matchHeader('abc', 'XYZ')
         .get('/metadata')
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
@@ -203,7 +203,7 @@ describe('Client', function () {
 
     it('returns a FHIR resource from the FHIR server if metadata is not present', async function () {
       const scope = nock(this.baseUrl)
-        .matchHeader('accept', /application\/json.*/)
+        .matchHeader('accept', /.*application\/json/)
         .get('/metadata')
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
 
@@ -216,7 +216,7 @@ describe('Client', function () {
 
     it('returns a FHIR resource from the FHIR client if metadata is already present', async function () {
       const scope = nock(this.baseUrl)
-        .matchHeader('accept', /application\/json.*/)
+        .matchHeader('accept', /.*application\/json/)
         .get('/metadata')
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
 

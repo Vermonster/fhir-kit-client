@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.6.3
+- Fixed logging headers (thanks @jpnarkinsky and @awatson1978)
+- Updates SMART auth to not use set headers the deprecated way
+- Remove flatted
+
 ### 1.6.2
 - Add new client.request method to create request directly
 - Fix a bug where console.dir was not working with react native. NOTE: We will

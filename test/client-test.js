@@ -1041,7 +1041,7 @@ describe('Client', function () {
         const newPatient = {
           resourceType: 'Patient',
           active: true,
-          name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+          name: [{ use: 'official', family: 'Coleman', given: ['Lisa', 'P.'] }],
           gender: 'female',
           birthDate: '1948-04-14',
         };
@@ -1067,7 +1067,7 @@ describe('Client', function () {
         const newPatient = {
           resourceType: 'Patient',
           active: true,
-          name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+          name: [{ use: 'official', family: 'Coleman', given: ['Lisa', 'P.'] }],
           gender: 'female',
           birthDate: '1948-04-14',
         };
@@ -1090,7 +1090,7 @@ describe('Client', function () {
       it('throws an error if the resource is not supported', async function () {
         const newRecord = {
           resourceType: 'Foo',
-          name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+          name: [{ use: 'official', family: 'Coleman', given: ['Lisa', 'P.'] }],
         };
 
         nock(this.baseUrl)
@@ -1118,7 +1118,7 @@ describe('Client', function () {
         const newPatient = {
           resourceType: 'Patient',
           active: true,
-          name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+          name: [{ use: 'official', family: 'Coleman', given: ['Lisa', 'P.'] }],
           gender: 'female',
           birthDate: '1948-04-14',
         };

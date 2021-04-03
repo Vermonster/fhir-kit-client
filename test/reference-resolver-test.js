@@ -32,7 +32,7 @@ describe('ReferenceResolver', function () {
           const reference = `${resourceType}/${id}`;
           const absoluteReference = `${this.baseUrl}/${reference}`;
           nock(this.baseUrl)
-            .matchHeader('accept', 'application/json+fhir')
+            .matchHeader('accept', 'application/fhir+json')
             .get(`/${reference}`)
             .reply(200, () => readStreamFor('patient.json'));
 
@@ -51,7 +51,7 @@ describe('ReferenceResolver', function () {
           const reference = `${resourceType}/${id}`;
           const absoluteReference = `${baseUrl}/${reference}`;
           nock(baseUrl)
-            .matchHeader('accept', 'application/json+fhir')
+            .matchHeader('accept', 'application/fhir+json')
             .get(`/${reference}`)
             .reply(200, () => readStreamFor('patient.json'));
 
@@ -69,7 +69,7 @@ describe('ReferenceResolver', function () {
         const id = 'eb3271e1-ae1b-4644-9332-41e32c829486';
         const reference = `${resourceType}/${id}`;
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get(`/${reference}`)
           .reply(200, () => readStreamFor('patient.json'));
 
@@ -151,7 +151,7 @@ describe('ReferenceResolver', function () {
             const reference = 'Patient/eb3271e1-ae1b-4644-9332-41e32c829486';
             const absoluteReference = `${this.baseUrl}/${reference}`;
             nock(this.baseUrl)
-              .matchHeader('accept', 'application/json+fhir')
+              .matchHeader('accept', 'application/fhir+json')
               .get(`/${reference}`)
               .reply(200, () => readStreamFor('patient.json'));
 
@@ -170,7 +170,7 @@ describe('ReferenceResolver', function () {
           it('requests the resource from baseUrl and returns it', async function () {
             const reference = 'Patient/eb3271e1-ae1b-4644-9332-41e32c829486';
             nock(this.baseUrl)
-              .matchHeader('accept', 'application/json+fhir')
+              .matchHeader('accept', 'application/fhir+json')
               .get(`/${reference}`)
               .reply(200, () => readStreamFor('patient.json'));
 

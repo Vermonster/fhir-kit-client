@@ -24,6 +24,10 @@ Node FHIR client library
 * URL polyfill (so it works in client-only apps without much trouble)
 * Support optional parameters for the request, such as TLS key and cert
 
+## Roadmap
+
+Project roadmap uses [Github Projects](https://github.com/Vermonster/fhir-kit-client/projects/1).
+
 ## Examples
 
 Examples using promises...

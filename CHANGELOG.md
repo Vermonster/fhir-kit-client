@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.6.4
+- Update to use correct mime-type (thanks @oliveregger)
+- Update examples (human name)(thanks @oliveregger)
+
 ### 1.6.3
 - Fixed logging headers (thanks @jpnarkinsky and @awatson1978)
 - Updates SMART auth to not use set headers the deprecated way

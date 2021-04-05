@@ -538,6 +538,21 @@ describe('Client', function () {
         await this.fhirClient.operation({ name: 'everything' });
       });
 
+      it('runs system-level POST operation convert with input', async function () {
+        const patient = readFixture('patient.json');
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/fhir+json')
+          .post('/$convert')
+          .reply(200, function (uri, requestBody) {
+            return requestBody;
+          });
+
+        const response = await this.fhirClient.operation({ name: 'convert', method: 'post', input: patient });
+
+        expect(response.resourceType).to.equal('Patient');
+        expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
+      });
+
       it('runs system-level GET operation', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/fhir+json')

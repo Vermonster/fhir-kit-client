@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.6.5
+- Fix problem with operation (thanks @oliveregger)
+
 ### 1.6.4
 - Update to use correct mime-type (thanks @oliveregger)
 - Update examples (human name)(thanks @oliveregger)

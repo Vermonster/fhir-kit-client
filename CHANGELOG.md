@@ -1,6 +1,6 @@
 # Changelog
 
-### 1.6.6
+### 1.6.6 / 7 (re-tagged due to error)
 - Introduce typescript support
 - A few library version bumps
 

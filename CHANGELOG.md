@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.6.5
+- Introduce typescript support
+- A few library version bumps
+
 ### 1.6.4
 - Update to use correct mime-type (thanks @oliveregger)
 - Update examples (human name)(thanks @oliveregger)

@@ -11,6 +11,7 @@ Node FHIR client library
 * Support for R4 (4.0.1, 4.0.0, 3.5.0, 3.3.0, 3.2.0), STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)
 * Support for all FHIR REST actions
 * Support for FHIR operations
+* Typescript support
 * Pagination support for search results
 * Batch and transaction support
 * Support for absolute, in-bundle, and contained references
@@ -27,6 +28,42 @@ Node FHIR client library
 ## Roadmap
 
 Project roadmap uses [Github Projects](https://github.com/Vermonster/fhir-kit-client/projects/1).
+
+## Typescript Support
+
+There is now early Typescript support for this library. This library is
+intended to be agnostic to the version of FHIR, but there is a WIP pattern to
+use with @types/fhir.
+
+Assume a project where you did the following setup:
+```
+> npm install fhir-kit-client
+> npm install -D @types/fhir
+```
+
+Now in your code, you can:
+
+```typescript
+import Client from 'fhir-kit-client'
+
+const client = new Client({ baseUrl: 'http://foo.com' })
+
+const isPatient = (resource: fhir4.Resource): resource is fhir4.Patient => {
+  return resource.resourceType === 'Patient'
+}
+
+client
+  .read({resourceType: 'Patient', id: '12'})
+  .then(res => {
+    if (isPatient(res)) {
+      console.dir(res.name, { depth: 4})
+    }
+  })
+```
+
+This example uses a type guard for R4 Patient. If you are building an app that
+connects to systems with different versions, you could write a wrapper for each
+fhir version in your app.
 
 ## Examples
 

@@ -25,7 +25,8 @@
   "files": [
     "LICENSE",
     "README.md",
-    "lib/"
+    "lib/",
+    "index.d.ts"
   ],
   "repository": {
     "type": "git",

@@ -1,3 +1,6 @@
+This is a fork of https://github.com/Vermonster/fhir-kit-client to add support for providing an option to sign the requests.
+The feature is needed to support AWS Healthlake
+
 # FHIRKit Client
 [![npm version](https://badge.fury.io/js/fhir-kit-client.svg)](https://badge.fury.io/js/fhir-kit-client)
 [![Build Status](https://travis-ci.org/Vermonster/fhir-kit-client.svg?branch=master)](https://travis-ci.org/Vermonster/fhir-kit-client)

@@ -13,7 +13,7 @@ describe('Client with request signer', function () {
     Authorization: 'AWS4-HMAC-SHA256 Credential=ASIAVNINX4OVBSUDTHU4/20210729/us-west-2/healthlake/aws4_request, SignedHeaders=host;x-amz-date;x-amz-security-token, Signature=95ab2c54f7c7c851e3cc6c6e2406460caf3a2d24949cccccceeeeeffffff',
   };
 
-  function mockedAws4Signer(options) {
+  function mockedAws4Signer(url, options) {
     return {
       ...options,
       headers: awsSignedHeaders,
@@ -21,14 +21,14 @@ describe('Client with request signer', function () {
     };
   }
 
-  const requestSigner = (requestOptions) => {
+  const requestSigner = (url, requestOptions) => {
     let awsSignatureOpts = {
       path: requestOptions.path,
       service: 'healthlake',
       region: 'us-west-2',
       method: requestOptions.method,
     };
-    awsSignatureOpts = mockedAws4Signer(awsSignatureOpts);
+    awsSignatureOpts = mockedAws4Signer(url, awsSignatureOpts);
 
     const currentHeaders = requestOptions.headers;
     Object.keys(awsSignatureOpts.headers).forEach((key) => {

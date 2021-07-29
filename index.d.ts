@@ -225,6 +225,7 @@ declare class CapabilityTool {
  *   each request
  * @param [config.requestOptions] - Optional custom request options for
  *   instantiating the HTTP connection
+ * @param [config.requestSigner] Optionally pass in a function to sign the request.
  */
 export default class Client {
   baseUrl: string;
@@ -235,6 +236,7 @@ export default class Client {
     baseUrl: string;
     customHeaders?: HeadersInit;
     requestOptions?: RequestInit;
+    requestSigner?: (string, RequestInit) => void
   });
   /**
    * Given a Client response, returns the underlying HTTP request and response

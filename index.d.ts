@@ -11,10 +11,10 @@ interface FhirResource extends Record<string, any> {
 }
 
 interface SmartAuthMetadata {
-  authorizeUrl?: string;
-  tokenUrl?: string;
-  registerUrl?: string;
-  manageUrl?: string;
+  authorizeUrl?: URL;
+  tokenUrl?: URL;
+  registerUrl?: URL;
+  manageUrl?: URL;
 }
 
 interface SearchParams {

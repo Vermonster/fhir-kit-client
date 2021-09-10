@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.7.0
+- Downgrade debug so it works in old IE (for Epic and other citrix-based EHRs)
+
 ### 1.6.8
 - Fix typescript interface for smart metadata
 

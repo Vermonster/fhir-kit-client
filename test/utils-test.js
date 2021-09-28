@@ -9,6 +9,16 @@ describe('utils', function () {
     const id = '1234';
 
     context('with an absolute reference', function () {
+      context('with an R4 reference', function () {
+        it('returns the baseUrl, resource type, and id', function () {
+          const resourceType = 'MedicationKnowledge';
+          const absoluteReference = `${baseUrl}/${resourceType}/${id}`;
+          expect(splitReference(absoluteReference).baseUrl).to.equal(baseUrl);
+          expect(splitReference(absoluteReference).resourceType).to.equal(resourceType);
+          expect(splitReference(absoluteReference).id).to.equal(id);
+        });
+      });
+
       context('with an STU3 reference', function () {
         it('returns the baseUrl, resource type, and id', function () {
           const resourceType = 'MedicationRequest';

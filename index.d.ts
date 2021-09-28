@@ -1,6 +1,16 @@
 import { HeadersInit, RequestInit } from 'node-fetch';
 import { OpPatch } from 'json-patch';
 
+type HttpMethods = 'GET'
+  | 'HEAD'
+  | 'POST'
+  | 'PUT'
+  | 'DELETE'
+  | 'CONNECT'
+  | 'OPTIONS'
+  | 'TRACE'
+  | 'PATCH';
+
 interface RequestResponse {
   request: Request;
   response: Response;
@@ -235,6 +245,7 @@ export default class Client {
     baseUrl: string;
     customHeaders?: HeadersInit;
     requestOptions?: RequestInit;
+    bearerToken?: string | undefined;
   });
   /**
    * Given a Client response, returns the underlying HTTP request and response
@@ -364,6 +375,7 @@ export default class Client {
    * @returns Response
    */
   request(requestUrl: string, params?: {
+    method?: HttpMethods;
     headers?: HeadersInit;
     options?: RequestInit;
     body?: BodyInit;

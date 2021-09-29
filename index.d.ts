@@ -11,6 +11,8 @@ type HttpMethods = 'GET'
   | 'TRACE'
   | 'PATCH';
 
+interface RequestInitWithoutMethod extends Omit<RequestInit, 'method'> {}
+
 interface RequestResponse {
   request: Request;
   response: Response;
@@ -377,7 +379,7 @@ export default class Client {
   request(requestUrl: string, params?: {
     method?: HttpMethods;
     headers?: HeadersInit;
-    options?: RequestInit;
+    options?: RequestInitWithoutMethod;
     body?: BodyInit;
   }): Promise<object>;
   /**

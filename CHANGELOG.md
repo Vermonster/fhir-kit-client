@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.7.1
+- Fix a few problems with typescript definitions
+- Change to GH actions
+- Allow for longer FHIR ids (some systems use ids over 64)
+
 ### 1.7.0
 - Downgrade debug so it works in old IE (for Epic and other citrix-based EHRs)
 

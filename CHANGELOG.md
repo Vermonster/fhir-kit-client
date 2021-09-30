@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.6.9
+- This is a special release to remove typescript from the 1.6.x minor version (see [155](https://github.com/Vermonster/fhir-kit-client/issues/155))
+
 ### 1.7.1
 - Fix a few problems with typescript definitions
 - Change to GH actions

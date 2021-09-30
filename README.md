@@ -1,6 +1,6 @@
 # FHIRKit Client
 [![npm version](https://badge.fury.io/js/fhir-kit-client.svg)](https://badge.fury.io/js/fhir-kit-client)
-[![Build Status](https://travis-ci.org/Vermonster/fhir-kit-client.svg?branch=master)](https://travis-ci.org/Vermonster/fhir-kit-client)
+[![Build Status](https://github.com/Vermonster/fhir-kit-client/actions/workflows/node.js.yml/badge.svg)](https://github.com/Vermonster/fhir-kit-client/actions/workflows/node.js.yml)
 [![Coverage Status](https://coveralls.io/repos/github/Vermonster/fhir-kit-client/badge.svg?branch=master)](https://coveralls.io/github/Vermonster/fhir-kit-client?branch=master)
 [![GitHub license](https://img.shields.io/github/license/Vermonster/fhir-kit-client.svg)](https://github.com/Vermonster/fhir-kit-client/blob/master/LICENSE)
 

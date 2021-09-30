@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.7.2
+- Security updates
+
 ### 1.7.1
 - Fix a few problems with typescript definitions
 - Change to GH actions

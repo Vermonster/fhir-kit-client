@@ -4,7 +4,7 @@ const path = require('path');
 
 const { expect } = require('chai');
 
-const CapabilityTool = require('../lib/capability-tool');
+const { CapabilityTool } = require('../lib/client');
 
 function readFixture(filename) {
   return JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/${filename}`, 'utf8')));

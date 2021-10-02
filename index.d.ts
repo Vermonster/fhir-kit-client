@@ -1,6 +1,18 @@
 import { HeadersInit, RequestInit } from 'node-fetch';
 import { OpPatch } from 'json-patch';
 
+type HttpMethods = 'GET'
+  | 'HEAD'
+  | 'POST'
+  | 'PUT'
+  | 'DELETE'
+  | 'CONNECT'
+  | 'OPTIONS'
+  | 'TRACE'
+  | 'PATCH';
+
+interface RequestInitWithoutMethod extends Omit<RequestInit, 'method'> {}
+
 interface RequestResponse {
   request: Request;
   response: Response;
@@ -11,10 +23,10 @@ interface FhirResource extends Record<string, any> {
 }
 
 interface SmartAuthMetadata {
-  authorizeUrl?: string;
-  tokenUrl?: string;
-  registerUrl?: string;
-  manageUrl?: string;
+  authorizeUrl?: URL;
+  tokenUrl?: URL;
+  registerUrl?: URL;
+  manageUrl?: URL;
 }
 
 interface SearchParams {
@@ -237,6 +249,7 @@ export default class Client {
     customHeaders?: HeadersInit;
     requestOptions?: RequestInit;
     requestSigner?: (string, RequestInit) => void
+    bearerToken?: string | undefined;
   });
   /**
    * Given a Client response, returns the underlying HTTP request and response
@@ -366,8 +379,9 @@ export default class Client {
    * @returns Response
    */
   request(requestUrl: string, params?: {
+    method?: HttpMethods;
     headers?: HeadersInit;
-    options?: RequestInit;
+    options?: RequestInitWithoutMethod;
     body?: BodyInit;
   }): Promise<object>;
   /**
@@ -742,20 +756,18 @@ export default class Client {
    * @param [params.resourceType] - Optional The resource type (e.g. "Patient",
    *   "Observation")
    * @param [params.id] - Optional FHIR id for the resource
-   * @param [params.method] - Optional The HTTP method (post or get, defaults to post)
+   * @param [params.method] - Optional The HTTP method (POST or GET, defaults to post)
    * @param [params.input] - Optional input object for the operation
    * @param [params.options] - Optional options object
-   * @param [params.options.headers] - Optional headers to add to the
-   *   request
    * @returns Result of opeartion (e.g. FHIR Parameter)
    */
   operation(params: {
     name: string;
     resourceType?: ResourceType;
     id?: string;
-    method?: string;
-    input?: object;
-    options?: RequestInit;
+    method?: 'POST' | 'GET' | undefined;
+    input?: any;
+    options?: RequestInitWithoutMethod;
   }): Promise<FhirResource | any>;
   /**
    * Return the next page of results.

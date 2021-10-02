@@ -1,5 +1,19 @@
 # Changelog
 
+### 1.7.2
+- Security updates
+
+### 1.7.1
+- Fix a few problems with typescript definitions
+- Change to GH actions
+- Allow for longer FHIR ids (some systems use ids over 64)
+
+### 1.7.0
+- Downgrade debug so it works in old IE (for Epic and other citrix-based EHRs)
+
+### 1.6.8
+- Fix typescript interface for smart metadata
+
 ### 1.6.6 / 7 (re-tagged due to error)
 - Introduce typescript support
 - A few library version bumps

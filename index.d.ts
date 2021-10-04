@@ -227,7 +227,20 @@ declare class CapabilityTool {
  *     cert: certFileContent,
  *     key: keyFileContent,
  *     ca: caFileContent
- *   }
+ *   },
+ *   bearerToken: 'eyJhbGci...dQssw5c',
+ *   requestSigner: (url, requestOptions) => {
+ *      const signed = aws4.sign({
+ *        path: requestOptions.path,
+ *        service: 'healthlake',
+ *        region: 'us-west-2'
+ *        method: requestOptions.method
+ *      });
+ *      Object.keys(signed.headers).forEach((key) => {
+ *        requestOptions.headers.set(key, signed[key]);
+ *      });
+ *    }
+ * };
  * };
  *
  * const client = new Client(options);
@@ -237,6 +250,7 @@ declare class CapabilityTool {
  *   each request
  * @param [config.requestOptions] - Optional custom request options for
  *   instantiating the HTTP connection
+ * @param [config.requestSigner] Optional pass in a function to sign the request.
  */
 export default class Client {
   baseUrl: string;
@@ -247,6 +261,7 @@ export default class Client {
     baseUrl: string;
     customHeaders?: HeadersInit;
     requestOptions?: RequestInit;
+    requestSigner?: (string, RequestInit) => void
     bearerToken?: string | undefined;
   });
   /**

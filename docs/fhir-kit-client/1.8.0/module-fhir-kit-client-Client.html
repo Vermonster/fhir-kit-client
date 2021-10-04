@@ -103,7 +103,7 @@ documentation at https://github.com/request/request</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line47">line 47</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line60">line 60</a>
     </li></ul></dd>
     
 
@@ -290,7 +290,43 @@ each request</p>
             
 
             <td class="description last">
-                <p>Optional custom request options for
+                <p>Optional custom request options for</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>requestSigner</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>function</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p>Optional pass in a function to sign the request.
 instantiating the HTTP connection</p>
                 
             </td>
@@ -389,6 +425,17 @@ request.</p>
     ca: caFileContent
   },
   bearerToken: 'eyJhbGci...dQssw5c'
+  requestSigner: (url, requestOptions) => {
+     const signed = aws4.sign({
+       path: requestOptions.path,
+       service: 'healthlake',
+       region: 'us-west-2'
+       method: requestOptions.method
+     });
+     Object.keys(signed.headers).forEach((key) => {
+       requestOptions.headers.set(key, signed[key]);
+     });
+   }
 };
 
 const client = new Client(options);</code></pre>
@@ -457,7 +504,7 @@ const client = new Client(options);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line90">line 90</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line103">line 103</a>
     </li></ul></dd>
     
 
@@ -521,7 +568,7 @@ const client = new Client(options);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line100">line 100</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line113">line 113</a>
     </li></ul></dd>
     
 
@@ -585,7 +632,7 @@ const client = new Client(options);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line129">line 129</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line142">line 142</a>
     </li></ul></dd>
     
 
@@ -649,7 +696,7 @@ const client = new Client(options);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line111">line 111</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line124">line 124</a>
     </li></ul></dd>
     
 
@@ -713,7 +760,7 @@ const client = new Client(options);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line120">line 120</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line133">line 133</a>
     </li></ul></dd>
     
 
@@ -788,7 +835,7 @@ objects.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line78">line 78</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line91">line 91</a>
     </li></ul></dd>
     
 
@@ -966,7 +1013,7 @@ There should be no interdependencies between entries in the bundle.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line622">line 622</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line635">line 635</a>
     </li></ul></dd>
     
 
@@ -1371,7 +1418,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line285">line 285</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line298">line 298</a>
     </li></ul></dd>
     
 
@@ -1720,7 +1767,7 @@ The resourceType and id must be specified.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line967">line 967</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line980">line 980</a>
     </li></ul></dd>
     
 
@@ -2207,7 +2254,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line429">line 429</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line442">line 442</a>
     </li></ul></dd>
     
 
@@ -2625,7 +2672,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line459">line 459</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line472">line 472</a>
     </li></ul></dd>
     
 
@@ -3033,7 +3080,7 @@ entire system</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line1077">line 1077</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line1090">line 1090</a>
     </li></ul></dd>
     
 
@@ -3443,7 +3490,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line766">line 766</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line779">line 779</a>
     </li></ul></dd>
     
 
@@ -3817,7 +3864,7 @@ the request</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line733">line 733</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line746">line 746</a>
     </li></ul></dd>
     
 
@@ -4257,7 +4304,7 @@ Expects a JSON Patch document format, see http://jsonpatch.com/</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line550">line 550</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line563">line 563</a>
     </li></ul></dd>
     
 
@@ -4708,7 +4755,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line785">line 785</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line798">line 798</a>
     </li></ul></dd>
     
 
@@ -5077,7 +5124,7 @@ the request</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line349">line 349</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line362">line 362</a>
     </li></ul></dd>
     
 
@@ -5485,7 +5532,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line314">line 314</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line327">line 327</a>
     </li></ul></dd>
     
 
@@ -5792,7 +5839,7 @@ absolute URL, 2) relative URL or 3) an internal fragement. In the case of
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line177">line 177</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line190">line 190</a>
     </li></ul></dd>
     
 
@@ -6213,7 +6260,7 @@ client.resolve({ reference: '#patient-1', context: someResource }).then((patient
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line1119">line 1119</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line1132">line 1132</a>
     </li></ul></dd>
     
 
@@ -6619,7 +6666,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line886">line 886</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line899">line 899</a>
     </li></ul></dd>
     
 
@@ -7069,7 +7116,7 @@ system</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line829">line 829</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line842">line 842</a>
     </li></ul></dd>
     
 
@@ -7594,7 +7641,7 @@ any of the .well-known addresses.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line212">line 212</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line225">line 225</a>
     </li></ul></dd>
     
 
@@ -7943,7 +7990,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line1179">line 1179</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line1192">line 1192</a>
     </li></ul></dd>
     
 
@@ -8293,7 +8340,7 @@ Only the parameters defined for all resources can be used.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line924">line 924</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line937">line 937</a>
     </li></ul></dd>
     
 
@@ -8709,7 +8756,7 @@ The transaction fails if any resource overlap in DELETE, POST and PUT.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line691">line 691</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line704">line 704</a>
     </li></ul></dd>
     
 
@@ -9115,7 +9162,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line1150">line 1150</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line1163">line 1163</a>
     </li></ul></dd>
     
 
@@ -9487,7 +9534,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line501">line 501</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line514">line 514</a>
     </li></ul></dd>
     
 
@@ -9939,7 +9986,7 @@ console.log(response);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="client.js.html">client.js</a>, <a href="client.js.html#line386">line 386</a>
+        <a href="client.js.html">client.js</a>, <a href="client.js.html#line399">line 399</a>
     </li></ul></dd>
     
 
@@ -10355,7 +10402,7 @@ console.log(response);</code></pre>
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Thu Sep 30 2021 14:05:43 GMT-0400 (Eastern Daylight Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Mon Oct 04 2021 14:53:36 GMT-0400 (Eastern Daylight Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

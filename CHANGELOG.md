@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.8.0
+- Add support for per-request signing (used by AWS HealthLake) thanks @ericfuxealth and @sdhakal-xealth!
+- Export CapabilityTool
+- Officially drop support for Node 10
+
 ### 1.7.2
 - Security updates
 

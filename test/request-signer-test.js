@@ -31,28 +31,39 @@ describe('Client with request signer', function () {
     awsSignatureOpts = mockedAws4Signer(url, awsSignatureOpts);
 
     const currentHeaders = requestOptions.headers;
-    Object.keys(awsSignatureOpts.headers).forEach((key) => {
+    for (const key of Object.keys(awsSignatureOpts.headers)) {
       currentHeaders.set(key, awsSignatureOpts.headers[key]);
-    });
+    }
   };
 
   function mockAndCheckResponse(method) {
     const mock = nock(baseUrl)
       .matchHeader('accept', 'application/fhir+json');
     let interceptor;
-    if (method === 'GET') {
-      interceptor = mock.get('/Patient/123');
-    } else if (method === 'POST') {
-      interceptor = mock.post('/Patient');
-    } else if (method === 'DELETE') {
-      interceptor = mock.delete('/Patient/123');
-    } else {
-      throw new Error(`Invalid method ${method}`);
+    switch (method) {
+      case 'GET': {
+        interceptor = mock.get('/Patient/123');
+
+        break;
+      }
+      case 'POST': {
+        interceptor = mock.post('/Patient');
+
+        break;
+      }
+      case 'DELETE': {
+        interceptor = mock.delete('/Patient/123');
+
+        break;
+      }
+      default: {
+        throw new Error(`Invalid method ${method}`);
+      }
     }
 
     interceptor.reply(200, function () {
       const expectedHeaders = this.req.headers;
-      Object.keys(awsSignedHeaders).forEach((key) => {
+      for (const key of Object.keys(awsSignedHeaders)) {
         if (key === 'Host') {
           // the host header is a single value
           expect(expectedHeaders[key.toLowerCase()]).to.eql(awsSignedHeaders[key]);
@@ -60,7 +71,7 @@ describe('Client with request signer', function () {
           // otherwise it's a list of values
           expect(expectedHeaders[key.toLowerCase()]).to.eql([awsSignedHeaders[key]]);
         }
-      });
+      }
       return readStreamFor('patient.json');
     });
   }

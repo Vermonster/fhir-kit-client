@@ -6,6 +6,7 @@
   "plugins": [
     "filenames"
   ],
+  "ignorePatterns": "**/*.d.ts",
   "rules": {
     "consistent-return": 0,
     "filenames/match-regex": [2, "^[a-z\\-]+$", true],

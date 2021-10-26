@@ -13,7 +13,7 @@ const app = express();
 // Use session to pass the iss information to the callback
 app.use(session({
   secret: 'keyboard cat',
-  cookie: { maxAge: 60000 },
+  cookie: { maxAge: 60_000 },
   resave: true,
   saveUninitialized: true,
 }));

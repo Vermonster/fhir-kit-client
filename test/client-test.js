@@ -486,6 +486,7 @@ describe('Client', function () {
     describe('#search', function () {
       it('passes headers to each search method', async function () {
         const customHeader = { abc: 'XYZ' };
+        // eslint-disable-next-line unicorn/consistent-function-scoping
         const searchMethod = async function ({ options }) {
           return options.headers;
         };
@@ -1348,6 +1349,7 @@ describe('Client', function () {
     describe('#history', function () {
       it('passes headers to each history method', async function () {
         const customHeader = { abc: 'XYZ' };
+        // eslint-disable-next-line unicorn/consistent-function-scoping
         const historyMethod = async function ({ options }) {
           return options.headers;
         };
@@ -1481,7 +1483,7 @@ describe('Client', function () {
           options: { headers: { abc: 'XYZ' } },
         });
 
-        expectHistoryBundle(response, 152750);
+        expectHistoryBundle(response, 152_750);
       });
 
       it('returns a history bundle for all resources', async function () {
@@ -1492,7 +1494,7 @@ describe('Client', function () {
 
         const response = await this.fhirClient.systemHistory();
 
-        expectHistoryBundle(response, 152750);
+        expectHistoryBundle(response, 152_750);
       });
     });
   });

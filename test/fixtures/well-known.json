@@ -1,0 +1,37 @@
+{
+  "authorization_endpoint": "https://launch.smarthealthit.org/v/r4/auth/authorize",
+  "token_endpoint": "https://launch.smarthealthit.org/v/r4/auth/token",
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post"
+  ],
+  "scopes_supported": [
+    "openid",
+    "profile",
+    "fhirUser",
+    "launch",
+    "launch/patient",
+    "launch/encounter",
+    "patient/*.*",
+    "user/*.*",
+    "offline_access"
+  ],
+  "response_types_supported": [
+    "code"
+  ],
+  "capabilities": [
+    "launch-ehr",
+    "launch-standalone",
+    "client-public",
+    "client-confidential-symmetric",
+    "context-passthrough-banner",
+    "context-passthrough-style",
+    "context-ehr-patient",
+    "context-ehr-encounter",
+    "context-standalone-patient",
+    "context-standalone-encounter",
+    "permission-offline",
+    "permission-patient",
+    "permission-user"
+  ]
+}

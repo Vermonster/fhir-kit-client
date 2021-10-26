@@ -1,5 +1,67 @@
 # Changelog
 
+### 1.8.0
+- Add support for per-request signing (used by AWS HealthLake) thanks @ericfuxealth and @sdhakal-xealth!
+- Export CapabilityTool
+- Officially drop support for Node 10
+
+### 1.7.2
+- Security updates
+
+### 1.7.1
+- Fix a few problems with typescript definitions
+- Change to GH actions
+- Allow for longer FHIR ids (some systems use ids over 64)
+
+### 1.7.0
+- Downgrade debug so it works in old IE (for Epic and other citrix-based EHRs)
+
+### 1.6.8
+- Fix typescript interface for smart metadata
+
+### 1.6.6 / 7 (re-tagged due to error)
+- Introduce typescript support
+- A few library version bumps
+
+### 1.6.5
+- Minor updates
+
+### 1.6.4
+- Update to use correct mime-type (thanks @oliveregger)
+- Update examples (human name)(thanks @oliveregger)
+
+### 1.6.3
+- Fixed logging headers (thanks @jpnarkinsky and @awatson1978)
+- Updates SMART auth to not use set headers the deprecated way
+- Remove flatted
+
+### 1.6.2
+- Add new client.request method to create request directly
+- Fix a bug where console.dir was not working with react native. NOTE: We will
+  finally remove deprecation warnings and migrate to the new API in 1.7.0.
+- Update a dep in the examples
+
+### 1.6.1
+- Fix a bug with headers when calling smart auth
+
+### 1.6.0
+- Add support for .well-known (fetching SMART URIs)
+
+### 1.5.3
+- Remove require url, as we are on node 10+ now
+
+### 1.5.2
+- Add content-type default header if missing (fixes #129)
+- Update dependencies
+
+### 1.5.1
+- Add support for operations
+
+### 1.5.0
+- Drop support for node 8
+- Remove universal-url
+- Update dependencies
+
 ### 1.4.2
 - Update README
 

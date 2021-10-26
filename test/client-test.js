@@ -8,23 +8,10 @@ const { HttpsAgent } = require('agentkeepalive');
 
 const nock = require('nock');
 
+const { readStreamFor, readFixture } = require('./test-utils');
+
 const Client = require('../lib/client');
 const Pagination = require('../lib/pagination');
-
-/**
- * Read fixture data
- *
- * @param {String} fixture - The fixture file
- *
- * @returns {String} - The data from a fixture
- */
-function readStreamFor(fixture) {
-  return fs.createReadStream(path.normalize(`${__dirname}/fixtures/${fixture}`, 'utf8'));
-}
-
-function readFixture(filename) {
-  return JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/fixtures/${filename}`, 'utf8')));
-}
 
 /**
  * Mock out and assert behavior for client verbs without passing params
@@ -36,7 +23,7 @@ function readFixture(filename) {
  */
 const mockAndExpectNotFound = async function (httpVerb, apiVerb) {
   const scope = nock('http://example.com')
-    .matchHeader('accept', 'application/json+fhir');
+    .matchHeader('accept', 'application/fhir+json');
 
   switch (httpVerb) {
     case 'get':
@@ -134,7 +121,7 @@ describe('Client', function () {
   describe('#smartAuthMetadata', function () {
     it('builds a request with custom headers', async function () {
       nock(this.baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('accept', /.*application\/json/)
         .matchHeader('abc', 'XYZ')
         .get('/metadata')
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
@@ -149,7 +136,7 @@ describe('Client', function () {
     context('SMART URIs are not present', function () {
       it('returns an empty object', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', /.*application\/json/)
           .get('/metadata')
           .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
 
@@ -162,7 +149,7 @@ describe('Client', function () {
     context('SMART URIs are present', function () {
       it('returns SMART OAuth URIs', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', /.*application\/json/)
           .matchHeader('Authorization', '')
           .get('/metadata')
           .reply(200, () => readStreamFor('valid-capability-statement.json'));
@@ -182,7 +169,7 @@ describe('Client', function () {
   describe('#capabilityStatement', function () {
     it('builds a request with custom headers', async function () {
       const scope = nock(this.baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('accept', /.*application\/fhir\+json/)
         .matchHeader('abc', 'XYZ')
         .get('/metadata')
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
@@ -198,7 +185,7 @@ describe('Client', function () {
 
     it('works with the deprecated calling style', async function () {
       const scope = nock(this.baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('accept', /.*application\/fhir\+json/)
         .matchHeader('abc', 'XYZ')
         .get('/metadata')
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
@@ -214,7 +201,7 @@ describe('Client', function () {
 
     it('returns a FHIR resource from the FHIR server if metadata is not present', async function () {
       const scope = nock(this.baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('accept', /.*application\/fhir\+json/)
         .get('/metadata')
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
 
@@ -227,7 +214,7 @@ describe('Client', function () {
 
     it('returns a FHIR resource from the FHIR client if metadata is already present', async function () {
       const scope = nock(this.baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('accept', /.*application\/json/)
         .get('/metadata')
         .reply(200, () => readStreamFor('no-smart-oauth-uri-capability-statement.json'));
 
@@ -248,7 +235,7 @@ describe('Client', function () {
       const reference = `${resourceType}/${id}`;
       const absoluteReference = `${this.baseUrl}/${reference}`;
       nock(this.baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('accept', 'application/fhir+json')
         .matchHeader('abc', 'XYZ')
         .get(`/${reference}`)
         .reply(200, () => readStreamFor('patient.json'));
@@ -270,7 +257,7 @@ describe('Client', function () {
       const reference = `${resourceType}/${id}`;
       const absoluteReference = `${this.baseUrl}/${reference}`;
       nock(this.baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('accept', 'application/fhir+json')
         .get(`/${reference}`)
         .reply(200, () => readStreamFor('patient.json'));
 
@@ -286,7 +273,7 @@ describe('Client', function () {
       this.fhirClient.bearerToken = 'XYZ';
 
       nock(this.baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('accept', 'application/fhir+json')
         .matchHeader('Authorization', 'Bearer XYZ')
         .get('/Patient/test-access-token')
         .reply(200, () => readStreamFor('patient.json'));
@@ -299,7 +286,7 @@ describe('Client', function () {
       this.fhirClient.bearerToken = 'XYZ';
 
       nock(this.baseUrl, { badheaders: ['Authorization'] })
-        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('accept', 'application/fhir+json')
         .get('/Patient/test-access-token')
         .reply(200, () => readStreamFor('patient.json'));
 
@@ -312,7 +299,7 @@ describe('Client', function () {
       this.fhirClient.customHeaders = { abc: 'XYZ' };
 
       nock(this.baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('accept', 'application/fhir+json')
         .matchHeader('abc', 'XYZ')
         .matchHeader('def', 'UVW')
         .get('/Patient/test-access-token')
@@ -330,7 +317,7 @@ describe('Client', function () {
       this.fhirClient.customHeaders = { abc: 'XYZ' };
 
       nock(this.baseUrl)
-        .matchHeader('accept', 'application/json+fhir')
+        .matchHeader('accept', 'application/fhir+json')
         .matchHeader('abc', 'DEF')
         .get('/Patient/test-access-token')
         .reply(200, () => readStreamFor('patient.json'));
@@ -344,6 +331,62 @@ describe('Client', function () {
   });
 
   describe('API verbs', function () {
+    describe('#request', function () {
+      it('HEAD request', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/fhir+json')
+          .head('/Patient/123')
+          .reply(200);
+
+        await this.fhirClient.request('Patient/123', { method: 'HEAD' });
+      });
+
+      it('GET request', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/fhir+json')
+          .get('/Patient/123')
+          .reply(200, () => readStreamFor('patient.json'));
+
+        const response = await this.fhirClient.request('Patient/123');
+        expect(response.resourceType).to.equal('Patient');
+        expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
+      });
+
+      it('GET request with header', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/json')
+          .matchHeader('x-header-a', 'foo')
+          .get('/Patient/123')
+          .reply(200);
+
+        await this.fhirClient.request('Patient/123',
+          { options:
+            { headers:
+              { accept: 'application/json',
+                'x-header-a': 'foo' } } });
+      });
+
+      it('DELETE request', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/fhir+json')
+          .delete('/Patient/123')
+          .reply(200);
+
+        await this.fhirClient.request('Patient/123', { method: 'DELETE' });
+      });
+
+      it('POST request', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/fhir+json')
+          .post('/Patient', { resourceType: 'patient' })
+          .reply(200);
+
+        await this.fhirClient.request('Patient',
+          { method: 'POST',
+            body: { resourceType: 'patient' } });
+      });
+    });
+
     describe('#read', function () {
       it('builds request with no arguments', async function () {
         mockAndExpectNotFound('get', 'read');
@@ -351,7 +394,7 @@ describe('Client', function () {
 
       it('builds requests with custom headers', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('abc', 'XYZ')
           .get('/Patient/test-access-token')
           .reply(200, () => readStreamFor('patient.json'));
@@ -371,7 +414,7 @@ describe('Client', function () {
 
       it('throws errors for a missing resource', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/Patient/abcdef')
           .reply(404, () => readStreamFor('patient-not-found.json'));
 
@@ -388,7 +431,7 @@ describe('Client', function () {
       it('handles non-json error responses', async function () {
         const errorBody = 'An error occurred';
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/Patient/abcdef')
           .reply(404, () => errorBody);
 
@@ -410,7 +453,7 @@ describe('Client', function () {
 
       it('returns a matching resource', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/1')
           .reply(200, () => readStreamFor('patient.json'));
 
@@ -426,7 +469,7 @@ describe('Client', function () {
 
       it('builds a request with custom headers', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('abc', 'XYZ')
           .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/1')
           .reply(200, () => readStreamFor('patient.json'));
@@ -444,7 +487,7 @@ describe('Client', function () {
 
       it('throws errors for an absent resource', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/Patient/abcdef/_history/1')
           .reply(404, () => readStreamFor('patient-not-found.json'));
 
@@ -464,7 +507,7 @@ describe('Client', function () {
 
       it('throws errors for an absent version of an existing resource', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/Patient/eb3271e1-ae1b-4644-9332-41e32c829486/_history/2')
           .reply(404, () => readStreamFor('patient-version-not-found.json'));
 
@@ -480,6 +523,75 @@ describe('Client', function () {
           expect(error.response.data.resourceType).to.equal('OperationOutcome');
         }
         expect(response).to.be.undefined;
+      });
+    });
+
+    describe('#operation', function () {
+      it('runs system-level POST operation', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/fhir+json')
+          .post('/$everything')
+          .reply(200);
+
+        await this.fhirClient.operation({ name: 'everything' });
+      });
+
+      it('runs system-level POST operation convert with input', async function () {
+        const patient = readFixture('patient.json');
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/fhir+json')
+          .post('/$convert')
+          .reply(200, function (uri, requestBody) {
+            return requestBody;
+          });
+
+        const response = await this.fhirClient.operation({ name: 'convert', method: 'post', input: patient });
+
+        expect(response.resourceType).to.equal('Patient');
+        expect(response.id).to.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
+      });
+
+      it('runs system-level GET operation', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/fhir+json')
+          .get('/$everything')
+          .reply(200);
+
+        await this.fhirClient.operation({ name: 'everything', method: 'get' });
+      });
+
+      it('runs type-level operation', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/fhir+json')
+          .get('/ConceptMap/$translate?code=preliminary&source=http%3A%2F%2Fhl7.org%2Ffhir%2FValueSet%2Fcomposition-status&system=http%3A%2F%2Fhl7.org%2Ffhir%2Fcomposition-status&target=http%3A%2F%2Fhl7.org%2Ffhir%2FValueSet%2Fv3-ActStatus')
+          .reply(200);
+
+        const input = {
+          code: 'preliminary',
+          source: 'http://hl7.org/fhir/ValueSet/composition-status',
+          system: 'http://hl7.org/fhir/composition-status',
+          target: 'http://hl7.org/fhir/ValueSet/v3-ActStatus',
+        };
+
+        await this.fhirClient.operation({
+          resourceType: 'ConceptMap',
+          name: 'translate',
+          method: 'get',
+          input,
+        });
+      });
+
+      it('runs instance-level operation', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/fhir+json')
+          .post('/PlanDefinition/123/$apply')
+          .reply(200);
+
+        await this.fhirClient.operation({
+          resourceType: 'PlanDefinition',
+          id: '123',
+          name: 'apply',
+        });
       });
     });
 
@@ -567,7 +679,7 @@ describe('Client', function () {
 
       it('builds a request with custom headers', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('abc', 'XYZ')
           .get('/Patient?name=abbott')
           .reply(200, () => readStreamFor('search-results.json'));
@@ -584,7 +696,7 @@ describe('Client', function () {
 
       it('returns a matching search results bundle', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/Patient?name=abbott')
           .reply(200, () => readStreamFor('search-results.json'));
 
@@ -599,7 +711,7 @@ describe('Client', function () {
 
       it('performs a POST search', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('content-type', 'application/x-www-form-urlencoded')
           .post('/Patient/_search', 'name=abbott')
           .reply(200, () => readStreamFor('search-results.json'));
@@ -616,7 +728,7 @@ describe('Client', function () {
 
       it('supports repeated query params', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/Patient?_include=Observation&_include=MedicationRequest')
           .reply(200, () => readStreamFor('search-results.json'));
 
@@ -631,7 +743,7 @@ describe('Client', function () {
 
       it('supports searching with no query parameters', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/Patient')
           .times(2)
           .reply(200, () => readStreamFor('search-results.json'));
@@ -660,7 +772,7 @@ describe('Client', function () {
 
       it('builds a request with custom headers', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('abc', 'XYZ')
           .get('/_search?name=abcdef')
           .reply(200, () => readStreamFor('system-search-results.json'));
@@ -676,7 +788,7 @@ describe('Client', function () {
 
       it('returns a matching search results bundle', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/_search?name=abcdef')
           .reply(200, () => readStreamFor('system-search-results.json'));
 
@@ -690,7 +802,7 @@ describe('Client', function () {
 
       it('performs a POST search', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('content-type', 'application/x-www-form-urlencoded')
           .post('/_search', 'name=abcdef')
           .reply(200, () => readStreamFor('system-search-results.json'));
@@ -706,7 +818,7 @@ describe('Client', function () {
 
       it('supports repeated query params', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/_search?_include=Observation&_include=MedicationRequest&name=abcdef')
           .reply(200, () => readStreamFor('system-search-results.json'));
 
@@ -735,7 +847,7 @@ describe('Client', function () {
 
       it('builds a request with custom headers', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('abc', 'XYZ')
           .get('/Patient/385800201/Condition')
           .reply(200, () => readStreamFor('compartment-search-results.json'));
@@ -753,7 +865,7 @@ describe('Client', function () {
 
       it('returns a matching search results bundle with query params', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/Patient/385800201/Condition?category=problem')
           .reply(200, () => readStreamFor('compartment-search-with-query-results.json'));
 
@@ -770,7 +882,7 @@ describe('Client', function () {
 
       it('performs a POST search', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('content-type', 'application/x-www-form-urlencoded')
           .post('/Patient/385800201/Condition/_search', 'category=problem')
           .reply(200, () => readStreamFor('compartment-search-with-query-results.json'));
@@ -789,7 +901,7 @@ describe('Client', function () {
 
       it('supports repeated query params', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/Patient/385800201/Condition?_include=Observation&_include=MedicationRequest&category=problem')
           .reply(200, () => readStreamFor('compartment-search-with-query-results.json'));
 
@@ -809,7 +921,7 @@ describe('Client', function () {
 
       it('returns a matching search results bundle without query params', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/Patient/385800201/Condition')
           .reply(200, () => readStreamFor('compartment-search-results.json'));
 
@@ -828,7 +940,7 @@ describe('Client', function () {
       describe('#nextPage', function () {
         it('builds a request with custom headers', async function () {
           nock(this.baseUrl)
-            .matchHeader('accept', 'application/json+fhir')
+            .matchHeader('accept', 'application/fhir+json')
             .matchHeader('abc', 'XYZ')
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-2.json'));
@@ -843,7 +955,7 @@ describe('Client', function () {
 
         it('works with deprecated calling style', async function () {
           nock(this.baseUrl)
-            .matchHeader('accept', 'application/json+fhir')
+            .matchHeader('accept', 'application/fhir+json')
             .matchHeader('abc', 'XYZ')
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-2.json'));
@@ -856,7 +968,7 @@ describe('Client', function () {
           expect(response.link[0].url).to.equal(url);
 
           nock(this.baseUrl)
-            .matchHeader('accept', 'application/json+fhir')
+            .matchHeader('accept', 'application/fhir+json')
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-2.json'));
 
@@ -868,7 +980,7 @@ describe('Client', function () {
 
         it('returns httpClient get for the next link', async function () {
           nock(this.baseUrl)
-            .matchHeader('accept', 'application/json+fhir')
+            .matchHeader('accept', 'application/fhir+json')
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=3&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-2.json'));
 
@@ -889,7 +1001,7 @@ describe('Client', function () {
       describe('#prevPage', function () {
         it('builds a request with custom headers', async function () {
           nock(this.baseUrl)
-            .matchHeader('accept', 'application/json+fhir')
+            .matchHeader('accept', 'application/fhir+json')
             .matchHeader('abc', 'XYZ')
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-1.json'));
@@ -904,7 +1016,7 @@ describe('Client', function () {
 
         it('returns httpClient get for the previous link', async function () {
           nock(this.baseUrl)
-            .matchHeader('accept', 'application/json+fhir')
+            .matchHeader('accept', 'application/fhir+json')
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-1.json'));
 
@@ -922,7 +1034,7 @@ describe('Client', function () {
 
         it('detects and responds to "prev" relations', async function () {
           nock(this.baseUrl)
-            .matchHeader('accept', 'application/json+fhir')
+            .matchHeader('accept', 'application/fhir+json')
             .get('/?_getpages=678cd733-8823-4324-88a7-51d369cf78a9&_getpagesoffset=0&_count=3&_pretty=true&_bundletype=searchset')
             .reply(200, () => readStreamFor('search-results-page-1.json'));
 
@@ -945,13 +1057,14 @@ describe('Client', function () {
         const newPatient = {
           resourceType: 'Patient',
           active: true,
-          name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+          name: [{ use: 'official', family: 'Coleman', given: ['Lisa', 'P.'] }],
           gender: 'female',
           birthDate: '1948-04-14',
         };
 
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
+          .matchHeader('content-type', 'application/fhir+json')
           .matchHeader('abc', 'XYZ')
           .post('/Patient', newPatient)
           .reply(201, () => readStreamFor('patient-created.json'));
@@ -970,13 +1083,14 @@ describe('Client', function () {
         const newPatient = {
           resourceType: 'Patient',
           active: true,
-          name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+          name: [{ use: 'official', family: 'Coleman', given: ['Lisa', 'P.'] }],
           gender: 'female',
           birthDate: '1948-04-14',
         };
 
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
+          .matchHeader('content-type', 'application/fhir+json')
           .post('/Patient', newPatient)
           .reply(201, () => readStreamFor('patient-created.json'));
 
@@ -991,13 +1105,14 @@ describe('Client', function () {
 
       it('throws an error if the resource is not supported', async function () {
         const newRecord = {
-          resourceType: 'Patient',
-          name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+          resourceType: 'Foo',
+          name: [{ use: 'official', family: 'Coleman', given: ['Lisa', 'P.'] }],
         };
 
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
-          .post('/Patient', newRecord)
+          .matchHeader('accept', 'application/fhir+json')
+          .matchHeader('content-type', 'application/fhir+json')
+          .post('/Foo', newRecord)
           .reply(400, () => readStreamFor('unknown-resource.json'));
 
         let response;
@@ -1019,13 +1134,14 @@ describe('Client', function () {
         const newPatient = {
           resourceType: 'Patient',
           active: true,
-          name: [{ use: 'official', family: ['Coleman'], given: ['Lisa', 'P.'] }],
+          name: [{ use: 'official', family: 'Coleman', given: ['Lisa', 'P.'] }],
           gender: 'female',
           birthDate: '1948-04-14',
         };
 
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
+          .matchHeader('content-type', 'application/fhir+json')
           .post('/Patient', newPatient)
           .reply(201);
 
@@ -1034,7 +1150,7 @@ describe('Client', function () {
           body: newPatient,
           options: {
             headers: {
-              accept: 'application/json+fhir',
+              accept: 'application/fhir+json',
             },
           },
         });
@@ -1052,7 +1168,7 @@ describe('Client', function () {
 
       it('builds a request with custom headers', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('abc', 'XYZ')
           .delete('/Patient/152746')
           .reply(200, () => readStreamFor('patient-deleted.json'));
@@ -1069,7 +1185,7 @@ describe('Client', function () {
 
       it('returns a successful operation outcome', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .delete('/Patient/152746')
           .reply(200, () => readStreamFor('patient-deleted.json'));
 
@@ -1081,7 +1197,7 @@ describe('Client', function () {
 
       it('throws an error for a missing resource', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .delete('/Patient/abcdef')
           .reply(404, () => readStreamFor('patient-not-found.json'));
 
@@ -1105,7 +1221,7 @@ describe('Client', function () {
 
       it('builds a request with custom headers', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('abc', 'XYZ')
           .put('/Patient/152747')
           .reply(200, () => readStreamFor('patient-updated.json'));
@@ -1123,7 +1239,7 @@ describe('Client', function () {
 
       it('returns a successful operation outcome', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .put('/Patient/152747')
           .reply(200, () => readStreamFor('patient-updated.json'));
 
@@ -1135,7 +1251,7 @@ describe('Client', function () {
 
       it('throws an error for a missing resource', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .put('/Patient/abcdef')
           .reply(404, () => readStreamFor('patient-not-found.json'));
 
@@ -1159,7 +1275,7 @@ describe('Client', function () {
         const JSONPatch = [{ op: 'replace', path: '/gender', value: 'male' }];
 
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('content-type', 'application/json-patch+json')
           .matchHeader('abc', 'XYZ')
           .patch('/Patient/152747', JSONPatch)
@@ -1182,7 +1298,7 @@ describe('Client', function () {
         // Content-Type is 'application/json-patch+json'
         // http://hl7.org/fhir/STU3/http.html#patch
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('content-type', 'application/json-patch+json')
           .patch('/Patient/152747', JSONPatch)
           .reply(200, () => readStreamFor('patient-patched.json'));
@@ -1203,7 +1319,7 @@ describe('Client', function () {
         const invalidPatch = [{ op: 'replace', path: '/gender', value: 0 }];
 
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('content-type', 'application/json-patch+json')
           .patch('/Patient/152747', invalidPatch)
           .reply(500, () => readStreamFor('patient-not-patched.json'));
@@ -1230,7 +1346,7 @@ describe('Client', function () {
 
       it('builds a request with custom headers', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('abc', 'XYZ')
           .post('/')
           .reply(200, () => readStreamFor('batch-results.json'));
@@ -1247,7 +1363,7 @@ describe('Client', function () {
 
       it('returns a matching batch response bundle', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .post('/')
           .reply(200, () => readStreamFor('batch-results.json'));
 
@@ -1267,7 +1383,7 @@ describe('Client', function () {
 
       it('returns a bundle of errors if any operations are unsuccessful', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .post('/')
           .reply(200, () => readStreamFor('batch-error-results.json'));
 
@@ -1294,7 +1410,7 @@ describe('Client', function () {
 
       it('builds a request with custom headers', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('abc', 'XYZ')
           .post('/')
           .reply(200, () => readStreamFor('transaction-results.json'));
@@ -1311,7 +1427,7 @@ describe('Client', function () {
 
       it('returns a transaction response bundle with matching response statuses', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .post('/')
           .reply(200, () => readStreamFor('transaction-results.json'));
 
@@ -1329,7 +1445,7 @@ describe('Client', function () {
 
       it('throws an error if any operations are unsuccessful', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .post('/')
           .reply(404, () => readStreamFor('transaction-error-response.json'));
 
@@ -1413,7 +1529,7 @@ describe('Client', function () {
 
       it('builds a request with custom headers', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('abc', 'XYZ')
           .get('/Patient/152747/_history')
           .reply(200, () => readStreamFor('resource-history.json'));
@@ -1429,7 +1545,7 @@ describe('Client', function () {
 
       it('returns a history bundle for a resource', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/Patient/152747/_history')
           .reply(200, () => readStreamFor('resource-history.json'));
 
@@ -1446,7 +1562,7 @@ describe('Client', function () {
 
       it('builds a request with custom headers', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('abc', 'XYZ')
           .get('/Patient/_history')
           .reply(200, () => readStreamFor('type-history.json'));
@@ -1461,7 +1577,7 @@ describe('Client', function () {
 
       it('returns a history bundle for a resource type', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/Patient/_history')
           .reply(200, () => readStreamFor('type-history.json'));
 
@@ -1474,7 +1590,7 @@ describe('Client', function () {
     describe('#systemHistory', function () {
       it('builds a request with custom headers', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .matchHeader('abc', 'XYZ')
           .get('/_history')
           .reply(200, () => readStreamFor('system-history.json'));
@@ -1488,7 +1604,7 @@ describe('Client', function () {
 
       it('returns a history bundle for all resources', async function () {
         nock(this.baseUrl)
-          .matchHeader('accept', 'application/json+fhir')
+          .matchHeader('accept', 'application/fhir+json')
           .get('/_history')
           .reply(200, () => readStreamFor('system-history.json'));
 

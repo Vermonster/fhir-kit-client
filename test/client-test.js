@@ -1612,4 +1612,58 @@ describe('Client', function () {
       });
     });
   });
+
+  describe('#noUrlInjection', function () {
+    it('rejects url injection through resourceType', async function () {
+      nock(this.baseUrl)
+        .matchHeader('accept', 'application/fhir+json')
+        .get('/Patient/123')
+        .reply(404, () => readStreamFor('patient-not-found.json'));
+
+      nock('https://bad-server')
+        .matchHeader('accept', 'application/fhir+json')
+        .get('/Patient/123')
+        .reply(200, () => readStreamFor('patient.json'));
+
+      let response;
+      try {
+        response = await this.fhirClient.read({
+          resourceType: 'https://bad-server/Patient',
+          id: '123',
+        });
+      } catch (error) {
+        expect(error.response.status).to.equal(404);
+        expect(error.response.data.resourceType).to.equal('OperationOutcome');
+      }
+      expect(response && response.id).to.not.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
+      expect(response && response.resourceType).to.not.equal('Patient');
+      expect(response).to.be.undefined;
+    });
+
+    it('rejects url injection through resourceType and id', async function () {
+      nock(this.baseUrl)
+        .matchHeader('accept', 'application/fhir+json')
+        .get('/Patient/123')
+        .reply(404, () => readStreamFor('patient-not-found.json'));
+
+      nock('https://bad-server')
+        .matchHeader('accept', 'application/fhir+json')
+        .get('/Patient/123')
+        .reply(200, () => readStreamFor('patient.json'));
+
+      let response;
+      try {
+        response = await this.fhirClient.read({
+          resourceType: 'https:/',
+          id: 'bad-server/Patient/123',
+        });
+      } catch (error) {
+        expect(error.response.status).to.equal(404);
+        expect(error.response.data.resourceType).to.equal('OperationOutcome');
+      }
+      expect(response && response.id).to.not.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
+      expect(response && response.resourceType).to.not.equal('Patient');
+      expect(response).to.be.undefined;
+    });
+  });
 });

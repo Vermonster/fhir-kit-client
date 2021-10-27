@@ -1633,8 +1633,7 @@ describe('Client', function () {
           id: '123',
         });
       } catch (error) {
-        expect(error.response.status).to.equal(404);
-        expect(error.response.data.resourceType).to.equal('OperationOutcome');
+        expect(error.message).to.contain('Invalid FHIR resourceType');
       }
       expect(response && response.id).to.not.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
       expect(response && response.resourceType).to.not.equal('Patient');
@@ -1659,8 +1658,7 @@ describe('Client', function () {
           id: 'bad-server/Patient/123',
         });
       } catch (error) {
-        expect(error.response.status).to.equal(404);
-        expect(error.response.data.resourceType).to.equal('OperationOutcome');
+        expect(error.message).to.contain('Invalid FHIR resourceType');
       }
       expect(response && response.id).to.not.equal('eb3271e1-ae1b-4644-9332-41e32c829486');
       expect(response && response.resourceType).to.not.equal('Patient');

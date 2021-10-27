@@ -1122,8 +1122,7 @@ describe('Client', function () {
             body: newRecord,
           });
         } catch (error) {
-          expect(error.response.status).to.eq(400);
-          expect(error.response.data.resourceType).to.equal('OperationOutcome');
+          expect(error.message).to.contain('Invalid FHIR resourceType');
         }
         expect(response).to.be.undefined; // eslint-disable-line no-unused-expressions
       });

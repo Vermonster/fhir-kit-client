@@ -32,7 +32,7 @@ describe('Client with request signer', function () {
 
     const currentHeaders = requestOptions.headers;
     for (const key of Object.keys(awsSignatureOpts.headers)) {
-      currentHeaders.set(key, awsSignatureOpts.headers[key]);
+      currentHeaders[key] = awsSignatureOpts.headers[key];
     }
   };
 
@@ -64,13 +64,7 @@ describe('Client with request signer', function () {
     interceptor.reply(200, function () {
       const expectedHeaders = this.req.headers;
       for (const key of Object.keys(awsSignedHeaders)) {
-        if (key === 'Host') {
-          // the host header is a single value
-          expect(expectedHeaders[key.toLowerCase()]).to.eql(awsSignedHeaders[key]);
-        } else {
-          // otherwise it's a list of values
-          expect(expectedHeaders[key.toLowerCase()]).to.eql([awsSignedHeaders[key]]);
-        }
+        expect(expectedHeaders[key.toLowerCase()]).to.eql(awsSignedHeaders[key]);
       }
       return readStreamFor('patient.json');
     });

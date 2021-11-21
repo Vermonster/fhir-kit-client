@@ -83,10 +83,10 @@ fhirClient.smartAuthMetadata().then((response) => {
 
 // Direct request
 fhirClient.request('Patient/123')
-  .then(respose => console.log(response));
+  .then(response => console.log(response));
 
 fhirClient.request('Patient/123', { method: 'DELETE' })
-  .then(respose => console.log(response));
+  .then(response => console.log(response));
 
 // Read a patient
 fhirClient

@@ -261,7 +261,7 @@ export default class Client {
     baseUrl: string;
     customHeaders?: HeadersInit;
     requestOptions?: RequestInit;
-    requestSigner?: (string, RequestInit) => void
+    requestSigner?: (url: string, requestOptions: RequestInit) => void | undefined;
     bearerToken?: string | undefined;
   });
   /**

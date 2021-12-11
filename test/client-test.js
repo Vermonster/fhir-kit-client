@@ -1612,4 +1612,31 @@ describe('Client', function () {
       });
     });
   });
+  describe('#noUrlInjection', function () {
+    it('rejects url injection through resourceType', async function () {
+      let response;
+      try {
+        response = await this.fhirClient.read({
+          resourceType: 'https://bad-server/Patient',
+          id: '123',
+        });
+      } catch (error) {
+        expect(error.message).to.match(/Invalid resourceType/);
+      }
+      expect(response).to.be.undefined;
+    });
+
+    it('rejects url injection through resourceType and id', async function () {
+      let response;
+      try {
+        response = await this.fhirClient.read({
+          resourceType: 'https:/',
+          id: 'bad-server/Patient/123',
+        });
+      } catch (error) {
+        expect(error.message).to.match(/Invalid resourceType/);
+      }
+      expect(response).to.be.undefined;
+    });
+  });
 });

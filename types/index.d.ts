@@ -1,5 +1,4 @@
-import { HeadersInit, RequestInit } from 'node-fetch';
-import { OpPatch } from 'json-patch';
+import { OpPatch } from './externals';
 
 type HttpMethods = 'GET'
   | 'HEAD'

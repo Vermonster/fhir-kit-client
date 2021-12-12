@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.8.1
+- Address potential URL injection
+- Update typescript definitions
+
 ### 1.8.0
 - Add support for per-request signing (used by AWS HealthLake) thanks @ericfuxealth and @sdhakal-xealth!
 - Export CapabilityTool

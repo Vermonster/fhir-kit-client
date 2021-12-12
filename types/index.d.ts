@@ -1,5 +1,4 @@
-import { HeadersInit, RequestInit } from 'node-fetch';
-import { OpPatch } from 'json-patch';
+import { OpPatch } from './externals';
 
 type HttpMethods = 'GET'
   | 'HEAD'
@@ -261,7 +260,7 @@ export default class Client {
     baseUrl: string;
     customHeaders?: HeadersInit;
     requestOptions?: RequestInit;
-    requestSigner?: (string, RequestInit) => void
+    requestSigner?: (url: string, requestOptions: RequestInit) => void | undefined;
     bearerToken?: string | undefined;
   });
   /**

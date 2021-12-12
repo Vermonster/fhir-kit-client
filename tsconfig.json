@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"module": "ESNext",
+		"moduleResolution": "Node",
+		"noEmitOnError": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"pretty": true,
+		"strict": true,
+		"target": "ESNext"
+	},
+	"include": ["types/*.d.ts", "test", "lib" ],
+	"exclude": ["node_modules"]
+}

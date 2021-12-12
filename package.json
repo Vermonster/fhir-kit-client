@@ -9,14 +9,14 @@
     "HL7"
   ],
   "main": "lib/client.js",
-  "types": "index.d.ts",
+  "types": "types/index.d.ts",
   "engines": {
     "node": ">=12.0.0"
   },
   "scripts": {
     "docs": "rm -rf ./docs && jsdoc --configure .jsdoc.json",
     "lint": "eslint .",
-    "test": "mocha test --reporter spec",
+    "test": "mocha test --reporter spec && npx tsc --noEmit test/*.ts",
     "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "coveralls:report": "nyc --reporter=lcov --reporter=text-lcov npm test"
   },
@@ -26,15 +26,14 @@
     "LICENSE",
     "README.md",
     "lib/",
-    "index.d.ts"
+    "types/"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Vermonster/fhir-kit-client.git"
   },
   "devDependencies": {
-    "@types/json-patch": "0.0.30",
-    "@types/node-fetch": "^2.5.10",
+    "@types/node": "^16.11.12",
     "chai": "^4.2.0",
     "coveralls": "^3.1.0",
     "eslint": "^7.32.0",
@@ -61,6 +60,7 @@
   "nyc": {
     "exclude": [
       "test/**",
+      "types/**",
       "lib/logging.js"
     ]
   }

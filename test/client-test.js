@@ -1248,6 +1248,19 @@ describe('Client', function () {
         expect(response.issue[0].diagnostics).to.have.string('_history/2');
       });
 
+      it('returns a successful operation outcome for a conditional update', async function () {
+        nock(this.baseUrl)
+          .matchHeader('accept', 'application/fhir+json')
+          .put('/Patient?identifier=urn:1.2.3|152747')
+          .reply(200, () => readStreamFor('patient-updated.json'));
+
+        const response = await this.fhirClient.update({ resourceType: 'Patient', searchParams: {
+          identifier: 'urn:1.2.3|152747'}, body });
+
+        expect(response.resourceType).to.equal('OperationOutcome');
+        expect(response.issue[0].diagnostics).to.have.string('_history/2');
+      });
+
       it('throws an error for a missing resource', async function () {
         nock(this.baseUrl)
           .matchHeader('accept', 'application/fhir+json')

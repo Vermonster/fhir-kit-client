@@ -554,6 +554,7 @@ export default class Client {
    * @param params.resourceType - The resource type (e.g. "Patient",
    *   "Observation").
    * @param params.id - The FHIR id for the resource.
+   * @param params.searchParams - For a conditional update the searchParams are specified instead of the id, see https://www.hl7.org/fhir/http.html#cond-update
    * @param params.body - The resource to be updated.
    * @param [params.headers] - DEPRECATED Optional custom headers to
    *   add to the request
@@ -564,7 +565,8 @@ export default class Client {
    */
   update<T extends FhirResource>(params: {
     resourceType: ResourceType;
-    id: string;
+    id?: string;
+    searchParams?: SearchParams;
     body: T;
     headers?: HeadersInit;
     options?: RequestInit;

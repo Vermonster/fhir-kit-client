@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.9.0
+- Update dependencies
+- Add support for conditional update
+
 ### 1.8.1
 - Address potential URL injection
 - Update typescript definitions

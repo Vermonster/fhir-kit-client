@@ -16,9 +16,9 @@
   "scripts": {
     "docs": "rm -rf ./docs && jsdoc --configure .jsdoc.json",
     "lint": "eslint .",
-    "test": "mocha test --reporter spec && npx tsc --noEmit test/*.ts",
-    "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
-    "coveralls:report": "nyc --reporter=lcov --reporter=text-lcov npm test"
+    "test": "NODE_OPTIONS=--no-experimental-fetch mocha test --reporter spec && npx tsc --noEmit test/*.ts",
+    "coveralls": "NODE_OPTIONS=--no-experimental-fetch nyc npm test && nyc report --reporter=text-lcov | coveralls",
+    "coveralls:report": "NODE_OPTIONS=--no-experimental-fetch nyc --reporter=lcov --reporter=text-lcov npm test"
   },
   "author": "Vermonster",
   "license": "MIT",
@@ -44,7 +44,7 @@
     "minami": "^1.2.3",
     "mocha": "^9.2.1",
     "mocha-lcov-reporter": "^1.3.0",
-    "nock": "^13.2.4",
+    "nock": "^13.2.9",
     "nyc": "^15.1.0",
     "typescript": "^4.6.2"
   },

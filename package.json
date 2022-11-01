@@ -16,9 +16,7 @@
   "scripts": {
     "docs": "rm -rf ./docs && jsdoc --configure .jsdoc.json",
     "lint": "eslint .",
-    "test": "NODE_OPTIONS=--no-experimental-fetch mocha test --reporter spec && npx tsc --noEmit test/*.ts",
-    "coveralls": "NODE_OPTIONS=--no-experimental-fetch nyc npm test && nyc report --reporter=text-lcov | coveralls",
-    "coveralls:report": "NODE_OPTIONS=--no-experimental-fetch nyc --reporter=lcov --reporter=text-lcov npm test"
+    "test": "NODE_OPTIONS=--no-experimental-fetch mocha test --reporter spec && npx tsc --noEmit test/*.ts"
   },
   "author": "Vermonster",
   "license": "MIT",
@@ -35,7 +33,6 @@
   "devDependencies": {
     "@types/node": "^17.0.21",
     "chai": "^4.3.6",
-    "coveralls": "^3.1.1",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-filenames": "^1.3.2",

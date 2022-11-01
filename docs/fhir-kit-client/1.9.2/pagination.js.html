@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Global - Documentation</title>
+    <title>pagination.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,621 +29,67 @@
 
 <div id="main">
     
-    <h1 class="page-title">Global</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-        
-        </h2>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-        
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="authFromCapability"><span class="type-signature"></span>authFromCapability<span class="signature">(capabilityStatement)</span><span class="type-signature"> &rarr; {Object}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Get the SMART OAuth URIs from a Capability Statement
-http://docs.smarthealthit.org/authorization/conformance-statement/</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="smart.js.html">smart.js</a>, <a href="smart.js.html#line21">line 21</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>capabilityStatement</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Object</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>a FHIR capabilityStatement</p>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>Object</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    <p>contains the following SMART URIs: authorizeUrl, tokenUrl,
-registerUrl, manageUrl</p>
-</div>
-
-    
-</div>
-
-
-
-<div class="section-examples">
-<h5>Example</h5>
-
-    <pre class="prettyprint"><code>{
-  authorizeUrl,
-  tokenUrl,
-  registerUrl,
-  manageUrl,
-} = authFromCapability(capabilityStatement);</code></pre>
-
-</div>
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="splitReference"><span class="type-signature"></span>splitReference<span class="signature">(reference)</span><span class="type-signature"> &rarr; {Object}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Split a FHIR reference into its baseUrl (if present), type, and id</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line22">line 22</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>reference</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>String</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>the FHIR reference</p>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>Object</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    <p>Contains baseUrl, resourceType, and id fields. baseUrl will be
-undefined for relative references</p>
-</div>
-
-    
-</div>
-
-
-
-<div class="section-examples">
-<h5>Example</h5>
-
-    <pre class="prettyprint"><code>// With an absolute reference
-{ baseUrl, resourceType, id } = splitReference('http://www.example.com/fhir/Patient/1');
-console.log(`${baseUrl}/${resourceType}/${id}`);
-
-// With a relative reference
-{ resourceType, id } = splitReference('Patient/1');
-console.log('${resourceType}/${id}');</code></pre>
-
-</div>
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="validResourceType"><span class="type-signature"></span>validResourceType<span class="signature">(resourceType)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Is the string a valid resource type?</p>
-<p>The type is the Canonical URL of Resource Definition that is the type this
-reference refers to. References are URLs that are relative to
-http://hl7.org/fhir/StructureDefinition/ e.g. &quot;Patient&quot; is a reference to
-http://hl7.org/fhir/StructureDefinition/Patient. Absolute URLs are only
-allowed for logical models (and can only be used in references in logical
-models, not resources).</p>
-<p>Since this is a library to request resource, we can assume we will never
-be dealing with logical models. Also, since the binding is extensible,
-this implementation does not use a valueset of resourceTypes to test.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line62">line 62</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="https://www.hl7.org/fhir/references-definitions.html#Reference.type">https://www.hl7.org/fhir/references-definitions.html#Reference.type</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>resourceType</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>String</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>the FHIR resource type</p>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    <p>is valid resource type</p>
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">pagination.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+  * Class for paging Bundles.
+  * @private
+  *
+  */
+class Pagination {
+  /**
+   * Add pagination functionality for the provided client.
+   *
+   * @private
+   * @param {HttpClient} httpClient a configured instance of http client.
+   */
+  constructor(httpClient) {
+    this.httpClient = httpClient;
+  }
+
+  /**
+   * Return the next page of results.
+   *
+   * @param {object} results a bundle result of a FHIR search
+   * @param {Object} [options] - Optional options object
+   * @param {Object} [options.headers] - Optional custom headers to add to the
+   *   request
+   *
+   * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
+   */
+  nextPage(results, { headers } = {}) {
+    const nextLink = results.link.find((link) => link.relation === 'next');
+    return nextLink ? this.httpClient.get(nextLink.url, { headers }) : undefined;
+  }
+
+  /**
+   * Return the previous page of results.
+   *
+   * @param {object} results a bundle result of a FHIR search
+   * @param {Object} [options] - Optional options object
+   * @param {Object} [options.headers] - Optional custom headers to add to the
+   *   request
+   *
+   * @return {Promise&lt;Object>} FHIR resources in a FHIR Bundle structure.
+   */
+  prevPage(results, { headers } = {}) {
+    const prevLink = results.link.find((link) => link.relation.match(/^prev(ious)?$/));
+    return prevLink ? this.httpClient.get(prevLink.url, { headers }) : undefined;
+  }
+}
+
+module.exports = Pagination;
+</code></pre>
+        </article>
+    </section>
 
 
 
@@ -653,7 +99,7 @@ this implementation does not use a valueset of resourceTypes to test.</p>
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Tue Apr 26 2022 17:13:26 GMT-0400 (Eastern Daylight Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.11</a> on Mon Oct 31 2022 20:10:11 GMT-0400 (Eastern Daylight Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

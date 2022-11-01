@@ -280,7 +280,7 @@ export default class Client {
    * @param requestResponse - to one of the FHIR Kit Client requests
    * @returns object containing http request and response
    */
-  static httpFor(requestResponse: Response): RequestResponse;
+  static httpFor(fhirResource: FhirResource): RequestResponse;
   /**
    * Resolve a reference and return FHIR resource
    *

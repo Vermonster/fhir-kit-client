@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.9.2
+- Fix problem with typescript httpFor
+- Update node LTS requirement
+
 ### 1.9.1
 - Use node-abort-controller due to a problem with CRA (Create React App) 5+
 - Update dependencies

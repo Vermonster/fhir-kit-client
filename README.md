@@ -185,6 +185,10 @@ DEBUG environment variable, or use `fhir-kit-client:*` to enable both.
 $ DEBUG=fhir-kit-client:* node smart-launch.js
 ```
 
+## Disabling Fetch Polyfill
+
+The optional polyfill in the cross-fetch package can be disabled by setting the environmnt variable FETCH_POLYFILL=disable.
+
 ## Contributing
 
 FHIRKit Client is an open source Node.js FHIR client library that welcomes

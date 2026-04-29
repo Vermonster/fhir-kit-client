@@ -1,126 +1,95 @@
-/* eslint import/no-extraneous-dependencies: ['error', {'devDependencies': true}] */
-/* eslint no-console: 0, import/no-unresolved: 0 */
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
-const jwkToPem = require('jwk-to-pem');
-const axios = require('axios');
-const fs = require('fs');
-const Client = require('../../lib/client');
-const CapabilityTool = require('../../lib/capability-tool');
+import express from 'express';
+import cors from 'cors';
+import jwt from 'jsonwebtoken';
+import jwkToPem from 'jwk-to-pem';
+import { Client, CapabilityTool } from 'fhir-kit-client';
 
 const app = express();
 
-/* global pemPath */
-// const pemPath = './ecpublickey.pem';
-// const jku = 'http://sandbox.cds-hooks.org/.well-known/jwks.json';
-
+/**
+ * Whitelist of known EHR issuers.  Replace with your own validation logic.
+ *
+ * const pemPath = './ecpublickey.pem';  // option 1: pre-loaded PEM file
+ * const jku     = 'https://sandbox.cds-hooks.org/.well-known/jwks.json';  // option 2: static JKU
+ */
 const whitelistedEHRs = [
   { iss: 'https://sandbox.cds-hooks.org', sub: '48163c5e-88b5-4cb3-92d3-23b800caa927' },
 ];
 
-/**
- * This is an example of a SMART app responding to CDS Hooks requests from an EHR.
- *
- * In this example, there are two routes:
- *  - /cds-services
- *  - /cds-services/patient-greeter
- *
- * The EHR will call the cds-services route (the "discovery endpoint")
- * in order to configure any available CDS services for this SMART application.
- *
- * Based on this configuration, the EHR may then post to /cds-services/patient-view
- * with prefetch data as prescribed by the cds-services discovery route and,
- * optionally, FHIR authorization details (i.e., access_token and scope). If
- * an access token is provided, it may then be used by the FHIR client for
- * requests to the EHR, as seen in the MedicationOrder example.
-
- * Before every request, the EHR is first directed through the `authenticateEHR` middleware.
- *
- * `authenticateEHR` expects a JSON Web Token (JWT) from the EHR's authorization
- * request header. It is used to establish that the request is from a trusted party.
- * The JWT can be verified by one of 3 different ways in this example:
- *
- *  1) By setting a PEM file in the current directory on line 15.
- *  2) By generating a PEM file from a `jku` variable set on line 16.
- *  3) By generating a PEM file from a `jku` in the decoded JWT header.
- *
- */
-
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
+/**
+ * Verify the EHR-supplied JWT before processing any CDS hook request.
+ *
+ * Supports three verification strategies (in priority order):
+ *  1. Pre-loaded PEM file (`pemPath` constant above)
+ *  2. Static JKU constant (`jku` constant above)
+ *  3. `jku` claim in the decoded JWT header
+ */
 async function authenticateEHR(req, res, next) {
-  const token = req.headers.authorization.replace('Bearer ', '');
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'Missing Authorization header' });
+
+  const token = authHeader.replace('Bearer ', '');
   const decodedJwt = jwt.decode(token, { complete: true });
-  const asymmetricAlgs = ['ES256', 'ES384', 'ES384', 'RS256', 'RS384', 'RS512'];
-  const { alg, jku, kid } = decodedJwt.header;
+  const asymmetricAlgs = ['ES256', 'ES384', 'RS256', 'RS384', 'RS512'];
+  const { alg, jku: jkuHeader, kid } = decodedJwt.header;
   const { iss, sub } = decodedJwt.payload;
 
-  let pem;
-  let verified;
-
   const isWhitelisted = whitelistedEHRs.find((ehr) => ehr.iss === iss && ehr.sub === sub);
-
-  if (!isWhitelisted) { return res.status(401).json('Authentication failed'); }
-
-  console.log(`token: ${token}`);
-  console.log(`decodedJwt: ${JSON.stringify(decodedJwt)}`);
+  if (!isWhitelisted) return res.status(401).json({ error: 'EHR not whitelisted' });
 
   if (asymmetricAlgs.includes(alg)) {
-    if (typeof pemPath !== 'undefined') {
-      // Use existing public key
-      try {
-        pem = fs.readFileSync(pemPath);
-      } catch (err) {
-        console.log(err);
-      }
-    } else if (typeof jku !== 'undefined') {
-      // Generate public key with an jwks.json endpoint
-      const jwks = await axios.get(jku);
-      const targetJwk = jwks.data.keys.find((key) => key.kid === kid);
+    let pem;
 
+    // Option 1: static PEM file
+    // pem = readFileSync(pemPath);
+
+    // Option 2/3: fetch JWKS and derive PEM
+    if (typeof jkuHeader !== 'undefined') {
+      const jwksResponse = await fetch(jkuHeader);
+      const jwks = await jwksResponse.json();
+      const targetJwk = jwks.keys.find((key) => key.kid === kid);
       pem = jwkToPem(targetJwk);
     }
 
     try {
-      verified = jwt.verify(token, pem, { algorithms: [alg] });
-      console.log('Verified with PEM');
+      jwt.verify(token, pem, { algorithms: [alg] });
     } catch (error) {
       console.error('Invalid Token Error', error.message);
-      return res.status(401).json('Authentication failed');
+      return res.status(401).json({ error: 'Authentication failed' });
     }
   }
-
-  console.log(`Authenticated Token: ${JSON.stringify(verified)}`);
 
   return next();
 }
 
+/**
+ * Attach a FHIR client to `req.fhirClient`, setting the bearer token if the
+ * EHR provided FHIR authorization context in the hook request body.
+ */
 async function authenticateClient(req, res, next) {
   const { fhirServer, fhirAuthorization } = req.body;
 
   req.fhirClient = new Client({ baseUrl: fhirServer });
 
-  if (typeof fhirAuthorization === 'undefined') {
-    return next();
+  if (fhirAuthorization?.access_token) {
+    req.fhirClient.bearerToken = fhirAuthorization.access_token;
   }
-
-  console.log('The token is : ', fhirAuthorization.access_token);
-  req.fhirClient.bearerToken = fhirAuthorization.access_token;
 
   return next();
 }
 
-app.get('/cds-services', async (req, res) => res.status(200).json({
+/** CDS Hooks discovery endpoint */
+app.get('/cds-services', (_req, res) => res.status(200).json({
   services: [
     {
       hook: 'patient-view',
       id: 'patient-greeter',
       title: 'Patient Greeter with Med Count',
-      description: 'Example of CDS service greeting patient based on prefetch and counting meds with FHIR Kit client.',
+      description: 'Greets the patient by name and reports their active medication count.',
       prefetch: {
         patientToGreet: 'Patient/{{context.patientId}}',
       },
@@ -128,36 +97,42 @@ app.get('/cds-services', async (req, res) => res.status(200).json({
   ],
 }));
 
+/** patient-view hook handler */
 app.post('/cds-services/patient-greeter', [authenticateEHR, authenticateClient], async (req, res) => {
-  let patientGreeting = `Hello ${req.body.prefetch.patientToGreet.name[0].given[0]}! `;
+  const prefetchPatient = req.body.prefetch?.patientToGreet;
+  const givenName = prefetchPatient?.name?.[0]?.given?.[0] ?? 'there';
+  let patientGreeting = `Hello ${givenName}! `;
 
-  if (typeof req.fhirClient !== 'undefined') {
+  if (req.fhirClient) {
     const capabilityStatement = await req.fhirClient.capabilityStatement();
     const capabilities = new CapabilityTool(capabilityStatement);
 
-    const medOrderSupport = capabilities.resourceCan('MedicationOrder', 'read');
-    const medRequestSupport = capabilities.resourceCan('MedicationRequest', 'read');
-    const searchParams = { patient: req.body.context.patientId };
+    const medRequestSupport = capabilities.supportFor({
+      resourceType: 'MedicationRequest',
+      interaction: 'search-type',
+    });
+    const medOrderSupport = capabilities.supportFor({
+      resourceType: 'MedicationOrder',
+      interaction: 'search-type',
+    });
 
-    let medOrders;
-    if (medOrderSupport) {
-      medOrders = await req.fhirClient.search({ resourceType: 'MedicationOrder', searchParams });
-    } else if (medRequestSupport) {
+    const searchParams = { patient: req.body.context.patientId };
+    let medOrders = { total: 0 };
+
+    if (medRequestSupport) {
       medOrders = await req.fhirClient.search({ resourceType: 'MedicationRequest', searchParams });
-    } else {
-      medOrders = { total: '0' };
+    } else if (medOrderSupport) {
+      medOrders = await req.fhirClient.search({ resourceType: 'MedicationOrder', searchParams });
     }
 
-    patientGreeting += `You have ${medOrders.total} medication orders on file.`;
+    patientGreeting += `You have ${medOrders.total ?? 0} medication orders on file.`;
   }
 
   return res.status(200).json({
     cards: [
       {
         summary: patientGreeting,
-        source: {
-          label: 'Patient greeting and med count service',
-        },
+        source: { label: 'Patient greeting and med count service' },
         indicator: 'info',
       },
     ],
@@ -165,6 +140,6 @@ app.post('/cds-services/patient-greeter', [authenticateEHR, authenticateClient],
 });
 
 const server = app.listen(3000, 'localhost', () => {
-  console.log('Express server started on port 3000');
-  console.log(`CDS Discovery endpoint is at http://${server.address().address}:3000/cds-services`);
+  const addr = server.address();
+  console.log(`CDS Discovery endpoint: http://${addr.address}:${addr.port}/cds-services`);
 });

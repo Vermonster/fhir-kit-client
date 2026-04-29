@@ -1,205 +1,525 @@
 # FHIRKit Client
+
 [![npm version](https://badge.fury.io/js/fhir-kit-client.svg)](https://badge.fury.io/js/fhir-kit-client)
 [![Build Status](https://github.com/Vermonster/fhir-kit-client/actions/workflows/node.js.yml/badge.svg)](https://github.com/Vermonster/fhir-kit-client/actions/workflows/node.js.yml)
-[![Coverage Status](https://coveralls.io/repos/github/Vermonster/fhir-kit-client/badge.svg?branch=master)](https://coveralls.io/github/Vermonster/fhir-kit-client?branch=master)
 [![GitHub license](https://img.shields.io/github/license/Vermonster/fhir-kit-client.svg)](https://github.com/Vermonster/fhir-kit-client/blob/master/LICENSE)
 
-Node FHIR client library
+Node.js FHIR R4 client library — TypeScript-first, ESM-only, zero polyfills.
+
+> **v2 requires Node 18+.** It uses native `fetch`, `AbortController`, and `URLSearchParams`.
+> CommonJS (`require`) is not supported. See the [migration guide](#migrating-from-v1) if upgrading.
 
 ## Features
 
-* Support for R4 (4.0.1, 4.0.0, 3.5.0, 3.3.0, 3.2.0), STU3 (3.0.1, 1.8.0, 1.6.0, 1.4.0, 1.1.0) and DSTU2 (1.0.2)
-* Support for all FHIR REST actions
-* Support for FHIR operations
-* Typescript support
-* Pagination support for search results
-* Batch and transaction support
-* Support for absolute, in-bundle, and contained references
-* Metadata caching on client instance
-* SMART security support
-* Capability-checking tool based on server capability statements
-* Minimal dependencies
-* Contemporary async/await structure
-* Modern ES6 Classes
-* TDD with Mocha
-* URL polyfill (so it works in client-only apps without much trouble)
-* Support optional parameters for the request, such as TLS key and cert
+- Full TypeScript source — types included, no `@types/fhir-kit-client` needed
+- All FHIR REST interactions (read, vread, create, update, patch, delete, history)
+- FHIR search: resource, compartment, system (GET and POST forms)
+- FHIR operations (`$everything`, `$validate`, etc.)
+- Batch and transaction bundles
+- Reference resolution: absolute, relative, in-bundle, and contained (`#`)
+- SMART App Launch — authorization URL discovery via capability statement or `.well-known`
+- Capability-checking tool (`CapabilityTool`)
+- Pagination helpers (`nextPage` / `prevPage`)
+- Custom request signer hook (AWS SigV4, HMAC, etc.)
+- Bearer token support
+- Debug logging via the [`debug`](https://www.npmjs.com/package/debug) package
+- Minimal dependencies (only `agentkeepalive` and `debug`)
 
-## Roadmap
+## Installation
 
-Project roadmap uses [Github Projects](https://github.com/Vermonster/fhir-kit-client/projects/1).
-
-## Typescript Support
-
-There is now early Typescript support for this library. This library is
-intended to be agnostic to the version of FHIR, but there is a WIP pattern to
-use with @types/fhir.
-
-Assume a project where you did the following setup:
-```
-> npm install fhir-kit-client
-> npm install -D @types/fhir
+```sh
+npm install fhir-kit-client
 ```
 
-Now in your code, you can:
+### Optional: TypeScript type packages
 
-```typescript
-import Client from 'fhir-kit-client'
+```sh
+# Ambient FHIR R4/R4B/R5 namespace types (fhir4.Patient, fhir4.Bundle, …)
+npm install --save-dev @types/fhir
 
-const client = new Client({ baseUrl: 'http://foo.com' })
-
-const isPatient = (resource: fhir4.Resource): resource is fhir4.Patient => {
-  return resource.resourceType === 'Patient'
-}
-
-client
-  .read({resourceType: 'Patient', id: '12'})
-  .then(res => {
-    if (isPatient(res)) {
-      console.dir(res.name, { depth: 4})
-    }
-  })
+# Runtime Zod schemas + inferred TypeScript types
+npm install @reasonhealth/fhir-zod zod
 ```
 
-This example uses a type guard for R4 Patient. If you are building an app that
-connects to systems with different versions, you could write a wrapper for each
-fhir version in your app.
+## Quick Start
 
-## Examples
+```ts
+import { Client } from 'fhir-kit-client';
 
-Examples using promises...
-
-```javascript
-const Client = require('fhir-kit-client');
-const fhirClient = new Client({
-  baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open'
-  });
-
-// Get SMART URLs for OAuth
-fhirClient.smartAuthMetadata().then((response) => {
-  console.log(response);
-  });
-
-
-// Direct request
-fhirClient.request('Patient/123')
-  .then(response => console.log(response));
-
-fhirClient.request('Patient/123', { method: 'DELETE' })
-  .then(response => console.log(response));
+const client = new Client({ baseUrl: 'https://r4.smarthealthit.org' });
 
 // Read a patient
-fhirClient
-  .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' })
-  .then((response) => {
-    console.log(response);
-  });
+const patient = await client.read({ resourceType: 'Patient', id: '123' });
+console.log(patient.resourceType); // 'Patient'
 
-
-// Search for patients, and page through results
-fhirClient
-  .search({ resourceType: 'Patient', searchParams: { _count: '3', gender: 'female' } })
-  .then((response) => {
-    console.log(response);
-    return response;
-  })
-  .then((response) => {
-    console.log(response);
-    return fhirClient.nextPage(response);
-  })
-  .then((response) => {
-    console.log(response);
-    return fhirClient.prevPage(response);
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+// Search
+const bundle = await client.search({
+  resourceType: 'Patient',
+  searchParams: { name: 'Smith', _count: '10' },
+});
 ```
 
-Examples using async/await...
+## TypeScript Types
 
-```javascript
-const Client = require('fhir-kit-client');
-const fhirClient = new Client({
-  baseUrl: 'https://sb-fhir-stu3.smarthealthit.org/smartstu3/open'
-  });
+### With `@types/fhir` (ambient namespace types)
 
-async function asyncExamples() {
-  // Get SMART URLs for OAuth
-  let response = await fhirClient.smartAuthMetadata();
-  console.log(response);
+`@types/fhir` adds ambient globals like `fhir4.Patient`, `fhir4.Bundle`, etc.
+Use a type guard to narrow the generic `FhirResource` returned by the client:
 
+```ts
+import { Client } from 'fhir-kit-client';
 
-  // Read a patient
-  response = await fhirClient
-    .read({ resourceType: 'Patient', id: '2e27c71e-30c8-4ceb-8c1c-5641e066c0a4' });
-  console.log(response);
+const client = new Client({ baseUrl: 'https://r4.smarthealthit.org' });
 
-
-  // Search for a patient with name matching abbott, then paging
-  let searchResponse = await fhirClient
-    .search({ resourceType: 'Patient', searchParams: { name: 'abbott ' } })
-  console.log(searchResponse);
-
-  searchResponse = await fhirClient.nextPage(searchResponse);
-  console.log(searchResponse);
-
-  searchResponse = await fhirClient.prevPage(searchResponse);
-  console.log(searchResponse);
+function isPatient(r: fhir4.Resource): r is fhir4.Patient {
+  return r.resourceType === 'Patient';
 }
 
-asyncExamples();
+function isBundle(r: fhir4.Resource): r is fhir4.Bundle {
+  return r.resourceType === 'Bundle';
+}
+
+// Read and narrow
+const resource = await client.read({ resourceType: 'Patient', id: '123' });
+if (isPatient(resource)) {
+  // resource is now fhir4.Patient
+  console.log(resource.name?.[0]?.family);
+}
+
+// Search and iterate bundle entries
+const result = await client.search({
+  resourceType: 'Observation',
+  searchParams: { patient: '123', _count: '20' },
+});
+if (isBundle(result)) {
+  for (const entry of result.entry ?? []) {
+    console.log(entry.resource?.resourceType, entry.resource?.id);
+  }
+}
 ```
 
-For more examples see the JS Docs and Launch Examples below.
+### With `@reasonhealth/fhir-zod` (runtime validation + inferred types)
 
-## Documentation
+`@reasonhealth/fhir-zod` provides Zod schemas generated from official FHIR StructureDefinitions.
+Use them to validate server responses at runtime and get fully-typed resources without `@types/fhir`.
 
-[JSDoc-generated documentation with plenty of examples](https://vermonster.github.io/fhir-kit-client/fhir-kit-client/1.9.2/index.html)
+```ts
+import { Client } from 'fhir-kit-client';
+import { PatientSchema, BundleSchema, ObservationSchema } from '@reasonhealth/fhir-zod/r4';
+import type { z } from 'zod';
 
-## Launch Examples (SMART, CDS Hooks)
+type Patient = z.infer<typeof PatientSchema>;
+type Bundle  = z.infer<typeof BundleSchema>;
 
-To see how to follow launch and authorization workflows for FHIR applications,
-see the [examples directory](./examples/) and [examples README](./examples/README.md).
+const client = new Client({ baseUrl: 'https://r4.smarthealthit.org' });
 
-## Example React App
+// Parse and validate — throws ZodError if the response doesn't conform
+const raw = await client.read({ resourceType: 'Patient', id: '123' });
+const patient: Patient = PatientSchema.parse(raw);
+console.log(patient.name?.[0]?.family);
 
-[FHIRKit Create React App](https://github.com/Vermonster/fhir-kit-create-react)
-provides a [create-react-app](https://github.com/facebook/create-react-app)
-template that can be used to create a sample React app using FHIRKit Client.
+// Safe parse — inspect errors without throwing
+const result = ObservationSchema.safeParse(
+  await client.read({ resourceType: 'Observation', id: 'obs-1' })
+);
+if (result.success) {
+  console.log('Status:', result.data.status);
+} else {
+  console.error('Invalid Observation:', result.error.flatten());
+}
+```
 
-## Even more Examples (client-side ones)
+#### Validate a search Bundle
 
-See https://github.com/Vermonster/fhir-kit-client-examples for examples in React,
-Angular, and React Native.
+```ts
+import { BundleSchema, PatientSchema } from '@reasonhealth/fhir-zod/r4';
+
+const raw = await client.search({ resourceType: 'Patient', searchParams: { name: 'Smith' } });
+const bundle = BundleSchema.parse(raw);
+
+const patients = (bundle.entry ?? [])
+  .map(e => e.resource)
+  .filter((r): r is NonNullable<typeof r> => r?.resourceType === 'Patient')
+  .map(r => PatientSchema.parse(r));
+
+console.log(`Found ${patients.length} patient(s)`);
+```
+
+#### Discriminated union across resource types
+
+```ts
+import { z } from 'zod';
+import { PatientSchema, PractitionerSchema, RelatedPersonSchema } from '@reasonhealth/fhir-zod/r4';
+
+const SubjectSchema = z.discriminatedUnion('resourceType', [
+  PatientSchema,
+  PractitionerSchema,
+  RelatedPersonSchema,
+]);
+type Subject = z.infer<typeof SubjectSchema>;
+
+function parseSubject(raw: unknown): Subject {
+  return SubjectSchema.parse(raw);
+}
+```
+
+#### Using both `@types/fhir` and `@reasonhealth/fhir-zod` together
+
+Use the Zod schema as a type guard that bridges to the ambient `fhir4` namespace types:
+
+```ts
+import { PatientSchema } from '@reasonhealth/fhir-zod/r4';
+
+function isValidPatient(resource: fhir4.Resource): resource is fhir4.Patient {
+  return PatientSchema.safeParse(resource).success;
+}
+```
+
+## API Reference
+
+### `new Client(config)`
+
+```ts
+import { Client } from 'fhir-kit-client';
+import type { ClientConfig } from 'fhir-kit-client';
+
+const client = new Client({
+  baseUrl: 'https://r4.smarthealthit.org',   // required
+  bearerToken: 'eyJ...',                      // optional, sets Authorization header
+  customHeaders: { 'X-Tenant': 'acme' },      // optional, sent with every request
+  requestSigner: (url, init) => {             // optional, for custom auth (e.g. AWS SigV4)
+    init.headers = { ...init.headers, 'X-Custom-Sig': sign(url) };
+  },
+});
+```
+
+Properties can be updated after construction:
+
+```ts
+client.baseUrl = 'https://other-server.org/fhir';
+client.bearerToken = newToken;
+client.customHeaders = { 'X-Tenant': 'new-tenant' };
+```
+
+### Read
+
+```ts
+// Read a resource by type and id
+const patient = await client.read({ resourceType: 'Patient', id: '123' });
+
+// Read a specific version
+const v1 = await client.vread({ resourceType: 'Patient', id: '123', version: '1' });
+```
+
+### Create
+
+```ts
+const created = await client.create({
+  resourceType: 'Patient',
+  body: { resourceType: 'Patient', name: [{ family: 'Smith', given: ['Jane'] }] },
+});
+
+// With Prefer: return=minimal (server returns 201 with empty body)
+const minimal = await client.create({
+  resourceType: 'Patient',
+  body: { resourceType: 'Patient', name: [{ family: 'Smith' }] },
+  options: { headers: { Prefer: 'return=minimal' } },
+});
+const { response } = Client.httpFor(minimal);
+console.log(response?.status);          // 201
+console.log(response?.headers.get('Location')); // Location header
+```
+
+### Update
+
+```ts
+// Update by id
+await client.update({ resourceType: 'Patient', id: '123', body: updatedPatient });
+
+// Conditional update
+await client.update({
+  resourceType: 'Patient',
+  searchParams: { identifier: 'system|value' },
+  body: updatedPatient,
+});
+```
+
+### Patch (JSON Patch, RFC 6902)
+
+```ts
+await client.patch({
+  resourceType: 'Patient',
+  id: '123',
+  JSONPatch: [
+    { op: 'replace', path: '/active', value: false },
+    { op: 'add', path: '/name/-', value: { use: 'nickname', text: 'Jay' } },
+  ],
+});
+```
+
+### Delete
+
+```ts
+await client.delete({ resourceType: 'Patient', id: '123' });
+```
+
+### Search
+
+```ts
+// Resource-type search (GET)
+const bundle = await client.search({
+  resourceType: 'Patient',
+  searchParams: { name: 'Smith', birthdate: 'lt1990-01-01', _count: '20' },
+});
+
+// System-wide search
+const all = await client.search({ searchParams: { _type: 'Patient,Practitioner' } });
+
+// Compartment search
+const conditions = await client.search({
+  resourceType: 'Condition',
+  compartment: { resourceType: 'Patient', id: '123' },
+});
+
+// POST-based search (when params exceed URL length)
+const postResult = await client.search({
+  resourceType: 'Patient',
+  searchParams: { identifier: longList },
+  options: { postSearch: true },
+});
+```
+
+### Direct methods: `resourceSearch`, `compartmentSearch`, `systemSearch`
+
+```ts
+await client.resourceSearch({ resourceType: 'Observation', searchParams: { patient: '123' } });
+await client.systemSearch({ searchParams: { _type: 'Patient' } });
+await client.compartmentSearch({
+  resourceType: 'MedicationRequest',
+  compartment: { resourceType: 'Patient', id: '123' },
+});
+```
+
+### Operations
+
+```ts
+// System operation (POST)
+await client.operation({ name: 'convert', input: bundle });
+
+// Type-level operation (GET with params)
+await client.operation({
+  name: 'translate',
+  resourceType: 'ConceptMap',
+  method: 'GET',
+  input: { url: 'http://example.com/map', code: '73211009', system: 'http://snomed.info/sct' },
+});
+
+// Instance-level operation
+await client.operation({ name: 'everything', resourceType: 'Patient', id: '123' });
+await client.operation({ name: 'apply',      resourceType: 'PlanDefinition', id: 'pd-1' });
+await client.operation({ name: 'validate',   resourceType: 'Patient', input: rawPatient });
+```
+
+### Batch and Transaction
+
+```ts
+const batchBundle = {
+  resourceType: 'Bundle',
+  type: 'batch',
+  entry: [
+    { request: { method: 'GET', url: 'Patient/123' } },
+    { request: { method: 'GET', url: 'Observation?patient=123&_count=5' } },
+  ],
+};
+const batchResult = await client.batch({ body: batchBundle });
+
+const txBundle = { resourceType: 'Bundle', type: 'transaction', entry: [...] };
+const txResult  = await client.transaction({ body: txBundle });
+```
+
+### History
+
+```ts
+// Instance history
+await client.history({ resourceType: 'Patient', id: '123' });
+
+// Type history
+await client.history({ resourceType: 'Patient' });
+
+// System history
+await client.history();
+```
+
+### Pagination
+
+```ts
+let bundle = await client.search({
+  resourceType: 'Patient',
+  searchParams: { _count: '10' },
+});
+
+// Walk forward through all pages
+while (bundle) {
+  processBatch(bundle);
+  bundle = await client.nextPage({ bundle }) ?? null;
+}
+
+// Or go backwards
+const prevBundle = await client.prevPage({ bundle });
+```
+
+### SMART App Launch — `smartAuthMetadata`
+
+Discovers SMART authorization URLs from the `.well-known/smart-configuration` endpoint,
+the capability statement, or `.well-known/openid-configuration`. The first successful
+response wins (race).
+
+```ts
+import { Client } from 'fhir-kit-client';
+import type { SmartAuthMetadata } from 'fhir-kit-client';
+
+const client = new Client({ baseUrl: 'https://launch.smarthealthit.org/v/r4/fhir' });
+const { authorizeUrl, tokenUrl, registerUrl } = await client.smartAuthMetadata();
+
+console.log(authorizeUrl?.toString()); // 'https://.../authorize'
+console.log(tokenUrl?.toString());     // 'https://.../token'
+```
+
+### CapabilityStatement & CapabilityTool
+
+```ts
+import { Client, CapabilityTool } from 'fhir-kit-client';
+
+const client = new Client({ baseUrl: 'https://r4.smarthealthit.org' });
+const cs = await client.capabilityStatement();
+const tool = new CapabilityTool(cs);
+
+// Server-level
+tool.serverCan('transaction');                          // boolean
+tool.serverSearch('_id');                               // boolean
+tool.supportFor({ capabilityType: 'interaction', where: { code: 'history-system' } });
+
+// Resource-level
+tool.resourceCan('Patient', 'create');                  // boolean
+tool.resourceSearch('Patient', 'birthdate');            // boolean
+tool.interactionsFor({ resourceType: 'Patient' });      // string[]
+tool.searchParamsFor({ resourceType: 'Patient' });      // string[]
+tool.resourceCapabilities({ resourceType: 'Patient' }); // raw capability object
+tool.capabilityContents({ resourceType: 'Patient', capabilityType: 'conditionalDelete' });
+```
+
+### Reference Resolution
+
+```ts
+// Absolute, relative, and in-bundle references
+const referenced = await client.resolve({ reference: 'Patient/123' });
+const absolute   = await client.resolve({ reference: 'https://server.org/fhir/Patient/456' });
+
+// In-bundle or contained — supply the context bundle/resource
+const contained = await client.resolve({
+  reference: '#condition-1',
+  context: patient,
+});
+const bundleRef = await client.resolve({
+  reference: 'Patient/123',
+  context: bundle,
+});
+```
+
+### Raw Request
+
+```ts
+const patient   = await client.request('Patient/123');
+const deleted   = await client.request('Patient/123', { method: 'DELETE' });
+const created   = await client.request('Patient', { method: 'POST', body: newPatient });
+```
+
+### Inspecting the HTTP Request/Response
+
+Every FHIR response object carries hidden `__request` and `__response` properties
+that expose the underlying `Request` and `Response` objects.
+
+```ts
+import { Client } from 'fhir-kit-client';
+
+const result = await client.read({ resourceType: 'Patient', id: '123' });
+const { request, response } = Client.httpFor(result);
+
+console.log(request?.url);         // 'https://server.org/fhir/Patient/123'
+console.log(response?.status);     // 200
+console.log(response?.headers.get('etag'));
+```
+
+### Custom Request Signer (AWS SigV4, HMAC, etc.)
+
+```ts
+import { Client } from 'fhir-kit-client';
+import { SignatureV4 } from '@smithy/signature-v4';
+import { Sha256 } from '@aws-crypto/sha256-browser';
+
+const signer = new SignatureV4({
+  credentials: fromNodeProviderChain(),
+  region: 'us-east-1',
+  service: 'healthlake',
+  sha256: Sha256,
+});
+
+const client = new Client({
+  baseUrl: 'https://healthlake.us-east-1.amazonaws.com/datastore/<id>/r4',
+  requestSigner: async (url, options) => {
+    const signed = await signer.sign({
+      method: options.method ?? 'GET',
+      headers: options.headers as Record<string, string>,
+      hostname: new URL(url).hostname,
+      path: new URL(url).pathname,
+      protocol: 'https',
+      body: options.body as string | undefined,
+    });
+    Object.assign(options.headers!, signed.headers);
+  },
+});
+```
 
 ## Logging
 
-The [debug library](https://www.npmjs.com/package/debug) can provide logging
-during development. Two different logging namespaces are provided, `fhir-kit-
-client:info` logs each request and response, and `fhir-kit-client:error` logs
-errors. To enable logging during development, add one of the namespaces to the
-DEBUG environment variable, or use `fhir-kit-client:*` to enable both.
+Uses the [`debug`](https://www.npmjs.com/package/debug) package.
 
+| Namespace | Content |
+|---|---|
+| `fhir-kit-client:info` | Every request URL and response status |
+| `fhir-kit-client:error` | Errors |
+
+```sh
+# Enable all logging during development
+DEBUG=fhir-kit-client:* node app.js
+
+# Requests/responses only
+DEBUG=fhir-kit-client:info node app.js
 ```
-$ DEBUG=fhir-kit-client:* node smart-launch.js
-```
+
+## Migrating from v1
+
+| v1 | v2 |
+|---|---|
+| `require('fhir-kit-client')` | `import { Client } from 'fhir-kit-client'` |
+| Node 12+ | Node 18+ required |
+| `cross-fetch`, `node-abort-controller` polyfills | Native `fetch`, `AbortController` |
+| `client.read({…, headers: {…}})` | `client.read({…, options: { headers: {…} }})` |
+| `client.nextPage(bundle)` | `client.nextPage({ bundle })` |
+| `query-string` (alpha sort) | `URLSearchParams` (insertion order) |
+| `fhir-kit-client` default export | Named export `Client` |
+
+## Examples
+
+See the [examples directory](./examples/) for runnable SMART App Launch and CDS Hooks examples.
 
 ## Contributing
 
-FHIRKit Client is an open source Node.js FHIR client library that welcomes
-community contributions with enthusiasm.
-
-All are welcome to participate. By participating in this project, you agree to
-follow the [Code of
-Conduct](https://github.com/Vermonster/fhir-kit-client/blob/master/CODE_OF_CONDUCT.md).
-
-Please see our
-[Contributing](https://github.com/Vermonster/fhir-kit-client/blob/master/CONTRIBUTING.md)
-document for more details on how to get started.
+FHIRKit Client welcomes community contributions.
+All participants must follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
 ## License
 
-MIT
+MIT — Copyright (c) 2018 Vermonster LLC
 
-Copyright (c) 2018 Vermonster LLC

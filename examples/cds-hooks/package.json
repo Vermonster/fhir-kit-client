@@ -1,21 +1,18 @@
 {
-  "name": "example",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "cds-hooks-example",
+  "version": "2.0.0",
+  "description": "CDS Hooks service example using fhir-kit-client",
+  "type": "module",
+  "main": "cds-hooks-launch.js",
   "scripts": {
     "start": "node cds-hooks-launch.js"
   },
-  "keywords": [],
-  "author": "",
   "license": "MIT",
-  "devDependencies": {
-    "axios": "^0.21.1",
-    "body-parser": "^1.18.2",
-    "cors": "^2.8.4",
-    "express": "^4.14.0",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.0",
+    "fhir-kit-client": "^2.0.0",
     "jsonwebtoken": "^9.0.0",
-    "jwk-to-pem": "^2.0.0"
-  },
-  "dependencies": {}
+    "jwk-to-pem": "^2.0.5"
+  }
 }

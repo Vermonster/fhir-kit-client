@@ -1,126 +1,59 @@
 # Launch Examples
 
-NOTE: For more examples, see this repository: https://github.com/Vermonster/fhir-kit-client-examples
+This directory contains example apps demonstrating SMART App Launch and CDS Hooks workflows with `fhir-kit-client` v2.
 
-This directory contains example apps demonstrating an application
-launch.
+All examples require **Node 18+** and use ESM (`import`/`export`).
 
-To use these examples:
-1. `yarn install` in the project root
-2. `yarn install` in the example subdirectory you are interested in
-3. In the example code, you could modify `<CLIENT_ID>` and/or `<CLIENT_SECRET>`
-   as needed. FYI: The [SMART sandbox](https://launch.smarthealthit.org) will
-   accept any values for these.
-4. `yarn start` to serve the web app through port 3000.
-5. To test with external servers, try tunneling to localhost:3000 with a
-   service like [ngrok](http://ngrok.com/).
+## Setup
+
+1. `npm install` in the project root
+2. `npm install` in the example subdirectory you want to run
+3. Edit `CLIENT_ID` (and `CLIENT_SECRET` for confidential apps) in the launch file
+4. `npm start` — serves the app on port 3000
+
+To test with an external SMART sandbox, tunnel localhost:3000 with [ngrok](https://ngrok.com/) or similar.
+The [SMART App Launch sandbox](https://launch.smarthealthit.org) accepts any CLIENT_ID/CLIENT_SECRET values.
+
+---
 
 ## [examples/confidential-smart-ehr](./confidential-smart-ehr)
 
-This example provides two routes, `/launch` and `/callback`, through
-which an EHR may launch the SMART app within the EHR's provided launch
-context. This example demonstrates a confidential app, meaning that the
-application runs on a trusted server and can protect secret data, such
-as the CLIENT_SECRET variable.
+EHR-launched SMART app running on a trusted server with a client secret.
 
-An EHR can then visit the launch route with two parameters: iss and
-launch. The SMART app will make a request to the OAuth server's
-authorization URL. Then, it will redirect to the SMART app callback.
+The EHR visits `/launch?iss=<FHIR_URL>&launch=<LAUNCH_TOKEN>`. The app discovers
+the authorization URL via `client.smartAuthMetadata()`, redirects the user to the
+EHR's authorization server, and exchanges the authorization code for an access token
+in the `/callback` route.
 
-In the callback route, another request is made (using the simple-oauth
-library) to request a token from the OAuth2 server. The server will then
-send back a launch_context containing, among other things, an access
-token to set in the Authorization header and use for subsequent FHIR
-requests (to the ISS).
+**Use this pattern when your app runs server-side and can protect a `CLIENT_SECRET`.**
 
 ## [examples/public-smart-ehr](./public-smart-ehr)
 
-The public-smart-ehr example is almost identical to the
-confidential-smart-ehr code above, but it is assumed that this app would
-be downloaded to a device and run in an environment that cannot protect
-a client secret (eg. a browser). This means that the public-smart-ehr
-app:
+EHR-launched SMART app for environments that cannot protect a client secret
+(e.g. a downloaded desktop app). Identical to the confidential example except
+no `CLIENT_SECRET` is used.
 
-  - is assumed to run on an end-user's device rather than on a trusted
-    server
-  - cannot protect secret variables (in this case, CLIENT_SECRET)
-  - should be hosted within a trusted server environment
-
-The app's launch URL is required to be preregistered with the EHR. This
-required step helps to mitigate security risks. Because the public app
-is the less secure option with no ability to store confidential
-information, it is recommended that refresh tokens for public apps have
-a shorter lifetime.
-
-To use, refer to the first two paragraphs of the confidential-smart-ehr
-example above. The only difference for this public example is that it
-does not require a client secret.
-
-An EHR can then visit the launch route with two parameters: iss and
-launch. The SMART app will make a request to the OAuth server's
-authorization URL. Then, it will redirect to the SMART app callback.
-
-In the callback route, another request is made (using the simple-oauth
-library) to request a token from the OAuth2 server. The server will then
-send back a launch_context containing, among other things, an access
-token to set in the Authorization header and use for subsequent FHIR
-requests (to the ISS).
+The app's redirect URI must be pre-registered with the EHR before launch.
 
 ## [examples/smart-standalone](./smart-standalone)
 
-This example provides the same routes above, but instead of an EHR
-launching from the `/launch` route, a user would directly visit the
-route with two different parameters: iss and scope. For example:
+Standalone SMART launch — a user visits `/launch` directly (without an EHR
+initiating the flow), supplying `iss` and `scope` query parameters:
 
-`https://localhost:3000/launch?iss=http://example.com/fhir&scope=openid%20profile%20offline_access%20user%2F*.*%20patient%2F*.*%20launch%2Fencounter%20launch%2Fpatient`
+```
+http://localhost:3000/launch?iss=https://launch.smarthealthit.org/v/r4/fhir&scope=openid%20profile%20offline_access%20user%2F*.*%20patient%2F*.*
+```
 
-The EHR will again then provide a launch context and access token.
-
-To run, follow the same instructions above listed for the
-*examples/confidential-smart-ehr* example.
+The remainder of the OAuth2 flow is the same as the EHR-launched examples.
 
 ## [examples/cds-hooks](./cds-hooks)
 
-This example triggers a Clinical Decision Support (CDS) app from within
-an EHR according to [CDS Hooks
-specifications](https://cds-hooks.org/specification/1.0/).
+An Express server that acts as a [CDS Hooks](https://cds-hooks.org/) service.
 
-The `/cds-services` route provides a CDS Hooks "discovery endpoint" that
-informs the EHR which CDS services the SMART app offers and serves
-configuration data for the EHR to consume.
+- `GET /cds-services` — discovery endpoint listing available hooks
+- `POST /cds-services/patient-greeter` — handles a `patient-view` hook, greets
+  the patient by name and counts their MedicationRequests using the FHIR client
 
-Once an EHR consumes this discovery endpoint and is configured to supply
-the specified prefetch data, it will be able to launch the
-`cds-services/patient-greeter` route. The EHR would post to this route a
-request body with FHIR authorization details, prefetch data, and more.
+Requests are authenticated with a JWT signed by the EHR. See the source for
+three supported verification methods (PEM file, JWK endpoint, JWT header `jku`).
 
-In this example app, an access token may be supplied to the FHIR client
-instance in order to make an asynchronous `MedicationOrder` request
-based on the provided EHR patient. The resulting CDS Hook "card" greets
-the patient by name based on prefetch data and offers a count of
-medication orders based on the asynchronous request. (Note that if no
-data is required beyond that supplied in the prefetch, a card could be
-served without needing the FHIR client instance.)
-
-### JWT (JSON Web Token) Validation
-
-All requests in the example are first directed through the
-`authenticateEHR` middleware.
-
-`authenticateEHR` expects a JSON Web Token (JWT) from the EHR's
-authorization request header. It is used to establish that the request
-is from a trusted party. The JWT can be verified by one of 3 different
-ways in this example:
-
-  1) By setting a PEM file in the current directory on line 15 of
-     `cds-hooks-launch.js`.
-  2) By generating a PEM file from a `jku` variable set on line 16.
-  3) By generating a PEM file from a `jku` in the decoded JWT header.
-
-The library `jwk-to-pem` takes RSA or EC fields from a JWK to generate a
-public key. Both RSA and ECC algorithms are supported.
-
-To generate a public key through a private key from the EHR, use
-openssl, .e.g:
-
-`openssl ec -in ecprivatekey.pem -pubout -out ecpublickey.pem`

@@ -1,5 +1,38 @@
 # Changelog
 
+### 2.0.0
+
+**Breaking Changes**
+
+- **Full TypeScript rewrite**: the package is now native ESM TypeScript. CommonJS `require()` is no longer supported.
+- `PatchParams.JSONPatch` renamed to `PatchParams.jsonPatch` (camelCase consistency).
+- Node.js ≥ 18 required.
+- All imports must use the `.js` extension (ESM resolution).
+
+**New Features**
+
+- Native TypeScript source — no separate `@types/fhir-kit-client` package needed.
+- Full type definitions for all public APIs (`Client`, `CapabilityTool`, request/response params).
+- New exports: `splitReference`, `SplitReference`, `SupportForParams`, `CapabilityWhere`.
+- Comprehensive JSDoc on all public `Client` and `CapabilityTool` methods (including `@param`, `@returns`, `@throws`, `@example`).
+- `HttpMethod` union type used throughout for stricter method typing.
+- `FetchQueue.numJobs` is now a getter (eliminates mutable state).
+- Biome added as formatter and linter; ESLint removed.
+
+**Documentation**
+
+- README fully rewritten with TypeScript examples.
+- Added examples using `@types/fhir` and `@reasonhealth/fhir-zod` for FHIR resource typing.
+- New examples directory with standalone ESM examples.
+
+**CI/CD**
+
+- Updated to `actions/checkout@v4` and `actions/setup-node@v4`.
+- Switched from yarn to npm; test matrix covers Node 20 and 22.
+- CI now runs `typecheck`, `build`, `format:check`, and `lint` steps.
+
+---
+
 ### 1.9.2
 - Fix problem with typescript httpFor
 - Update node LTS requirement

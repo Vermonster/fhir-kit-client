@@ -1,17 +1,18 @@
 {
-  "name": "example",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "smart-standalone-example",
+  "version": "2.0.0",
+  "description": "Standalone SMART launch example (confidential client, no EHR context)",
+  "type": "module",
+  "main": "smart-standalone-launch.js",
   "scripts": {
     "start": "node smart-standalone-launch.js"
   },
-  "keywords": [],
-  "author": "",
   "license": "MIT",
-  "devDependencies": {
-    "express": "^4.14.0",
-    "express-session": "^1.15.6",
-    "simple-oauth2": "2.2.1"
+  "dependencies": {
+    "express": "^4.18.0",
+    "express-session": "^1.17.3",
+    "fhir-kit-client": "^2.0.0",
+    "simple-oauth2": "^5.0.0"
   }
 }
+

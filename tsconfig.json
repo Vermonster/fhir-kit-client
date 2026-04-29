@@ -13,7 +13,8 @@
     "noUnusedParameters": true,
     "pretty": true,
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["node"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

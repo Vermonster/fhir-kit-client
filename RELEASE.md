@@ -98,13 +98,16 @@ Monitor progress at https://github.com/Vermonster/fhir-kit-client/actions.
 
 ## Manual npm publish (fallback)
 
-If the CI publish fails you can publish manually:
+If the CI publish fails, or for the first release before the `NPM_TOKEN` secret is configured:
 
 ```bash
-npm login          # authenticates with npmjs.com
-npm run build      # compile TypeScript to dist/
-npm publish --provenance --access public
+npm login          # opens a browser to authenticate with npmjs.com
+npm run build      # compile TypeScript → dist/
+npm test           # verify nothing broke
+npm publish --access public
 ```
+
+> Add `--provenance` if publishing from a GitHub Actions environment with `id-token: write` permission.
 
 ---
 

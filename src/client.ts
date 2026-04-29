@@ -14,30 +14,26 @@ import type {
 } from './types.js';
 import { createQueryString, validResourceType } from './utils.js';
 
-/** @internal */
-interface ReadParams {
+export interface ReadParams {
   resourceType: string;
   id: string;
   options?: RequestOptions;
 }
 
-/** @internal */
-interface VreadParams {
+export interface VreadParams {
   resourceType: string;
   id: string;
   version: string;
   options?: RequestOptions;
 }
 
-/** @internal */
-interface CreateParams {
+export interface CreateParams {
   resourceType: string;
   body: FhirResource;
   options?: RequestOptions;
 }
 
-/** @internal */
-interface UpdateParams {
+export interface UpdateParams {
   resourceType: string;
   /** Resource id for a direct update. Mutually exclusive with `searchParams`. */
   id?: string;
@@ -47,15 +43,13 @@ interface UpdateParams {
   options?: RequestOptions;
 }
 
-/** @internal */
-interface DeleteParams {
+export interface DeleteParams {
   resourceType: string;
   id: string;
   options?: RequestOptions;
 }
 
-/** @internal */
-interface PatchParams {
+export interface PatchParams {
   resourceType: string;
   id: string;
   /** Array of RFC 6902 JSON Patch operations. */
@@ -63,8 +57,7 @@ interface PatchParams {
   options?: RequestOptions;
 }
 
-/** @internal */
-interface BundleParams {
+export interface BundleParams {
   /**
    * A FHIR Bundle resource. The `Bundle.type` field (`'batch'` or `'transaction'`)
    * determines how the server processes the bundle.
@@ -73,8 +66,7 @@ interface BundleParams {
   options?: RequestOptions;
 }
 
-/** @internal */
-interface OperationParams {
+export interface OperationParams {
   /** Operation name with or without leading `$` (e.g. `'$everything'` or `'everything'`). */
   name: string;
   resourceType?: string;
@@ -88,51 +80,44 @@ interface OperationParams {
  * Parameters for the top-level {@link Client#search} dispatcher.
  * Provide `compartment + resourceType` for compartment search,
  * `resourceType` alone for type-level search, or just `searchParams` for system search.
- * @internal
  */
-interface SearchCallParams {
+export interface SearchCallParams {
   resourceType?: string;
   compartment?: { resourceType: string; id: string };
   searchParams?: SearchParams;
   options?: RequestOptions;
 }
 
-/** @internal */
-interface ResourceSearchParams {
+export interface ResourceSearchParams {
   resourceType: string;
   searchParams?: SearchParams;
   options?: RequestOptions;
 }
 
-/** @internal */
-interface SystemSearchParams {
+export interface SystemSearchParams {
   searchParams?: SearchParams;
   options?: RequestOptions;
 }
 
-/** @internal */
-interface CompartmentSearchParams {
+export interface CompartmentSearchParams {
   resourceType: string;
   compartment: { resourceType: string; id: string };
   searchParams?: SearchParams;
   options?: RequestOptions;
 }
 
-/** @internal */
-interface HistoryParams {
+export interface HistoryParams {
   resourceType?: string;
   id?: string;
   options?: RequestOptions;
 }
 
-/** @internal */
-interface PaginationParams {
+export interface PaginationParams {
   bundle: FhirResource & { link: Array<{ relation: string; url: string }> };
   options?: RequestOptions;
 }
 
-/** @internal */
-interface RawRequestParams {
+export interface RawRequestParams {
   method?: HttpMethod;
   options?: RequestOptions;
   body?: unknown;

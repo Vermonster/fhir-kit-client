@@ -1,0 +1,20 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "docs",
+  "name": "FHIRKit Client",
+  "includeVersion": true,
+  "readme": "README.md",
+  "navigationLinks": {
+    "GitHub": "https://github.com/Vermonster/fhir-kit-client",
+    "npm": "https://www.npmjs.com/package/fhir-kit-client"
+  },
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "searchInComments": true,
+  "logLevel": "Error",
+  "validation": {
+    "notDocumented": false,
+    "invalidLink": true,
+    "notExported": false
+  }
+}

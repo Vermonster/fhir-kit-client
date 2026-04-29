@@ -4,6 +4,8 @@
 [![Build Status](https://github.com/Vermonster/fhir-kit-client/actions/workflows/node.js.yml/badge.svg)](https://github.com/Vermonster/fhir-kit-client/actions/workflows/node.js.yml)
 [![GitHub license](https://img.shields.io/github/license/Vermonster/fhir-kit-client.svg)](https://github.com/Vermonster/fhir-kit-client/blob/master/LICENSE)
 
+**[API Documentation →](https://vermonster.github.io/fhir-kit-client/)**
+
 Node.js FHIR R4 client library — TypeScript-first, ESM-only, zero polyfills.
 
 > **v2 requires Node 18+.** It uses native `fetch`, `AbortController`, and `URLSearchParams`.

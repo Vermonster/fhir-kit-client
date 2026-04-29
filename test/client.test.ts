@@ -712,7 +712,7 @@ describe('Client', () => {
           return HttpResponse.json(readFixture('patient-patched.json'));
         }));
 
-        const response = await fhirClient.patch({ resourceType: 'Patient', id: '152747', JSONPatch, options: { headers: { abc: 'XYZ' } } });
+        const response = await fhirClient.patch({ resourceType: 'Patient', id: '152747', jsonPatch: JSONPatch, options: { headers: { abc: 'XYZ' } } });
         expect(response.resourceType).toBe('OperationOutcome');
         expect(capturedAbc).toBe('XYZ');
       });
@@ -725,7 +725,7 @@ describe('Client', () => {
           return HttpResponse.json(readFixture('patient-patched.json'));
         }));
 
-        const response = await fhirClient.patch({ resourceType: 'Patient', id: '152747', JSONPatch });
+        const response = await fhirClient.patch({ resourceType: 'Patient', id: '152747', jsonPatch: JSONPatch });
         expect(response.resourceType).toBe('OperationOutcome');
         expect(capturedContentType).toContain('application/json-patch+json');
         expect((response as Record<string, Array<{ diagnostics: string }>>).issue[0].diagnostics).toContain('_history/3');
@@ -735,7 +735,7 @@ describe('Client', () => {
         const invalidPatch = [{ op: 'replace', path: '/gender', value: 0 }];
         server.use(http.patch(`${BASE_URL}/Patient/152747`, () => HttpResponse.json(readFixture('patient-not-patched.json'), { status: 500 })));
 
-        await expect(fhirClient.patch({ resourceType: 'Patient', id: '152747', JSONPatch: invalidPatch })).rejects.toMatchObject({
+        await expect(fhirClient.patch({ resourceType: 'Patient', id: '152747', jsonPatch: invalidPatch })).rejects.toMatchObject({
           response: { status: 500, data: { resourceType: 'OperationOutcome' } },
         });
       });

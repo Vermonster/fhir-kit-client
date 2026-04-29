@@ -26,7 +26,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint ."
+    "format": "biome format --write src/ test/**/*.ts vitest.config.ts",
+    "format:check": "biome format src/ test/**/*.ts vitest.config.ts",
+    "lint": "biome lint src/",
+    "check": "biome check src/ test/**/*.ts vitest.config.ts"
   },
   "author": "Vermonster",
   "license": "MIT",
@@ -40,6 +43,7 @@
     "url": "https://github.com/Vermonster/fhir-kit-client.git"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.13",
     "@types/debug": "^4.1.12",
     "@types/json-stringify-safe": "^5.0.3",
     "@types/node": "^20.0.0",

@@ -38,11 +38,7 @@ export function splitReference(reference: string): SplitReference {
  */
 export function validResourceType(resourceType: string | undefined | null): boolean {
   if (!resourceType) return false;
-  return (
-    !resourceType.startsWith('/') &&
-    !resourceType.includes(':') &&
-    /\S/.test(resourceType)
-  );
+  return !resourceType.startsWith('/') && !resourceType.includes(':') && /\S/.test(resourceType);
 }
 
 /**

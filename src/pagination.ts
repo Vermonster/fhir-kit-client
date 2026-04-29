@@ -1,5 +1,5 @@
-import type { FhirResource, RequestOptions } from './types.js';
 import type { HttpClient } from './http-client.js';
+import type { FhirResource, RequestOptions } from './types.js';
 
 interface BundleLink {
   relation: string;

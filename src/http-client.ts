@@ -1,7 +1,7 @@
 import HttpAgent from 'agentkeepalive';
 import { logRequestError, logRequestInfo, logResponseInfo } from './logging.js';
 import type { FhirResource, RequestOptions } from './types.js';
-import { RESPONSE_KEY, REQUEST_KEY } from './types.js';
+import { REQUEST_KEY, RESPONSE_KEY } from './types.js';
 
 const { HttpsAgent } = HttpAgent;
 
@@ -18,9 +18,7 @@ function buildAgent(baseUrl: string): AgentOptions {
   const cached = agentCache.get(baseUrl);
   if (cached) return cached;
 
-  const agent: AgentOptions = baseUrl.startsWith('https')
-    ? { agent: new HttpsAgent() }
-    : { agent: new HttpAgent() };
+  const agent: AgentOptions = baseUrl.startsWith('https') ? { agent: new HttpsAgent() } : { agent: new HttpAgent() };
 
   agentCache.set(baseUrl, agent);
   return agent;
@@ -45,7 +43,9 @@ interface ResponseErrorConfig {
   url: string;
 }
 
-function buildResponseError(config: ResponseErrorConfig): Error & { response: { status: number; data: unknown }; config: ResponseErrorConfig } {
+function buildResponseError(
+  config: ResponseErrorConfig,
+): Error & { response: { status: number; data: unknown }; config: ResponseErrorConfig } {
   const error = Object.assign(new Error(`HTTP ${config.status}: ${config.method} ${config.url}`), {
     response: { status: config.status, data: config.data },
     config,
@@ -122,7 +122,7 @@ export class HttpClient {
 
   private buildRequest(method: string, url: string, options: RequestOptions, body?: unknown): Request {
     const requestInit: RequestInit = {
-      ...this.baseRequestOptions as RequestInit,
+      ...(this.baseRequestOptions as RequestInit),
       method,
       body: stringifyBody(body),
       headers: new Headers(this.mergeHeaders(options.headers)),
@@ -139,7 +139,12 @@ export class HttpClient {
     return new Request(url, requestInit);
   }
 
-  async request(method: string, requestUrl: string, options: RequestOptions = {}, body?: unknown): Promise<FhirResource> {
+  async request(
+    method: string,
+    requestUrl: string,
+    options: RequestOptions = {},
+    body?: unknown,
+  ): Promise<FhirResource> {
     const url = this.expandUrl(requestUrl);
     const req = this.buildRequest(method, url, options, body);
     logRequestInfo(method, url, req.headers);

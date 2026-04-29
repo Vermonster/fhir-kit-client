@@ -43,15 +43,18 @@ export class ReferenceResolver {
       return this.client.httpClient.get(reference, options);
     }
     const { baseUrl, resourceType, id } = splitReference(reference);
+    if (!baseUrl) {
+      throw new Error(`Unable to resolve absolute reference without a base URL: ${reference}`);
+    }
     const { Client } = await import('./client.js');
-    return new Client({ baseUrl: baseUrl! }).read({ resourceType, id, options });
+    return new Client({ baseUrl }).read({ resourceType, id, options });
   }
 
   private resolveContainedReference(reference: string, context: FhirResource): FhirResource {
-    const contained = context['contained'] as FhirResource[] | undefined;
+    const contained = context.contained as FhirResource[] | undefined;
     if (contained) {
       const referenceId = reference.slice(1);
-      const resource = contained.find((r) => r['id'] === referenceId);
+      const resource = contained.find((r) => r.id === referenceId);
       if (resource) return resource;
     }
     throw new Error(`Unable to resolve contained reference: ${reference}`);
@@ -62,7 +65,7 @@ export class ReferenceResolver {
     bundle: FhirResource,
     options?: RequestOptions,
   ): Promise<FhirResource> {
-    const entries = bundle['entry'] as Array<{ fullUrl?: string; resource?: FhirResource }> | undefined;
+    const entries = bundle.entry as Array<{ fullUrl?: string; resource?: FhirResource }> | undefined;
     const referenceRegEx = new RegExp(`(^|/)${reference}$`);
     const entry = entries?.find((e) => e.fullUrl && referenceRegEx.test(e.fullUrl));
 

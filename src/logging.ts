@@ -14,7 +14,7 @@ function inspectHeaders(headers: unknown): string {
     headers !== null &&
     typeof headers === 'object' &&
     'raw' in headers &&
-    typeof (headers as Record<string, unknown>)['raw'] === 'function'
+    typeof (headers as Record<string, unknown>).raw === 'function'
   ) {
     return stringify((headers as { raw: () => unknown }).raw());
   }

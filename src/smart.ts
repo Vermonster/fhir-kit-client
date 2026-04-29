@@ -1,5 +1,5 @@
-import type { FhirResource, SmartAuthMetadata } from './types.js';
 import { logError } from './logging.js';
+import type { FhirResource, SmartAuthMetadata } from './types.js';
 
 const smartOauthUrl = 'http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris';
 
@@ -21,7 +21,7 @@ export function authFromCapability(capabilityStatement: FhirResource): SmartAuth
   const authMetadata: SmartAuthMetadata = {};
 
   try {
-    const restItems = capabilityStatement['rest'] as CapabilityRest[] | undefined;
+    const restItems = capabilityStatement.rest as CapabilityRest[] | undefined;
     if (!restItems) return authMetadata;
 
     for (const restItem of restItems) {

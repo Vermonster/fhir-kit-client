@@ -250,7 +250,7 @@ await client.update({
 await client.patch({
   resourceType: 'Patient',
   id: '123',
-  JSONPatch: [
+  jsonPatch: [
     { op: 'replace', path: '/active', value: false },
     { op: 'add', path: '/name/-', value: { use: 'nickname', text: 'Jay' } },
   ],

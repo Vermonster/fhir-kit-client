@@ -2,14 +2,15 @@
 
 Step-by-step checklist for cutting a new `fhir-kit-client` release.
 
+> **npm publishing is always manual.** There is no automated publish workflow.
+
 ---
 
 ## Prerequisites
 
 - Write access to the `Vermonster/fhir-kit-client` GitHub repository
-- `NPM_TOKEN` secret configured in the repo (Settings → Secrets → Actions)
-  - Generate at https://www.npmjs.com/settings/~/tokens (type: **Automation**)
-- GitHub Pages enabled (Settings → Pages → Source: **Deploy from a branch**, branch: `gh-pages`, folder: `/`)
+- npm account with publish rights to the `fhir-kit-client` package
+- GitHub Pages configured (Settings → Pages → Source: **GitHub Actions**)
 
 ---
 
@@ -59,7 +60,16 @@ Push the commit **and** the tag:
 git push && git push --tags
 ```
 
-### 4. Create a GitHub Release
+### 4. Publish to npm
+
+```bash
+npm login          # opens a browser to authenticate with npmjs.com
+npm run build      # compile TypeScript → dist/
+npm test           # verify nothing broke
+npm publish --access public
+```
+
+### 5. Create a GitHub Release
 
 ```bash
 gh release create vX.Y.Z \
@@ -75,59 +85,19 @@ Or via the GitHub UI:
 4. Paste the relevant CHANGELOG section as the release notes
 5. Click **Publish release**
 
-### 5. Automated publishing (CI handles this)
-
-Publishing the GitHub Release triggers **two** automated workflows:
-
-| Workflow | File | What it does |
-|---|---|---|
-| `Publish to npm` | `.github/workflows/publish.yml` | Runs tests → build → `npm publish --provenance` |
-| `Deploy Docs` | `.github/workflows/docs.yml` | Builds TypeDoc → deploys to `gh-pages` branch |
-
-Monitor progress at https://github.com/Vermonster/fhir-kit-client/actions.
-
-> **Note:** The Docs workflow triggers on push to `main`. The npm publish workflow triggers on GitHub Release publication.
-
 ### 6. Verify
 
 - **npm**: https://www.npmjs.com/package/fhir-kit-client — confirm the new version is listed
-- **Docs**: https://vermonster.github.io/fhir-kit-client/ — confirm the docs reflect the new version
+- **Docs**: https://vermonster.github.io/fhir-kit-client/ — docs deploy automatically when `main` is updated
 - **GitHub Release**: https://github.com/Vermonster/fhir-kit-client/releases — confirm release notes look correct
-
----
-
-## Manual npm publish (fallback)
-
-If the CI publish fails, or for the first release before the `NPM_TOKEN` secret is configured:
-
-```bash
-npm login          # opens a browser to authenticate with npmjs.com
-npm run build      # compile TypeScript → dist/
-npm test           # verify nothing broke
-npm publish --access public
-```
-
-> Add `--provenance` if publishing from a GitHub Actions environment with `id-token: write` permission.
-
----
-
-## First-time setup: NPM_TOKEN secret
-
-1. Log in to https://npmjs.com as the `vermonster` org account
-2. Go to **Access Tokens** → **Generate New Token** → type **Automation**
-3. Copy the token
-4. In the GitHub repo: **Settings → Secrets and variables → Actions → New repository secret**
-   - Name: `NPM_TOKEN`
-   - Value: the token you copied
-5. Save
 
 ---
 
 ## First-time setup: GitHub Pages
 
 1. In the GitHub repo: **Settings → Pages**
-2. Source: **Deploy from a branch**
-3. Branch: `gh-pages`, folder: `/`
-4. Click **Save**
+2. Source: **GitHub Actions** *(not "Deploy from a branch")*
+3. No further configuration needed — the `Deploy Docs` workflow deploys on every push to `main`
 
-The `gh-pages` branch is created automatically by the `Deploy Docs` workflow on the first push to `main`.
+> **Important:** Do NOT use "Deploy from a branch" → `/docs`. The TypeDoc output is built by CI and served directly via the official `actions/deploy-pages` action. Setting the source to "GitHub Actions" prevents GitHub from running its own Jekyll pipeline on the repository.
+

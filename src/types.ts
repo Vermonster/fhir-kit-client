@@ -19,10 +19,26 @@ export interface Compartment {
 }
 
 /** Options passed per-request */
-export interface RequestOptions extends Omit<RequestInit, 'method' | 'body'> {
+export interface RequestOptions extends Omit<RequestInit, 'method' | 'body' | 'signal'> {
   headers?: Record<string, string>;
   postSearch?: boolean;
-  signal?: AbortSignal;
+  /**
+   * Abort signal for the request. Accepts the native `AbortSignal` and
+   * duck-typed polyfills such as `node-abort-controller` — see
+   * https://github.com/Vermonster/fhir-kit-client/issues/204.
+   */
+  signal?: SignalLike;
+}
+
+/**
+ * Minimal duck-typed AbortSignal interface. Accepts both the native
+ * `AbortSignal` and polyfills (e.g. `node-abort-controller`) whose signal
+ * class is not an `instanceof` the native `AbortSignal`.
+ */
+export interface SignalLike {
+  readonly aborted: boolean;
+  readonly reason?: unknown;
+  addEventListener(type: 'abort', listener: () => void, options?: { once?: boolean }): void;
 }
 
 /** Constructor config for Client */

@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { readFixture } from './test-utils.js';
+import { describe, expect, it } from 'vitest';
 import { authFromCapability, authFromWellKnown } from '../src/smart.js';
+import { readFixture } from './test-utils.js';
 
 describe('smart', () => {
   describe('authFromWellKnown', () => {
@@ -9,6 +9,14 @@ describe('smart', () => {
       const { authorizeUrl, tokenUrl } = authFromWellKnown(wellKnown);
       expect(authorizeUrl).toEqual(new URL('https://launch.smarthealthit.org/v/r4/auth/authorize'));
       expect(tokenUrl).toEqual(new URL('https://launch.smarthealthit.org/v/r4/auth/token'));
+    });
+
+    it('parses registerUrl from registration_endpoint', () => {
+      const { registerUrl } = authFromWellKnown({
+        resourceType: 'WellKnown',
+        registration_endpoint: 'https://auth.example.com/register',
+      });
+      expect(registerUrl).toEqual(new URL('https://auth.example.com/register'));
     });
 
     it('returns undefined if not available', () => {

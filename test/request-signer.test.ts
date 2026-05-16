@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { http, HttpResponse } from 'msw';
+import { HttpResponse, http } from 'msw';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { Client } from '../src/client.js';
 import { server } from './setup.js';
 import { readFixture } from './test-utils.js';
-import { Client } from '../src/client.js';
 
 const BASE_URL = 'https://healthlake.us-west-2.amazonaws.com';
 
@@ -45,24 +45,24 @@ describe('Client with request signer', () => {
     const handler =
       method === 'GET'
         ? http.get(`${BASE_URL}${path}`, ({ request }) => {
-          Object.keys(awsSignedHeaders).forEach((k) => {
-            capturedHeaders[k] = request.headers.get(k.toLowerCase());
-          });
-          return HttpResponse.json(readFixture('patient.json'));
-        })
-        : method === 'DELETE'
-          ? http.delete(`${BASE_URL}${path}`, ({ request }) => {
             Object.keys(awsSignedHeaders).forEach((k) => {
               capturedHeaders[k] = request.headers.get(k.toLowerCase());
             });
             return HttpResponse.json(readFixture('patient.json'));
           })
+        : method === 'DELETE'
+          ? http.delete(`${BASE_URL}${path}`, ({ request }) => {
+              Object.keys(awsSignedHeaders).forEach((k) => {
+                capturedHeaders[k] = request.headers.get(k.toLowerCase());
+              });
+              return HttpResponse.json(readFixture('patient.json'));
+            })
           : http.post(`${BASE_URL}${path}`, ({ request }) => {
-            Object.keys(awsSignedHeaders).forEach((k) => {
-              capturedHeaders[k] = request.headers.get(k.toLowerCase());
+              Object.keys(awsSignedHeaders).forEach((k) => {
+                capturedHeaders[k] = request.headers.get(k.toLowerCase());
+              });
+              return HttpResponse.json(readFixture('patient.json'));
             });
-            return HttpResponse.json(readFixture('patient.json'));
-          });
 
     server.use(handler);
     return capturedHeaders;
@@ -72,7 +72,9 @@ describe('Client with request signer', () => {
     const capturedHeaders = mockAndCaptureHeaders('GET', '/Patient/123');
     await fhirClient.request('Patient/123');
     Object.keys(awsSignedHeaders).forEach((key) => {
-      expect(capturedHeaders[key]).toBe(awsSignedHeaders[key].toLowerCase() === awsSignedHeaders[key] ? awsSignedHeaders[key] : awsSignedHeaders[key]);
+      expect(capturedHeaders[key]).toBe(
+        awsSignedHeaders[key].toLowerCase() === awsSignedHeaders[key] ? awsSignedHeaders[key] : awsSignedHeaders[key],
+      );
     });
   });
 

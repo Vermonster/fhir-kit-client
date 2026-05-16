@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { readFixture } from './test-utils.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { CapabilityTool } from '../src/capability-tool.js';
+import { readFixture } from './test-utils.js';
 
 describe('CapabilityTool', () => {
   let capabilities: CapabilityTool;
@@ -56,11 +56,15 @@ describe('CapabilityTool', () => {
     });
 
     it('returns true when a resource-level interaction capability is in the capability statement', () => {
-      expect(capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'interaction', where: { code: 'read' } })).toBe(true);
+      expect(
+        capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'interaction', where: { code: 'read' } }),
+      ).toBe(true);
     });
 
     it('returns false when a resource-level interaction capability is not in the capability statement', () => {
-      expect(capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'interaction', where: { code: 'foo' } })).toBe(false);
+      expect(
+        capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'interaction', where: { code: 'foo' } }),
+      ).toBe(false);
     });
 
     it('returns true when a resource-level capability is in the capability statement', () => {
@@ -68,11 +72,19 @@ describe('CapabilityTool', () => {
     });
 
     it('returns true when a resource-level search param capability is in the capability statement', () => {
-      expect(capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'searchParam', where: { name: 'birthdate' } })).toBe(true);
+      expect(
+        capabilities.supportFor({
+          resourceType: 'Patient',
+          capabilityType: 'searchParam',
+          where: { name: 'birthdate' },
+        }),
+      ).toBe(true);
     });
 
     it('returns false when a resource-level search param capability is not in the capability statement', () => {
-      expect(capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'searchParam', where: { name: 'foo' } })).toBe(false);
+      expect(
+        capabilities.supportFor({ resourceType: 'Patient', capabilityType: 'searchParam', where: { name: 'foo' } }),
+      ).toBe(false);
     });
 
     it('returns true when a resource-level conditional delete capability is in the capability statement', () => {
@@ -102,7 +114,17 @@ describe('CapabilityTool', () => {
     });
 
     it('returns an array of supported interactions for the interaction capability', () => {
-      const expected = ['read', 'vread', 'update', 'patch', 'delete', 'history-instance', 'history-type', 'create', 'search-type'];
+      const expected = [
+        'read',
+        'vread',
+        'update',
+        'patch',
+        'delete',
+        'history-instance',
+        'history-type',
+        'create',
+        'search-type',
+      ];
       expect(capabilities.interactionsFor({ resourceType: 'Patient' })).toEqual(expected);
     });
   });
@@ -121,7 +143,35 @@ describe('CapabilityTool', () => {
     });
 
     it('returns an array of supported search params', () => {
-      const expected = ['_language', 'birthdate', 'deceased', 'address-state', 'gender', 'animal-species', 'link', 'language', 'animal-breed', 'address-country', 'death-date', 'phonetic', 'telecom', 'address-city', 'email', 'given', 'identifier', 'address', 'general-practitioner', 'active', 'address-postalcode', 'phone', 'organization', 'address-use', 'name', '_id', 'family'];
+      const expected = [
+        '_language',
+        'birthdate',
+        'deceased',
+        'address-state',
+        'gender',
+        'animal-species',
+        'link',
+        'language',
+        'animal-breed',
+        'address-country',
+        'death-date',
+        'phonetic',
+        'telecom',
+        'address-city',
+        'email',
+        'given',
+        'identifier',
+        'address',
+        'general-practitioner',
+        'active',
+        'address-postalcode',
+        'phone',
+        'organization',
+        'address-use',
+        'name',
+        '_id',
+        'family',
+      ];
       expect(capabilities.searchParamsFor({ resourceType: 'Patient' })).toEqual(expected);
     });
   });
@@ -138,12 +188,16 @@ describe('CapabilityTool', () => {
     });
 
     it('returns text for the conditionalDelete capability', () => {
-      expect(capabilities.capabilityContents({ resourceType: 'Patient', capabilityType: 'conditionalDelete' })).toBe('multiple');
+      expect(capabilities.capabilityContents({ resourceType: 'Patient', capabilityType: 'conditionalDelete' })).toBe(
+        'multiple',
+      );
     });
 
     it('returns an array for the searchInclude capability', () => {
       const expected = ['*', 'Patient:general-practitioner', 'Patient:link', 'Patient:organization'];
-      expect(capabilities.capabilityContents({ resourceType: 'Patient', capabilityType: 'searchInclude' })).toEqual(expected);
+      expect(capabilities.capabilityContents({ resourceType: 'Patient', capabilityType: 'searchInclude' })).toEqual(
+        expected,
+      );
     });
   });
 

@@ -1,6 +1,6 @@
 import HttpAgent from 'agentkeepalive';
 import { logRequestError, logRequestInfo, logResponseInfo } from './logging.js';
-import type { FhirResource, RequestOptions } from './types.js';
+import type { FhirResource, RequestOptions, SignalLike } from './types.js';
 import { REQUEST_KEY, RESPONSE_KEY } from './types.js';
 
 const { HttpsAgent } = HttpAgent;
@@ -11,17 +11,27 @@ interface AgentOptions {
   agent?: InstanceType<typeof HttpAgent> | InstanceType<typeof HttpsAgent>;
 }
 
-// Cache agents by base URL (keyed as a tuple string for simplicity)
-const agentCache = new Map<string, AgentOptions>();
+/**
+ * Ensures the signal is a native AbortSignal.
+ *
+ * On Node 24+, undici's Request constructor enforces a strict
+ * `instanceof AbortSignal` check. Polyfill libraries such as
+ * `node-abort-controller` create their own AbortSignal class that is NOT
+ * the native one, causing a TypeError at request-build time. We bridge any
+ * foreign signal to a native AbortController so undici is always satisfied.
+ *
+ * See: https://github.com/Vermonster/fhir-kit-client/issues/204
+ */
+function normalizeSignal(signal: SignalLike): AbortSignal {
+  if (signal instanceof AbortSignal) return signal;
 
-function buildAgent(baseUrl: string): AgentOptions {
-  const cached = agentCache.get(baseUrl);
-  if (cached) return cached;
-
-  const agent: AgentOptions = baseUrl.startsWith('https') ? { agent: new HttpsAgent() } : { agent: new HttpAgent() };
-
-  agentCache.set(baseUrl, agent);
-  return agent;
+  const controller = new AbortController();
+  if (signal.aborted) {
+    controller.abort(signal.reason);
+  } else {
+    signal.addEventListener('abort', () => controller.abort(signal.reason), { once: true });
+  }
+  return controller.signal;
 }
 
 function stringifyBody(body: unknown): string | undefined {
@@ -63,6 +73,8 @@ export class HttpClient {
   private readonly baseRequestOptions: Record<string, unknown>;
   private readonly requestSigner?: (url: string, options: RequestInit) => void;
   private authHeader: Record<string, string> = {};
+  /** Keepalive agents keyed by base URL, reused across requests on this instance. */
+  private readonly agentCache = new Map<string, AgentOptions>();
 
   constructor({
     baseUrl,
@@ -113,6 +125,16 @@ export class HttpClient {
     };
   }
 
+  private buildAgent(): AgentOptions {
+    const cached = this.agentCache.get(this.baseUrl);
+    if (cached) return cached;
+    const agent: AgentOptions = this.baseUrl.startsWith('https')
+      ? { agent: new HttpsAgent() }
+      : { agent: new HttpAgent() };
+    this.agentCache.set(this.baseUrl, agent);
+    return agent;
+  }
+
   expandUrl(url = ''): string {
     if (url.toLowerCase().startsWith('http')) return url;
     if (this.baseUrl.endsWith('/') && url.startsWith('/')) return this.baseUrl + url.slice(1);
@@ -127,10 +149,10 @@ export class HttpClient {
       body: stringifyBody(body),
       headers: new Headers(this.mergeHeaders(options.headers)),
       keepalive: true,
-      ...buildAgent(this.baseUrl),
+      ...this.buildAgent(),
     };
 
-    if (options.signal) requestInit.signal = options.signal;
+    if (options.signal) requestInit.signal = normalizeSignal(options.signal);
 
     if (this.requestSigner) {
       this.requestSigner(url, requestInit);

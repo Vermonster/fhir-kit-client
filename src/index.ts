@@ -1,6 +1,5 @@
 export type { CapabilityWhere, SupportForParams } from './capability-tool.js';
 export { CapabilityTool } from './capability-tool.js';
-export { Client } from './client.js';
 export type {
   BundleParams,
   CompartmentSearchParams,
@@ -18,6 +17,7 @@ export type {
   UpdateParams,
   VreadParams,
 } from './client.js';
+export { Client } from './client.js';
 export type {
   AddPatch,
   ClientConfig,
@@ -32,6 +32,7 @@ export type {
   ReplacePatch,
   RequestOptions,
   SearchParams,
+  SignalLike,
   SmartAuthMetadata,
   TestPatch,
 } from './types.js';

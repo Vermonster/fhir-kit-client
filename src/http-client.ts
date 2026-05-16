@@ -1,6 +1,6 @@
 import HttpAgent from 'agentkeepalive';
 import { logRequestError, logRequestInfo, logResponseInfo } from './logging.js';
-import type { FhirResource, RequestOptions } from './types.js';
+import type { FhirResource, RequestOptions, SignalLike } from './types.js';
 import { REQUEST_KEY, RESPONSE_KEY } from './types.js';
 
 const { HttpsAgent } = HttpAgent;
@@ -22,7 +22,7 @@ interface AgentOptions {
  *
  * See: https://github.com/Vermonster/fhir-kit-client/issues/204
  */
-function normalizeSignal(signal: AbortSignal): AbortSignal {
+function normalizeSignal(signal: SignalLike): AbortSignal {
   if (signal instanceof AbortSignal) return signal;
 
   const controller = new AbortController();

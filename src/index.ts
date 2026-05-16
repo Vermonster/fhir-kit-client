@@ -32,6 +32,7 @@ export type {
   ReplacePatch,
   RequestOptions,
   SearchParams,
+  SignalLike,
   SmartAuthMetadata,
   TestPatch,
 } from './types.js';

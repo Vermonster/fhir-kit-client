@@ -1,4 +1,3 @@
-import { FetchQueue } from './fetch-queue.js';
 import { HttpClient } from './http-client.js';
 import { Pagination } from './pagination.js';
 import { ReferenceResolver } from './reference-resolver.js';
@@ -234,51 +233,31 @@ export class Client {
       headers: { accept: 'application/fhir+json,application/json', ...options.headers },
     };
 
-    const normalizedBaseUrl = this.baseUrl.replace(/\/*$/, '/');
-    const queue = new FetchQueue();
-    const metadataJob = queue.buildJob();
-    const wellknownSmartJob = queue.buildJob();
-    const wellknownOidcJob = queue.buildJob();
-    const errors: Error[] = [];
+    const base = this.baseUrl.replace(/\/*$/, '/');
+    const controllers = Array.from({ length: 3 }, () => new AbortController());
+    const abortOthers = (winner: number): void =>
+      controllers.forEach((c, i) => {
+        if (i !== winner) c.abort();
+      });
 
-    return new Promise((resolve, reject) => {
-      const handleError = (error: Error): void => {
-        if (errors.push(error) === queue.numJobs) {
-          reject(new Error(errors.map((e) => e.message).join('; ')));
-        }
-      };
-
+    return Promise.any([
       this.httpClient
-        .request(
-          'GET',
-          `${normalizedBaseUrl}.well-known/smart-configuration`,
-          wellknownSmartJob.addSignalOption(fetchOptions),
-        )
+        .request('GET', `${base}.well-known/smart-configuration`, { ...fetchOptions, signal: controllers[0].signal })
         .then((r) => {
-          queue.safeAbortOthers(wellknownSmartJob);
-          resolve(authFromWellKnown(r));
-        })
-        .catch(handleError);
-
-      this.capabilityStatement(metadataJob.addSignalOption(fetchOptions))
-        .then((r) => {
-          queue.safeAbortOthers(metadataJob);
-          resolve(authFromCapability(r));
-        })
-        .catch(handleError);
-
+          abortOthers(0);
+          return authFromWellKnown(r);
+        }),
+      this.capabilityStatement({ ...fetchOptions, signal: controllers[1].signal }).then((r) => {
+        abortOthers(1);
+        return authFromCapability(r);
+      }),
       this.httpClient
-        .request(
-          'GET',
-          `${normalizedBaseUrl}.well-known/openid-configuration`,
-          wellknownOidcJob.addSignalOption(fetchOptions),
-        )
+        .request('GET', `${base}.well-known/openid-configuration`, { ...fetchOptions, signal: controllers[2].signal })
         .then((r) => {
-          queue.safeAbortOthers(wellknownOidcJob);
-          resolve(authFromWellKnown(r));
-        })
-        .catch(handleError);
-    });
+          abortOthers(2);
+          return authFromWellKnown(r);
+        }),
+    ]);
   }
 
   /**
@@ -387,6 +366,7 @@ export class Client {
   update({ resourceType, id, searchParams, body, options }: UpdateParams): Promise<FhirResource> {
     if (!validResourceType(resourceType)) throw new Error(`Invalid resourceType: ${resourceType}`);
     if (id && searchParams) throw new Error('Cannot specify both id and searchParams for update');
+    if (!id && !searchParams) throw new Error('update requires either id or searchParams');
 
     if (searchParams) {
       const query = createQueryString(searchParams);

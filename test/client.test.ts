@@ -1199,4 +1199,81 @@ describe('Client', () => {
       );
     });
   });
+
+  describe('resourceType validation on every mutating method', () => {
+    const bad = 'https://evil.com/Patient';
+
+    it('vread rejects invalid resourceType', () => {
+      expect(() => fhirClient.vread({ resourceType: bad, id: '1', version: '1' })).toThrow(/Invalid resourceType/);
+    });
+
+    it('create rejects invalid resourceType', () => {
+      expect(() => fhirClient.create({ resourceType: bad, body: { resourceType: bad } })).toThrow(
+        /Invalid resourceType/,
+      );
+    });
+
+    it('update rejects invalid resourceType', () => {
+      expect(() => fhirClient.update({ resourceType: bad, id: '1', body: { resourceType: bad } })).toThrow(
+        /Invalid resourceType/,
+      );
+    });
+
+    it('delete rejects invalid resourceType', () => {
+      expect(() => fhirClient.delete({ resourceType: bad, id: '1' })).toThrow(/Invalid resourceType/);
+    });
+
+    it('patch rejects invalid resourceType', () => {
+      expect(() => fhirClient.patch({ resourceType: bad, id: '1', jsonPatch: [] })).toThrow(/Invalid resourceType/);
+    });
+
+    it('operation rejects invalid resourceType', () => {
+      expect(() => fhirClient.operation({ name: 'everything', resourceType: bad })).toThrow(/Invalid resourceType/);
+    });
+
+    it('search rejects invalid resourceType', () => {
+      expect(() => fhirClient.search({ resourceType: bad })).toThrow(/Invalid resourceType/);
+    });
+
+    it('compartmentSearch rejects invalid compartment resourceType', () => {
+      expect(() =>
+        fhirClient.compartmentSearch({
+          resourceType: 'Condition',
+          compartment: { resourceType: bad, id: '1' },
+        }),
+      ).toThrow(/Invalid compartment resourceType/);
+    });
+
+    it('history rejects invalid resourceType', () => {
+      expect(() => fhirClient.history({ resourceType: bad })).toThrow(/Invalid resourceType/);
+    });
+  });
+
+  describe('#update mutual-exclusion guards', () => {
+    const body = { resourceType: 'Patient', id: '1' };
+
+    it('throws when neither id nor searchParams is provided', () => {
+      expect(() => fhirClient.update({ resourceType: 'Patient', body })).toThrow(
+        'update requires either id or searchParams',
+      );
+    });
+
+    it('throws when both id and searchParams are provided', () => {
+      expect(() =>
+        fhirClient.update({ resourceType: 'Patient', id: '1', searchParams: { identifier: '1' }, body }),
+      ).toThrow('Cannot specify both id and searchParams for update');
+    });
+  });
+
+  describe('#smartAuthMetadata all-endpoints-fail', () => {
+    it('rejects when all three endpoints fail', async () => {
+      server.use(
+        http.get(`${BASE_URL}/metadata`, () => new HttpResponse(null, { status: 500 })),
+        http.get(`${BASE_URL}/.well-known/smart-configuration`, () => new HttpResponse(null, { status: 404 })),
+        http.get(`${BASE_URL}/.well-known/openid-configuration`, () => new HttpResponse(null, { status: 404 })),
+      );
+
+      await expect(fhirClient.smartAuthMetadata()).rejects.toThrow();
+    });
+  });
 });

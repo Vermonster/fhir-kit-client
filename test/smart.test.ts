@@ -11,6 +11,14 @@ describe('smart', () => {
       expect(tokenUrl).toEqual(new URL('https://launch.smarthealthit.org/v/r4/auth/token'));
     });
 
+    it('parses registerUrl from registration_endpoint', () => {
+      const { registerUrl } = authFromWellKnown({
+        resourceType: 'WellKnown',
+        registration_endpoint: 'https://auth.example.com/register',
+      });
+      expect(registerUrl).toEqual(new URL('https://auth.example.com/register'));
+    });
+
     it('returns undefined if not available', () => {
       const { authorizeUrl, tokenUrl } = authFromWellKnown({});
       expect(authorizeUrl).toBeUndefined();

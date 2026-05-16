@@ -11,9 +11,6 @@ interface AgentOptions {
   agent?: InstanceType<typeof HttpAgent> | InstanceType<typeof HttpsAgent>;
 }
 
-// Cache agents by base URL (keyed as a tuple string for simplicity)
-const agentCache = new Map<string, AgentOptions>();
-
 /**
  * Ensures the signal is a native AbortSignal.
  *
@@ -35,16 +32,6 @@ function normalizeSignal(signal: AbortSignal): AbortSignal {
     signal.addEventListener('abort', () => controller.abort(signal.reason), { once: true });
   }
   return controller.signal;
-}
-
-function buildAgent(baseUrl: string): AgentOptions {
-  const cached = agentCache.get(baseUrl);
-  if (cached) return cached;
-
-  const agent: AgentOptions = baseUrl.startsWith('https') ? { agent: new HttpsAgent() } : { agent: new HttpAgent() };
-
-  agentCache.set(baseUrl, agent);
-  return agent;
 }
 
 function stringifyBody(body: unknown): string | undefined {
@@ -86,6 +73,8 @@ export class HttpClient {
   private readonly baseRequestOptions: Record<string, unknown>;
   private readonly requestSigner?: (url: string, options: RequestInit) => void;
   private authHeader: Record<string, string> = {};
+  /** Keepalive agents keyed by base URL, reused across requests on this instance. */
+  private readonly agentCache = new Map<string, AgentOptions>();
 
   constructor({
     baseUrl,
@@ -136,6 +125,16 @@ export class HttpClient {
     };
   }
 
+  private buildAgent(): AgentOptions {
+    const cached = this.agentCache.get(this.baseUrl);
+    if (cached) return cached;
+    const agent: AgentOptions = this.baseUrl.startsWith('https')
+      ? { agent: new HttpsAgent() }
+      : { agent: new HttpAgent() };
+    this.agentCache.set(this.baseUrl, agent);
+    return agent;
+  }
+
   expandUrl(url = ''): string {
     if (url.toLowerCase().startsWith('http')) return url;
     if (this.baseUrl.endsWith('/') && url.startsWith('/')) return this.baseUrl + url.slice(1);
@@ -150,7 +149,7 @@ export class HttpClient {
       body: stringifyBody(body),
       headers: new Headers(this.mergeHeaders(options.headers)),
       keepalive: true,
-      ...buildAgent(this.baseUrl),
+      ...this.buildAgent(),
     };
 
     if (options.signal) requestInit.signal = normalizeSignal(options.signal);

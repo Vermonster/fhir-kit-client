@@ -1,5 +1,19 @@
 # Changelog
 
+### 2.0.1
+
+**Bug Fixes**
+
+- Fixed `TypeError: RequestInit: Expected signal to be an instance of AbortSignal` on Node 24+ when passing an `AbortSignal` from a polyfill such as `node-abort-controller`. A new `SignalLike` structural interface is accepted everywhere a signal is expected, and a `normalizeSignal` helper bridges any non-native signal to a native `AbortController` before it reaches the `Request` constructor.
+- Fixed `update()` silently sending `PUT ResourceType/undefined` when called without either `id` or `searchParams`. It now throws `'update requires either id or searchParams'`.
+
+**Improvements**
+
+- `smartAuthMetadata()` now uses `Promise.any()` instead of a manual `FetchQueue` + `Promise` constructor, simplifying the race-and-cancel logic considerably. `fetch-queue.ts` and the `FetchQueue`/`FetchJob` classes have been removed.
+- `HttpClient` agent cache moved from module-level singleton to per-instance, eliminating hidden shared state between client instances.
+- `SignalLike` is now part of the public API (exported from the package root).
+- 32 new tests covering `validResourceType`, `createQueryString`, `HttpClient.expandUrl`, `resourceType` validation on all mutating methods, `update()` guard conditions, `smartAuthMetadata` all-endpoints-fail path, and `authFromWellKnown` `registerUrl`.
+
 ### 2.0.0
 
 **Breaking Changes**

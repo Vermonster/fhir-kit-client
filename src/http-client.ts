@@ -14,6 +14,29 @@ interface AgentOptions {
 // Cache agents by base URL (keyed as a tuple string for simplicity)
 const agentCache = new Map<string, AgentOptions>();
 
+/**
+ * Ensures the signal is a native AbortSignal.
+ *
+ * On Node 24+, undici's Request constructor enforces a strict
+ * `instanceof AbortSignal` check. Polyfill libraries such as
+ * `node-abort-controller` create their own AbortSignal class that is NOT
+ * the native one, causing a TypeError at request-build time. We bridge any
+ * foreign signal to a native AbortController so undici is always satisfied.
+ *
+ * See: https://github.com/Vermonster/fhir-kit-client/issues/204
+ */
+function normalizeSignal(signal: AbortSignal): AbortSignal {
+  if (signal instanceof AbortSignal) return signal;
+
+  const controller = new AbortController();
+  if (signal.aborted) {
+    controller.abort(signal.reason);
+  } else {
+    signal.addEventListener('abort', () => controller.abort(signal.reason), { once: true });
+  }
+  return controller.signal;
+}
+
 function buildAgent(baseUrl: string): AgentOptions {
   const cached = agentCache.get(baseUrl);
   if (cached) return cached;
@@ -130,7 +153,7 @@ export class HttpClient {
       ...buildAgent(this.baseUrl),
     };
 
-    if (options.signal) requestInit.signal = options.signal;
+    if (options.signal) requestInit.signal = normalizeSignal(options.signal);
 
     if (this.requestSigner) {
       this.requestSigner(url, requestInit);

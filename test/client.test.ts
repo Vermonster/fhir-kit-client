@@ -900,6 +900,61 @@ describe('Client', () => {
     });
   });
 
+  describe('AbortSignal compatibility', () => {
+    /**
+     * Regression test for https://github.com/Vermonster/fhir-kit-client/issues/204
+     *
+     * On Node 24+, undici's Request constructor enforces a strict
+     * `instanceof AbortSignal` check. Polyfill libraries like
+     * `node-abort-controller` create their own AbortSignal class that is NOT
+     * the native one, causing a TypeError at request-build time:
+     *
+     *   TypeError: RequestInit: Expected signal ("AbortSignal {...}") to be
+     *   an instance of AbortSignal.
+     *
+     * The fix must normalise any incoming signal into a native AbortSignal
+     * before passing it to `new Request()`.
+     */
+
+    // Simulates the AbortSignal produced by `node-abort-controller` –
+    // a custom EventTarget subclass that is NOT an instance of the native AbortSignal.
+    class FakeAbortSignal extends EventTarget {
+      aborted = false;
+      reason: unknown = undefined;
+      onabort: ((this: AbortSignal, ev: Event) => unknown) | null = null;
+      throwIfAborted(): void {}
+    }
+
+    it('accepts a non-native AbortSignal (e.g. from node-abort-controller) without throwing', async () => {
+      server.use(http.get(`${BASE_URL}/Patient/123`, () => HttpResponse.json(readFixture('patient.json'))));
+
+      const fakeSignal = new FakeAbortSignal() as unknown as AbortSignal;
+
+      // On Node 24+ this currently throws:
+      //   TypeError: RequestInit: Expected signal ("FakeAbortSignal {}") to be an instance of AbortSignal.
+      const response = await fhirClient.read({
+        resourceType: 'Patient',
+        id: '123',
+        options: { signal: fakeSignal },
+      });
+
+      expect(response.resourceType).toBe('Patient');
+    });
+
+    it('still respects an already-aborted non-native signal', async () => {
+      server.use(http.get(`${BASE_URL}/Patient/123`, () => HttpResponse.json(readFixture('patient.json'))));
+
+      const fakeSignal = new FakeAbortSignal() as unknown as AbortSignal;
+      // Mark it as already-aborted
+      Object.assign(fakeSignal, { aborted: true, reason: new DOMException('Aborted', 'AbortError') });
+
+      // After normalisation the native signal should propagate the aborted state.
+      await expect(
+        fhirClient.read({ resourceType: 'Patient', id: '123', options: { signal: fakeSignal } }),
+      ).rejects.toThrow();
+    });
+  });
+
   describe('#noUrlInjection', () => {
     it('rejects url injection through resourceType', () => {
       expect(() => fhirClient.read({ resourceType: 'https://bad-server/Patient', id: '123' })).toThrow(/Invalid resourceType/);

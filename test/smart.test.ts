@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { readFixture } from './test-utils.js';
+import { describe, expect, it } from 'vitest';
 import { authFromCapability, authFromWellKnown } from '../src/smart.js';
+import { readFixture } from './test-utils.js';
 
 describe('smart', () => {
   describe('authFromWellKnown', () => {

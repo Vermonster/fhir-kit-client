@@ -29,7 +29,7 @@
     "format": "biome format --write src/ test/**/*.ts vitest.config.ts",
     "format:check": "biome format src/ test/**/*.ts vitest.config.ts",
     "lint": "biome lint src/",
-    "check": "biome check src/ test/**/*.ts vitest.config.ts",
+    "check": "biome check",
     "docs": "typedoc"
   },
   "author": "Vermonster",

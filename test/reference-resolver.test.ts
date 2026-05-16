@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { http, HttpResponse } from 'msw';
+import { HttpResponse, http } from 'msw';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { Client } from '../src/client.js';
+import { ReferenceResolver } from '../src/reference-resolver.js';
+import { splitReference } from '../src/utils.js';
 import { server } from './setup.js';
 import { readFixture } from './test-utils.js';
-import { Client } from '../src/client.js';
-import { splitReference } from '../src/utils.js';
-import { ReferenceResolver } from '../src/reference-resolver.js';
 
 const BASE_URL = 'https://example.com';
 

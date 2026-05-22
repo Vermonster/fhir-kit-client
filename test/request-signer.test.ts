@@ -32,6 +32,28 @@ const requestSigner = (_url: string, requestOptions: RequestInit): void => {
   });
 };
 
+const asyncRequestSigner = async (_url: string, requestOptions: RequestInit): Promise<void> => {
+  await Promise.resolve();
+  (requestOptions.headers as Headers).set('X-Async-Token', 'async-value');
+};
+
+describe('Client with async request signer', () => {
+  it('awaits an async requestSigner before sending the request', async () => {
+    const capturedHeaders: Record<string, string | null> = {};
+    server.use(
+      http.get(`${BASE_URL}/Patient/123`, ({ request }) => {
+        capturedHeaders['X-Async-Token'] = request.headers.get('x-async-token');
+        return HttpResponse.json(readFixture('patient.json'));
+      }),
+    );
+
+    const client = new Client({ baseUrl: BASE_URL, requestSigner: asyncRequestSigner });
+    await client.request('Patient/123');
+
+    expect(capturedHeaders['X-Async-Token']).toBe('async-value');
+  });
+});
+
 describe('Client with request signer', () => {
   let fhirClient: Client;
 

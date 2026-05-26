@@ -71,7 +71,7 @@ export class HttpClient {
   private baseUrlValue: string;
   customHeaders: Record<string, string>;
   private readonly baseRequestOptions: Record<string, unknown>;
-  private readonly requestSigner?: (url: string, options: RequestInit) => void;
+  private readonly requestSigner?: (url: string, options: RequestInit) => void | Promise<void>;
   private authHeader: Record<string, string> = {};
   /** Keepalive agents keyed by base URL, reused across requests on this instance. */
   private readonly agentCache = new Map<string, AgentOptions>();
@@ -85,7 +85,7 @@ export class HttpClient {
     baseUrl: string;
     customHeaders?: Record<string, string>;
     requestOptions?: Record<string, unknown>;
-    requestSigner?: (url: string, options: RequestInit) => void;
+    requestSigner?: (url: string, options: RequestInit) => void | Promise<void>;
   }) {
     this.baseUrlValue = '';
     this.baseUrl = baseUrl;
@@ -142,7 +142,7 @@ export class HttpClient {
     return `${this.baseUrl}/${url}`;
   }
 
-  private buildRequest(method: string, url: string, options: RequestOptions, body?: unknown): Request {
+  private async buildRequest(method: string, url: string, options: RequestOptions, body?: unknown): Promise<Request> {
     const requestInit: RequestInit = {
       ...(this.baseRequestOptions as RequestInit),
       method,
@@ -155,7 +155,7 @@ export class HttpClient {
     if (options.signal) requestInit.signal = normalizeSignal(options.signal);
 
     if (this.requestSigner) {
-      this.requestSigner(url, requestInit);
+      await this.requestSigner(url, requestInit);
     }
 
     return new Request(url, requestInit);
@@ -168,7 +168,7 @@ export class HttpClient {
     body?: unknown,
   ): Promise<FhirResource> {
     const url = this.expandUrl(requestUrl);
-    const req = this.buildRequest(method, url, options, body);
+    const req = await this.buildRequest(method, url, options, body);
     logRequestInfo(method, url, req.headers);
 
     const response = await fetch(req);

@@ -203,6 +203,22 @@ client.bearerToken = newToken;
 client.customHeaders = { 'X-Tenant': 'new-tenant' };
 ```
 
+#### Per-request `fetch` options
+
+Every read/write/search method accepts an optional `options` object that is
+forwarded to the underlying `RequestInit`. This lets you override library
+defaults on a single call — most notably `keepalive`, which defaults to `true`
+so in-flight requests survive page unload. Because the Fetch spec caps
+`keepalive` request bodies at 64 KiB, large Bundles must opt out:
+
+```ts
+// Send a large transaction Bundle without keepalive
+await client.transaction({ body: bundle, options: { keepalive: false } });
+```
+
+Other `RequestInit` fields (`redirect`, `mode`, `credentials`, etc.) are
+forwarded the same way.
+
 ### Read
 
 ```ts

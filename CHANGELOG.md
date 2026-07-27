@@ -1,5 +1,16 @@
 # Changelog
 
+### Unreleased
+
+**Bug Fixes**
+
+- Per-request `fetch` options (e.g. `keepalive`, `redirect`, `mode`) are now
+  forwarded to the underlying `RequestInit`, allowing callers to override the
+  library defaults on a single call. Previously `keepalive: true` was hardcoded
+  after `baseRequestOptions`, making large request bodies (>64 KiB) fail with
+  `TypeError: failed to fetch` because the Fetch spec caps `keepalive`
+  request bodies at 64 KiB. Reported in [#215](https://github.com/Vermonster/fhir-kit-client/issues/215).
+
 ### 2.0.2
 
 **Bug Fixes**

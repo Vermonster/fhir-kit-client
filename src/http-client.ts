@@ -143,6 +143,8 @@ export class HttpClient {
   }
 
   private async buildRequest(method: string, url: string, options: RequestOptions, body?: unknown): Promise<Request> {
+    const { postSearch: _postSearch, headers: _headers, signal: _signal, ...passthrough } = options;
+
     const requestInit: RequestInit = {
       ...(this.baseRequestOptions as RequestInit),
       method,
@@ -150,6 +152,7 @@ export class HttpClient {
       headers: new Headers(this.mergeHeaders(options.headers)),
       keepalive: true,
       ...this.buildAgent(),
+      ...passthrough,
     };
 
     if (options.signal) requestInit.signal = normalizeSignal(options.signal);

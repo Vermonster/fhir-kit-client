@@ -517,15 +517,15 @@ DEBUG=fhir-kit-client:info node app.js
 
 ## Migrating from v1
 
-| v1                                               | v2                                                                                                                      |
-|--------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
-| `const Client = require('fhir-kit-client')`      | `import { Client } from 'fhir-kit-client'` OR <br/>`const { Client } = require('fhir-kit-client')` (NodeJS 22.12+ only) |
-| Node 12+                                         | Node 18+ required                                                                                                       |
-| `cross-fetch`, `node-abort-controller` polyfills | Native `fetch`, `AbortController`                                                                                       |
-| `client.read({…, headers: {…}})`                 | `client.read({…, options: { headers: {…} }})`                                                                           |
-| `client.nextPage(bundle)`                        | `client.nextPage({ bundle })`                                                                                           |
-| `query-string` (alpha sort)                      | `URLSearchParams` (insertion order)                                                                                     |
-| `fhir-kit-client` default export                 | Named export `Client`                                                                                                   |
+| v1                                               | v2                                                                                          |
+|--------------------------------------------------|---------------------------------------------------------------------------------------------|
+| `const Client = require('fhir-kit-client')`      | `import { Client } from 'fhir-kit-client'` OR <br/>`const { Client } = require('fhir-kit-client')` |
+| Node 12+                                         | Node 18+ required for "import" syntax and NodeJS 22.12+ or v20.19+ for "require" syntax     |
+| `cross-fetch`, `node-abort-controller` polyfills | Native `fetch`, `AbortController`                                                           |
+| `client.read({…, headers: {…}})`                 | `client.read({…, options: { headers: {…} }})`                                               |
+| `client.nextPage(bundle)`                        | `client.nextPage({ bundle })`                                                               |
+| `query-string` (alpha sort)                      | `URLSearchParams` (insertion order)                                                         |
+| `fhir-kit-client` default export                 | Named export `Client`                                                                       |
 
 ## Examples
 

@@ -9,7 +9,7 @@
 Node.js FHIR R4 client library — TypeScript-first, ESM-only, zero polyfills.
 
 > **v2 requires Node 18+.** It uses native `fetch`, `AbortController`, and `URLSearchParams`.
-> CommonJS (`require`) is only supported on NodeJS 24.0+, 22.12+ and 20.19+. See the [migration guide](#migrating-from-v1) if upgrading.
+> CommonJS (`require`) is only supported on Node 24.0+, 22.12+ and 20.19+. See the [migration guide](#migrating-from-v1) if upgrading.
 
 ## Features
 
@@ -517,15 +517,15 @@ DEBUG=fhir-kit-client:info node app.js
 
 ## Migrating from v1
 
-| v1                                               | v2                                                                                                 |
-|--------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| v1                                               | v2                                                                                               |
+|--------------------------------------------------|--------------------------------------------------------------------------------------------------|
 | `const Client = require('fhir-kit-client')`      | `import { Client } from 'fhir-kit-client'` OR <br/>`const { Client } = require('fhir-kit-client')` |
-| Node 12+                                         | Node 18+ required for "import" syntax and NodeJS 24.0+, 22.12+ or v20.19+ for "require" syntax     |
-| `cross-fetch`, `node-abort-controller` polyfills | Native `fetch`, `AbortController`                                                                  |
-| `client.read({…, headers: {…}})`                 | `client.read({…, options: { headers: {…} }})`                                                      |
-| `client.nextPage(bundle)`                        | `client.nextPage({ bundle })`                                                                      |
-| `query-string` (alpha sort)                      | `URLSearchParams` (insertion order)                                                                |
-| `fhir-kit-client` default export                 | Named export `Client`                                                                              |
+| Node 12+                                         | Node 18+ required for "import" syntax and Node 24.0+, 22.12+ or v20.19+ for "require" syntax     |
+| `cross-fetch`, `node-abort-controller` polyfills | Native `fetch`, `AbortController`                                                                |
+| `client.read({…, headers: {…}})`                 | `client.read({…, options: { headers: {…} }})`                                                    |
+| `client.nextPage(bundle)`                        | `client.nextPage({ bundle })`                                                                    |
+| `query-string` (alpha sort)                      | `URLSearchParams` (insertion order)                                                              |
+| `fhir-kit-client` default export                 | Named export `Client`                                                                            |
 
 ## Examples
 
